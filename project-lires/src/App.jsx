@@ -1,18 +1,18 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./Layout";
-import NivelLibras from "./pages/NivelLibras";
+import SidebarLeft from './components/SidebarLeft';
+import SidebarRight from './components/SidebarRight';
+import MainContent from './components/MainContent';
+import EsqPers from './components/EsqPers';
+import MidPers from './components/MidPers';
+import DirPers from './components/DirPers';
+
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-
-        <Route path="/" element={<Layout />}>
-           <Route index element={<Home />} />
-          <Route path="nivel" element={<NivelLibras />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <div className="flex min-h-screen bg-white">
+    <EsqPers />
+    <MidPers />
+    <DirPers />
+  </div>
 
   );
 }

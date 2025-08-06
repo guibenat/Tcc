@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from "react-router-dom";
+
 import Check from '../assets/Check.png'
 import discord from'../assets/discord.png'
 import Linha from '../assets/Linha.png'
@@ -12,7 +12,7 @@ export default function MainContent() {
   return (
     <main className="flex-1 flex flex-col items-center p-8 bg-gradient-to-b from-white to-purple-100 overflow-y-auto">
       
-      <button onClick={() => navigate('/nivel')} className="flex items-center justify-between -gap-1 px-5 py-auto bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] text-white font-bold rounded-full shadow-md hover:scale-105 transition-all">
+      <button className="flex items-center justify-between -gap-1 px-5 py-auto bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] text-white font-bold rounded-full shadow-md hover:scale-105 transition-all">
   <span>Faça parte da nossa<br />comunidade do discord!</span>
   <img src={discord} alt="Discord" className="w-32 h-32 ml-10" />
 </button>
@@ -40,7 +40,7 @@ export default function MainContent() {
 <img  src={Espera} alt="" />
 <img  src={Espera} alt="" />
 </div>
-   <Outlet />
+   
 
     </main>
   );
