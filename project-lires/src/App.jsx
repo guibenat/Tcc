@@ -1,23 +1,20 @@
-import SidebarLeft from './components/SidebarLeft';
-import SidebarRight from './components/SidebarRight';
-import MainContent from './components/MainContent';
-import EsqPers from './components/EsqPers';
-import MidPers from './components/MidPers';
-import DirPers from './components/DirPers';
-import HomeMid from './components/HomeMid';
-import HomeNav from './components/HomeNav';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Personagem from './pages/Personagem';
 
 
 function App() {
   return (
-    <div className="flex min-h-screen bg-white">
-    <EsqPers />
-    <HomeNav />
-    <DirPers />
-  </div>
-
+    <Router>
+      <div className="flex min-h-screen bg-white">
+        {/* Define the routes for the application */}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/personagem" element={<Personagem />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
 export default App;
-
