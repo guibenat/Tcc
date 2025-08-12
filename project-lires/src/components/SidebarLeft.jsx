@@ -9,7 +9,7 @@ import Perfil from '../assets/Perfil.png'
 
 export default function SidebarLeft() {
   return (
-    <aside className="w-48 bg-white border-r border-gray-200 flex flex-col items-center py-8">
+    <aside className="w-48 bg-white border-r border-gray-200 flex flex-col items-center py-8 -mt-16">
       <img src={Lires} alt="" />
       <nav className="flex flex-col gap-6 text-[#7B68EE] font-extrabold">
         <a href="#" className="flex items-center gap-2 font-bold">
