@@ -3,6 +3,7 @@ import User from './pages/User';
 import Home from './pages/Home';
 import Personagem from './pages/Personagem';
 import Inicio from './pages/Inicio';
+import Loja from './pages/Loja';
 
 
 function App() {
@@ -11,10 +12,11 @@ function App() {
       <div className="flex min-h-screen bg-white">
         {/* Define the routes for the application */}
         <Routes>
-          <Route path="/" element={<User />} />
-          <Route path="/personagem" element={<Home />} />
+          <Route path="/" element={<Loja />} />
+          <Route path="/personagem" element={<Personagem />} />
           <Route path="/inicio" element={<Inicio />} />
-          <Route path="/user" element={<Personagem />} />
+          <Route path="/user" element={<User />} />
+          <Route path='/loja' element={<Home/>} />
           {/* Add more routes as needed */}
         </Routes>
       </div>
