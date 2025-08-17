@@ -1,55 +1,73 @@
+import React from "react";
+import Presente from '../assets/Presente.png'
+import { FaGift } from "react-icons/fa"; 
+import { FaCoins } from "react-icons/fa"; 
 import SuperCaixaGema from '../assets/SuperCaixaGema.png';
 import CaixaGema from '../assets/CaixaGema.png';
 import CaixaGrandeGema from '../assets/caixaGrandeGema.png';
-import Gemas from'../assets/Gemas.png';
 import SidebarLeft from "../components/SidebarLeft";
+import SidebarRight from "../components/SidebarRight";
 
 export default function Loja() {
     return (
-        <>
-            <div>
-                <SidebarLeft />
-            </div>
-            <main className='flex-1 flex flex-col items-center p-8 bg-gradient-to-b from-white to-purple-100 overflow-y-auto'>
-            <div className="flex flex-col items-start justify-between gap-x-7 px-5 py-auto bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] text-white font-bold rounded-2xl border-8 border-[#9CD6C8] ">
-                <div className="ml-3 mt-4 mb-4 gap-6">
-  <span className="font-extrabold text-2xl">Seja lires premium!</span>
-  <h2>Aprenda se divertindo com mais vontade</h2>
-  <button className="bg-white text-[#7B68EE] rounded-xl py-1 px-4">Saiba mais</button>
-  </div>
-</div>
+        <div className="flex flex-row w-full bg-[#f8f5ff]"> 
+            {/* Fundo lilás claro na tela inteira */}
+            
+            <SidebarLeft/>
 
-<div className="flex flex-row items-center">
-    <strong>Gemas</strong>
-    <img src={Gemas} alt="" />
-</div>
-<div className='flex flex-row items-center justify-between py-auto text-white font-bold rounded-2xl gap-4 '>
-    <div className='bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] rounded-xl flex flex-col items-center w-36 h-52 border-8 border-[#9CD6C8]'>
-        <div className='mt-7 items-center'>
-        <img src={CaixaGema} alt="" />
-        <span>1200</span>
-        <h2>0,00R$</h2>
-        </div>
-        </div>
-    <div className='bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] rounded-xl flex flex-col items-center w-36 h-52 border-8 border-[#9CD6C8]'>
-        <div className='mt-7 items-center'>
-        <img src={CaixaGrandeGema} alt="" />
-        <span>3000</span>                                       
-        <h2>0,00R$</h2>
-        </div>
-        </div>
-    <div className='bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] rounded-xl flex flex-col items-center w-36 h-52 border-8 border-[#9CD6C8]'>
-        <div className='mt-7 items-center'>
-        <img src={SuperCaixaGema} alt="" />
-        <span>6500</span>
-        <h2>0,00R$</h2>
-        </div>
-        </div>
-</div>
-            </main>
-            <footer className='flex flex-col items-center justify-center'>
+            {/* Conteúdo do meio */}
+            <div className="flex flex-col gap-6 w-full p-6">
+       
+                {/* Banner Premium */}
+                <div className="bg-gradient-to-r from-purple-400 to-purple-200 rounded-2xl p-6 text-white shadow-lg">
+                    <h2 className="text-xl font-bold">Seja Lires premium</h2>
+                    <p className="text-sm">Aprenda se divertindo e com mais vantagens</p>
+                    <button className="mt-4 bg-white text-purple-600 px-6 py-2 rounded-full font-semibold hover:bg-purple-100 transition">
+                        Saiba Mais
+                    </button>
+                </div>
+
+                {/* Lcoins */}
+                <div>
+                    <div className="flex items-center gap-2 mb-4">
+                        <FaCoins className="text-purple-500 text-2xl" />
+                        <span className="text-lg font-semibold text-purple-700">Lcoins</span>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                        {/* Pacote 1 */}
+                        <div className="flex flex-col items-center bg-purple-100 p-4 rounded-xl border-2 border-[#9CD6C8] shadow hover:scale-105 transition">
+                            <img src={CaixaGema} alt="1200 Lcoins" className="w-16 h-16 mb-2" />
+                            <span className="font-bold">1200</span>
+                            <span className="text-sm">R$ 27,90</span>
+                        </div>
+                        {/* Pacote 2 */}
+                        <div className="flex flex-col items-center bg-purple-100 p-4 rounded-xl border-2 border-[#9CD6C8] shadow hover:scale-105 transition">
+                            <img src={CaixaGrandeGema} alt="3000 Lcoins" className="w-16 h-16 mb-2" />
+                            <span className="font-bold">3000</span>
+                            <span className="text-sm">R$ 54,90</span>
+                        </div>
+                        {/* Pacote 3 */}
+                        <div className="flex flex-col items-center bg-purple-100 p-4 rounded-xl border-2 border-[#9CD6C8] shadow hover:scale-105 transition">
+                            <img src={SuperCaixaGema} alt="6500 Lcoins" className="w-16 h-16 mb-2" />
+                            <span className="font-bold">6500</span>
+                            <span className="text-sm">R$ 109,90</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bônus diário */}
+                <div className="bg-gradient-to-r from-purple-400 to-purple-200 rounded-2xl p-4 flex items-center gap-4 shadow-lg">
+                    <img src={Presente} alt="" className="w- h-28" />
+                    <span className="text-white font-bold text-5xl">
+                        Ganhe um bônus aleatório a cada dia
+                    </span>
+                </div>
                 
-            </footer>
-        </>
+            </div>
+
+            {/* Lado direito */}
+            <SidebarRight/>
+        </div>
     );
 }
