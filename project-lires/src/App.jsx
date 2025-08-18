@@ -13,7 +13,7 @@ function App() {
       <div className="flex min-h-screen bg-white">
         {/* Define the routes for the application */}
         <Routes>
-          <Route path="/" element={<Loja />} />
+          <Route path="/" element={<User />} />
           <Route path="/personagem" element={<Personagem />} />
           <Route path="/inicio" element={<Inicio />} />
           <Route path="/user" element={<User />} />

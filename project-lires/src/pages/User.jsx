@@ -66,7 +66,7 @@ export default function User() {
 
           {/* Dias acumulados 1 */}
           <div className="flex items-center gap-3 bg-gradient-to-r from-[#FFFFFF] to-[#F6B8FF] rounded-xl shadow p-4">
-            <img src={IconeDias} alt="Dias" className="w-14 h-14" />
+            <img src={IconeDias} alt="Dias" className="w-16 h-16" />
             <div>
               <p className="font-bold text-purple-800">Dias Acumulados</p>
               <span className="text-purple-800 text-lg font-bold">65</span>
@@ -84,13 +84,47 @@ export default function User() {
 
           {/* Dias acumulados 2 */}
           <div className="flex items-center gap-3 bg-gradient-to-r from-[#FFFFFF] to-[#F6B8FF] rounded-xl shadow p-4">
-            <img src={IconeDias} alt="Dias" className="w-14 h-14" />
+            <img src={IconeDias} alt="Dias" className="w-16 h-16" />
             <div>
               <p className="font-bold text-purple-800">Dias Acumulados</p>
               <span className="text-purple-800 text-lg font-bold">65</span>
             </div>
           </div>
         </div>
+
+        {/*Meta diaria*/}
+        <div className="w-full max-w-3xl mt-6">
+          <h2 className="font-bold text-[#7B68EE]">Metas</h2>
+          <h4 className="text-[#7B68EE]">Sua meta diaria</h4>
+          <div className="w-full max-w-3xl mt-6">
+        <h2 className="text-xl font-bold text-[#7B68EE] mb-2">Conquistas</h2>
+        <div className="flex items-center gap-3 bg-[linear-gradient(to_right,#A4C5F6,#052794)]  rounded-xl p-4 shadow">
+          <img src={Perfil} alt="Conquista" className="w-16 h-16" />
+          <div>
+            <p className="font-bold text-[#FFFFFF]">
+              10 Min por dia
+            </p>
+          </div>
+        </div>
+      </div>
+        </div>
+
+        {/*Objetivos*/}
+        <div className="w-full max-w-3xl mt-6">
+        <h2 className="text-xl font-bold text-[#7B68EE] mb-2">Objetivos</h2>
+        <div className="flex items-center gap-3 bg-gradient-to-tr from-[#A4C5F6] to-[#EFF1FA] rounded-xl p-4 shadow">
+          <img src={Trofeu} alt="Conquista" className="w-10 h-10" />
+          <div>
+            <p className="font-bold text-[#7B68EE]">
+              Aprendeu 100 sinais essa semana
+            </p>
+            <span className="text-[#7B68EE] cursor-pointer">
+              Clique para ver mais
+            </span>
+          </div>
+          
+        </div>
+      </div>
       </div>
     </main>
   );
