@@ -1,4 +1,8 @@
 import React from "react";
+import Aprendizado from "../assets/Aprendizado.png"; // Ícone aprendizado
+import Social from "../assets/Social.png"; // Ícone social
+import Consistência from "../assets/Consistencia.png"; // Ícone consistência
+import Exploração from "../assets/Exploração.png"; // Ícone exploração
 import Perfil from "../assets/Perfil.png";
 import Bandeira from "../assets/Brasil.jpg"; // Bandeira do Brasil
 import Foguinho from '../assets/Foguinho.png'
@@ -110,10 +114,10 @@ export default function User() {
         </div>
 
         {/*Objetivos*/}
-        <div className="w-full max-w-3xl mt-6">
+        <div className="w-full max-w-3xl mt-6 ">
         <h2 className="text-xl font-bold text-[#7B68EE] mb-2">Objetivos</h2>
         <div className="flex items-center gap-3 bg-gradient-to-tr from-[#A4C5F6] to-[#EFF1FA] rounded-xl p-4 shadow">
-          <img src={Trofeu} alt="Conquista" className="w-10 h-10" />
+          <img src={Aprendizado} alt="Conquista" className="w-20 h-20" />
           <div>
             <p className="font-bold text-[#7B68EE]">
               Aprendeu 100 sinais essa semana
@@ -122,7 +126,48 @@ export default function User() {
               Clique para ver mais
             </span>
           </div>
-          
+        </div>
+
+        <div className="mt-6">
+          <div className="flex items-center gap-3 bg-gradient-to-tr from-[#A4C5F6] to-[#EFF1FA] rounded-xl p-4 shadow ">
+            <img src={Social} alt="Conquista" className="w-20 h-20" />
+            <div>
+              <p className="font-bold text-[#7B68EE]">
+                Aprendeu 100 sinais essa semana
+              </p>
+              <span className="text-[#7B68EE] cursor-pointer">
+                Clique para ver mais
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6"> 
+          <div className="flex items-center gap-3 bg-gradient-to-tr from-[#A4C5F6] to-[#EFF1FA] rounded-xl p-4 shadow ">
+            <img src={Consistência} alt="Conquista" className="w-20 h-20" />
+            <div>
+              <p className="font-bold text-[#7B68EE]">
+                Aprendeu 100 sinais essa semana
+              </p>
+              <span className="text-[#7B68EE] cursor-pointer">
+                Clique para ver mais
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6"> 
+          <div className="flex items-center gap-3 bg-gradient-to-tr from-[#A4C5F6] to-[#EFF1FA] rounded-xl p-4 shadow ">
+            <img src={Exploração} alt="Conquista" className="w-20 h-20" />
+            <div>
+              <p className="font-bold text-[#7B68EE]">
+                Aprendeu 100 sinais essa semana
+              </p>
+              <span className="text-[#7B68EE] cursor-pointer">
+                Clique para ver mais
+              </span>
+            </div>
+          </div>
         </div>
       </div>
       </div>
