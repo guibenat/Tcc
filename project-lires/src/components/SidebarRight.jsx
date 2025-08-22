@@ -5,6 +5,7 @@ import Logo from'../assets/Logo.png'
 import Foguinho from'../assets/Foguinho.png';
 import lcoin from'../assets/lcoin.png'
 import Coracao from'../assets/Coracao.png'
+import { Link } from 'react-router-dom';  
 
 export default function SidebarRight() {
   return (
@@ -17,9 +18,9 @@ export default function SidebarRight() {
       {/*Primeiro Bloco*/}
       <div className="border-4 border-[#9CD6C8]  border-300 rounded-lg p-4 ">
 
-        <button className="text-xl px-9 py-1 bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] hover:bg-[linear-gradient(to_right,#7B68EE,#F6B8FF)] transition-all duration-300 text-white font-bold rounded-full ">
+        <Link to="/Assinatura"> <button className="text-xl px-9 py-1 bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] hover:bg-[linear-gradient(to_right,#7B68EE,#F6B8FF)] transition-all duration-300 text-white font-bold rounded-full ">
   Premium
-</button>
+</button></Link>
 <p className='text-[#7B68EE] font-extrabold mt-4 mb-1'>Seja premium agora</p>
 
         <p className="text-xs text-[#988AEA] font-black">Sem anúncios, <br /> vida ilimitada <br /> e skins grátis!</p>
