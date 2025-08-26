@@ -4,7 +4,7 @@ import Home from './pages/Home';
 import Personagem from './pages/Personagem';
 import Inicio from './pages/Inicio';
 import Loja from './pages/Loja';
-
+import Planos from './pages/Planos';
 import Assinatura from './pages/Assinatura';
 
 
@@ -20,6 +20,7 @@ function App() {
           <Route path="/user" element={<User />} />
           <Route path='/loja' element={<Loja/>} />
           <Route path='/Assinatura' element={<Assinatura/>} />
+          <Route path='/Planos' element={<Planos/>} />
           {/* Add more routes as needed */}
         </Routes>
       </div>
