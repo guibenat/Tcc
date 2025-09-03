@@ -25,7 +25,51 @@ export default function Home() {
                     </div>
                 </div>
                 {/*Cards de Cursos */}
-                <div className="flex flex-row w-full bg-[#f8f5ff]">
+                <div className="flex flex-row w-full bg-[#f8f5ff] items-center justify-center mt-7 ">
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="flex flex-col items-center bg-purple-100 p-4 rounded-xl border-2 border-[#9CD6C8] shadow hover:scale-105 transition">
+                            <span className="font-bold">1200</span>
+                            <span className="text-sm">R$ 27,90</span>
+                        </div>
+                        <div className="flex flex-col items-center bg-purple-100 p-4 rounded-xl border-2 border-[#9CD6C8] shadow hover:scale-105 transition">
+                            <span className="font-bold">1200</span>
+                            <span className="text-sm">R$ 27,90</span>
+                        </div>
+                        <div className="flex flex-col items-center bg-purple-100 p-4 rounded-xl border-2 border-[#9CD6C8] shadow hover:scale-105 transition">
+                            <span className="font-bold">1200</span>
+                            <span className="text-sm">R$ 27,90</span>
+                        </div>
+                    </div>
+                </div>
+                <div className='h-16 max-w-full bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] mt-7 items-center flex justify-center text-white'>
+                    <div className='h-28 max-w-full bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] ] items-center flex justify-center text-white p-12 rounded-3xl'>
+                        <strong><span>Segundos Passos</span></strong>
+                    </div>
+                </div>
+                {/*Cards de Cursos */}
+                <div className="flex flex-row w-full bg-[#f8f5ff] items-center justify-center mt-7 ">
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="flex flex-col items-center bg-purple-100 p-4 rounded-xl border-2 border-[#9CD6C8] shadow hover:scale-105 transition">
+                            <span className="font-bold">1200</span>
+                            <span className="text-sm">R$ 27,90</span>
+                        </div>
+                        <div className="flex flex-col items-center bg-purple-100 p-4 rounded-xl border-2 border-[#9CD6C8] shadow hover:scale-105 transition">
+                            <span className="font-bold">1200</span>
+                            <span className="text-sm">R$ 27,90</span>
+                        </div>
+                        <div className="flex flex-col items-center bg-purple-100 p-4 rounded-xl border-2 border-[#9CD6C8] shadow hover:scale-105 transition">
+                            <span className="font-bold">1200</span>
+                            <span className="text-sm">R$ 27,90</span>
+                        </div>
+                    </div>
+                </div>
+                <div className='h-16 max-w-full bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] mt-7 items-center flex justify-center text-white'>
+                    <div className='h-28 max-w-full bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] ] items-center flex justify-center text-white p-12 rounded-3xl'>
+                        <strong><span>Terceiros Passos</span></strong>
+                    </div>
+                </div>
+                {/*Cards de Cursos */}
+                <div className="flex flex-row w-full bg-[#f8f5ff] items-center justify-center mt-7 ">
                     <div className="grid grid-cols-3 gap-4">
                         <div className="flex flex-col items-center bg-purple-100 p-4 rounded-xl border-2 border-[#9CD6C8] shadow hover:scale-105 transition">
                             <span className="font-bold">1200</span>
