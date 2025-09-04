@@ -1,16 +1,21 @@
-import Lires from '../assets/Lires.png'
+import { Link } from 'react-router-dom';
+import Lires from '../assets/Lires.png';
 
-export default function Login() {
+
+const Cadastre = () => {
+
     return (
         <>
         <div className='bg-gradient-to-b w-full from-white to-purple-100'>
-        <nav className='flex items-center justify-between mt-0'> <img src={Lires} alt="" /></nav>
+        <nav  className='flex items-center justify-between mt-0'><Link to={"/inicio "}> <img  src={Lires} alt="" /> </Link></nav>
         <main className='flex flex-col items-center justify-center h-screen relative overflow-hidden w-full -mt-20'>
+        <strong className='font-bold text-[#7B68EE] text-2xl'>Cadastre-se</strong>
             <div className='flex flex-col gap-4 p-8 rounded-3xl bg-white z-10 shadow-inner'>
             <form className='flex flex-col gap-4 p-8 rounded-3xl'>
-                <input type="email" placeholder='Email' className='shadow-inner p-2 rounded-md' />
-                <input type="password" placeholder='Password' className='shadow-inner p-2 rounded-md' />
-                <button type='submit' className='p-2 rounded-md bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] text-white'>Login</button>
+                <input type="email" placeholder='Nome' className='shadow-inner p-2 rounded-md' />
+                <input type="password" placeholder='E-mail' className='shadow-inner p-2 rounded-md' />
+                <input type="email" placeholder='Password' className='shadow-inner p-2 rounded-md' />
+                <button type='submit' className='p-2 rounded-md bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] text-white'>Cadastrar</button>
                 <p className='text-center text-sm text-[#7B68EE]'>Esqueceu sua senha? <a href="/RecuperarSenha">Recuperar</a></p>
                 <div className='flex flex-row gap-4 items-center justify-center'>
                 <span className='text-center text-sm text-[#7B68EE]'>ou</span>
@@ -99,4 +104,6 @@ export default function Login() {
         </div>
         </>
     );
-}
+};
+
+export default Cadastre;

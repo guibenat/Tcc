@@ -3,6 +3,7 @@ import RoboPessoas from '../assets/RoboPessoas.png'
 import LoginLogo from '../assets/LoginLogo.png'
 import Brasil from '../assets/Brasil.jpg';
 import Lires from '../assets/Lires.png';
+import { Link } from 'react-router-dom';
 
 export default function HomeMid() {
   
@@ -14,8 +15,8 @@ export default function HomeMid() {
             <img className='h-80 w-80' src={LoginLogo} alt="" />
             <div className='flex flex-col gap-5'>
             <h1 className=''>Aprender libras  ficou mais facil e divertido com a gente!</h1>
-            <button className="text-xl px-9 py-1 bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] hover:bg-[linear-gradient(to_right,#7B68EE,#F6B8FF)] transition-all duration-300 text-white font-bold rounded-full ">Começe Agora</button>
-            <button className="text-xl px-9 py-1 bg-white transition-all duration-300 text-[#F6B8FF] font-bold rounded-full border border-[#9CD6C8] ">Já tenho uma conta</button>
+            <Link to={"/Login "}><button className="text-xl px-16 py-1 bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] hover:bg-[linear-gradient(to_right,#7B68EE,#F6B8FF)] transition-all duration-300 text-white font-bold rounded-full ">Começe Agora</button></Link>
+            <Link to={"/Cadastre "}><button className="text-xl px-9 py-1 bg-white transition-all duration-300 text-[#F6B8FF] font-bold rounded-full border border-[#9CD6C8] ">Já tenho uma conta</button></Link>
             </div>
         </div>
 
