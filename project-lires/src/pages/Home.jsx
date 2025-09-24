@@ -16,7 +16,7 @@ export default function Home() {
                     }}
                 >
                     <strong><span>Bem vindo a experiencia Lires <br />
-                        Se divirta a aprendendo!</span></strong>
+                        Se divirta a aprendendoo!</span></strong>
                 </div>
                 {/*Primeiros Passos */}
                 <div className='h-16 max-w-full bg-[linear-gradient(to_right,#F6B8FF,#7B68EE)] mt-7 items-center flex justify-center text-white'>
