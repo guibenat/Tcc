@@ -8,6 +8,12 @@ import Planos from './pages/Planos';
 import Assinatura from './pages/Assinatura';
 import Login from './pages/Login';
 import Cadastre from './pages/cadastre';
+import Segurança from './pages/Segurança';
+import Configuracoes from './pages/GerenciamentoConta';
+import ConfiguracoesGerenciamento from './pages/GerenciamentoConta';
+import FeedLires from './pages/FeedLires';
+import EncerramentoL from './pages/EncerramentoLires';
+import ConfiguracoesNotificações from './pages/Notificação';
 
 
 
@@ -27,6 +33,12 @@ function App() {
           <Route path='/Planos' element={<Planos/>} />
           <Route path="/Cadastre" element={<Cadastre />} />
           <Route path="/Login" element={<Login />} />
+          <Route path="/Segurança" element={<Segurança/>} />
+          <Route path="/Notificação" element={<ConfiguracoesNotificações/>} />
+          <Route path="/GerenciamentoConta" element={<ConfiguracoesGerenciamento />} />
+          <Route path="/FeedLires" element={<FeedLires/>} />
+          <Route path="/EncerramentoLires" element={<EncerramentoL />} />
+          <Route path="/Configurações" element={<Configuracoes/>} />
 
           {/* Add more routes as needed */}
         </Routes>
