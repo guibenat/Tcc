@@ -1,56 +1,27 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-
-// Simulando as imagens (você pode manter suas importações originais)
-const Lires = '../assets/LoginLogo.png';
-const Videos = '../assets/Videos.png';
-const Livros = '../assets/Livro.png';
-const Ele = '../assets/Ele.png';
-const Feed = '../assets/Feed.png';
-const Loja = '../assets/Loja.png';
-const Perfil = '../assets/Perfil.png';
-const Ajustes = '../assets/Ajustes.png';
+import logoLiresImg from '../assets/logo-lires.png';
 
 const menuItems = [
-  { icon: Videos, label: 'Vídeos', id: 'videos' },
-  { icon: Livros, label: 'Aprender', id: 'aprender' },
-  { icon: Ele, label: 'Praticar', id: 'praticar' },
-  { icon: Feed, label: 'Feed', id: 'feed' },
-  { icon: Loja, label: 'Loja', id: 'loja' },
-  { icon: Perfil, label: 'Perfil', id: 'perfil' },
-  { icon: Ajustes, label: 'Ajustes', id: 'ajustes' }
+  { icon: '../src/assets/aprender.png', label: 'Aprender', id: 'aprender' },
+  { icon: '../src/assets/praticar.png', label: 'Praticar', id: 'praticar' },
+  { icon: '../src/assets/videos.png', label: 'Vídeos', id: 'videos' },
+  { icon: '../src/assets/feed.png', label: 'Feed', id: 'feed' },
+  { icon: '../src/assets/loja.png', label: 'Loja', id: 'loja' },
+  { icon: '../src/assets/perfil.png', label: 'Perfil', id: 'perfil' },
+  { icon: '../src/assets/ajustes.png', label: 'Ajustes', id: 'ajustes' }
 ];
 
 export default function SidebarLeft() {
-  const [activeItem, setActiveItem] = useState('ajustes'); // Ajustes ativo por padrão
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [activeItem, setActiveItem] = useState('aprender');
 
   return (
-    <aside className={`${isCollapsed ? 'w-16' : 'w-48'} bg-white  border-r border-gray-200 flex flex-col items-center py-8 transition-all duration-300 ease-in-out shadow-lg  group fixed left-0 top-0 h-full z-10`}>
-      
-      {/* Logo com efeito hover */}
-      <div className="mb-8 transform transition-transform duration-200 hover:scale-110">
-        <img 
-          src={Lires} 
-          alt="Logo" 
-          className="drop-shadow-lg hover:drop-shadow-xl transition-all duration-200"
-        />
+    <aside className="w-48 bg-white border-r border-slate-200 flex flex-col p-4 fixed left-0 top-0 h-full">
+      <div className="px-2 mb-12 mt-4">
+        <img src={logoLiresImg} alt="Logo Lires" className="w-24" />
       </div>
 
-      {/* Botão de colapsar */}
-      <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute top-4 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-100 hover:bg-gray-200 rounded-full p-1 text-gray-600"
-        aria-label="Toggle sidebar"
-      >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-          <path d={isCollapsed ? "M6 4l4 4-4 4" : "M10 4l-4 4 4 4"} />
-        </svg>
-      </button>
-
-      {/* Navigation */}
-      <nav className="flex flex-col gap-2 w-full px-2">
-        {menuItems.map((item, index) => (
+      <nav className="flex flex-col gap-3">
+        {menuItems.map((item) => (
           <a
             key={item.id}
             href="#"
@@ -59,66 +30,23 @@ export default function SidebarLeft() {
               setActiveItem(item.id);
             }}
             className={`
-              relative flex items-center gap-3 px-3 py-3 rounded-xl font-bold transition-all duration-300 group/item
+              flex items-center gap-4 px-4 py-2.5 rounded-lg font-semibold transition-all duration-200
               ${activeItem === item.id 
-                ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg transform scale-105' 
-                : 'text-[#7B68EE] hover:bg-gray-50 hover:text-purple-600 hover:scale-102'
+                ? 'bg-purple-100 text-purple-700' 
+                : 'text-slate-500 hover:bg-slate-100 hover:text-purple-600'
               }
-              ${isCollapsed ? 'justify-center' : ''}
             `}
-            style={{
-              animationDelay: `${index * 0.1}s`
-            }}
           >
-            {/* Indicador ativo */}
-            {activeItem === item.id && !isCollapsed && (
-              <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
-            )}
-            
-            {/* Ícone com efeito */}
-            <div className="relative">
-              <img 
-                src={item.icon} 
-                alt={item.label}
-                className={`
-                  w-5 h-5 transition-all duration-200 group-hover/item:scale-110
-                  ${activeItem === item.id ? 'brightness-0 invert' : ''}
-                `}
-              />
-              
-              {/* Efeito de brilho no hover */}
-              <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover/item:opacity-20 transition-opacity duration-200"></div>
-            </div>
-            
-            {/* Label com animação */}
-            {!isCollapsed && (
-              <span className="transition-all duration-200 group-hover/item:translate-x-1">
-                {item.label}
-              </span>
-            )}
-            
-            {/* Tooltip para modo colapsado */}
-            {isCollapsed && (
-              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
-                {item.label}
-              </div>
-            )}
-
-            {/* Efeito de onda no clique */}
-            <div className="absolute inset-0 rounded-xl overflow-hidden">
-              <div className="absolute inset-0 bg-white opacity-0 group-active/item:opacity-30 transition-opacity duration-150"></div>
-            </div>
+            <img 
+              src={item.icon} 
+              alt={`Ícone de ${item.label}`} 
+              // ALTERADO: Aumentado o tamanho dos ícones de w-6 h-6 para w-7 h-7
+              className={`w-7 h-7 ${activeItem === item.id ? '' : 'opacity-70'}`}
+            />
+            <span>{item.label}</span>
           </a>
         ))}
       </nav>
-
-      {/* Decoração inferior */}
-      <div className="mt-auto mb-4 w-12 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full opacity-50"></div>
-      
-      {/* Efeito de borda gradiente sutil */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent opacity-50"></div>
-      </div>
     </aside>
   );
 }
