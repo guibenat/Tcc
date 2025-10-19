@@ -28,6 +28,8 @@ import DescubraNivel1 from './components/DescubraNivel1';
 import Finalizado1 from './components/finalizado1';
 import EsqueceuSenha from './components/EsqueceuSenha';
 import Cadastro from './pages/Cadastro';
+import AlfabetoPage from './pages/AlfabetoPage';
+import VideosPage from './pages/VideosPage';
 
 
 
@@ -38,21 +40,23 @@ function App() {
       <div className="flex min-h-screen bg-white">
         {/* Define the routes for the application */}
         <Routes>
-          <Route path="/" element={<Configuracoes />} />
+          <Route path="/configurações" element={<Configuracoes />} />
           <Route path="/personagem" element={<FeedLires />} />
-          <Route path="/inicio" element={<Inicio />} />
-          <Route path="/user" element={<User />} />
+          <Route path="/" element={<Inicio />} />
+          <Route path="/perfil" element={<User />} />
           <Route path='/home' element={<Home/>} />
-          <Route path='/Praticar' element={<Loja/>} />
-          <Route path='/Notificações' element={<Notificação/>} />
-          <Route path='/Segurança' element={<Segurança />} />
-          <Route path='/Login' element={<Login />} />
-          <Route path='/Inicial' element={<Inicial />} />
-          <Route path='/ComecarDoZero' element={<ComecarDoZero />} />
-          <Route path='/DescubraNivel1' element={<DescubraNivel1 />} />
-          <Route path='/finalizado1' element={<Finalizado1 />} />
-          <Route path='/EsqueceuSenha' element={<EsqueceuSenha />} />
-          <Route path='/Cadastro' element={<Cadastro />} />
+          <Route path='/loja' element={<Loja/>} />
+          <Route path='/notificações' element={<Notificação/>} />
+          <Route path='/segurança' element={<Segurança />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/inicial' element={<Inicial />} />
+          <Route path='/comecar-do-zero' element={<ComecarDoZero />} />
+          <Route path='/descubra-nivel' element={<DescubraNivel1 />} />
+          <Route path='/finalizado' element={<Finalizado1 />} />
+          <Route path='/esqueceu-senha' element={<EsqueceuSenha />} />
+          <Route path='/cadastro' element={<Cadastro />} />
+          <Route path="/alfabeto" element={<AlfabetoPage />} />
+          <Route path="/videos" element={<VideosPage />} />
       
           {/* Add more routes as needed */}
         </Routes>

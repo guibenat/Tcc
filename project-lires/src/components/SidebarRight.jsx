@@ -8,7 +8,7 @@ const lcoinIconImg = '../src/assets/lcoin.png';
 const heartIconImg = '../src/assets/coracaoo.png';
 const liresMasterLogoImg = '../src/assets/lires-master-logo.png'; 
 const robotMascotImg = '../src/assets/robot-mascot.png';     
-const AdImage = '../assets/anuncio.png';
+const AdImage = '../src/assets/anuncio.png';
 
 const UserStat = ({ iconSrc, value, color }) => (
     <div className="flex items-center gap-3">
@@ -19,8 +19,8 @@ const UserStat = ({ iconSrc, value, color }) => (
 
 export default function SidebarRight() {
   return (
-    // ALTERADO: Adicionada a borda à esquerda para separar do conteúdo principal
-    <aside className="w-96 p-6 space-y-6 fixed top-0 right-0 h-screen overflow-y-auto bg-[#F9F8FF] border-l border-slate-200">
+    // A classe 'hidden' esconde em telas pequenas, 'lg:block' mostra em telas grandes.
+    <aside className="w-96 p-6 space-y-6 fixed top-0 right-0 h-screen overflow-y-auto bg-[#F9F8FF] border-l border-slate-200 hidden lg:block">
       {/* User Stats */}
       <div className="flex justify-around items-center bg-slate-50 p-2 rounded-xl">
         <UserStat iconSrc={fireIconImg} value="1" color="text-orange-500" />
@@ -79,7 +79,6 @@ export default function SidebarRight() {
       
       {/* Anúncio */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 text-center flex-shrink-0">
-        <h4 className="font-bold text-slate-500 mb-2">Anúncio</h4>
         <div className="bg-slate-800 rounded-lg h-32 flex items-center justify-center">
           <img src={AdImage} alt="Anúncio" className="h-full w-full object-cover rounded-lg"/>
         </div>
@@ -95,4 +94,9 @@ export default function SidebarRight() {
       </footer>
     </aside>
   );
+          <style>{`
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+            body { font-family: 'Poppins', sans-serif; }
+            * { box-sizing: border-box; }
+        `}</style>
 }

@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logoLiresImg from '../assets/logo-lires.png';
 
 
-// --- Componentes de Ícones (O componente Logo foi removido daqui) ---
-
+// --- Componentes de Ícones ---
 const GoogleIcon = () => (
     <svg className="w-6 h-6 mr-2" viewBox="0 0 48 48">
         <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
@@ -33,8 +32,6 @@ const BackArrowIcon = () => (
     </svg>
 );
 
-// --- Componente do Rodapé ---
-
 const FooterText = () => (
     <div className="text-center text-xs text-gray-500 space-y-2 z-10 mt-auto py-6 px-4">
         <p>
@@ -48,23 +45,37 @@ const FooterText = () => (
     </div>
 );
 
+
 // --- Etapas do Formulário ---
 
-const AgeStep = ({ onNext }) => (
+const AgeStep = ({ age, setAge, onNext }) => (
     <>
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
             Quantos Anos Você Tem?
         </h2>
         
-        <input
-            type="number"
-            placeholder="Idade"
-            className="w-full px-5 py-3 text-base bg-pink-100 rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-500 text-gray-800"
-        />
+        <div className="flex items-center justify-center gap-4 my-4">
+            <button
+                onClick={() => setAge(prev => Math.max(0, prev - 1))}
+                disabled={age <= 0}
+                className="w-12 h-12 text-3xl font-bold text-white bg-pink-300 rounded-full hover:bg-pink-400 disabled:bg-gray-200 transition-colors"
+            >
+                -
+            </button>
+            <span className="text-4xl font-bold text-pink-500 w-24 text-center">
+                {age}
+            </span>
+            <button
+                onClick={() => setAge(prev => Math.min(100, prev + 1))}
+                disabled={age >= 100}
+                className="w-12 h-12 text-3xl font-bold text-white bg-pink-300 rounded-full hover:bg-pink-400 disabled:bg-gray-200 transition-colors"
+            >
+                +
+            </button>
+        </div>
 
         <p className="text-center text-xs text-gray-500 mt-4 mb-6">
             Informar sua idade garante que você tenha a melhor experiência com LIRES.
-            Para saber mais acesse a nossa <a href="#" className="text-pink-500 font-semibold hover:underline">Política de privacidade</a>
         </p>
         
         <button 
@@ -76,15 +87,8 @@ const AgeStep = ({ onNext }) => (
     </>
 );
 
-const ProfileStep = ({ onBack }) => {
+const ProfileStep = ({ name, setName, email, setEmail, password, setPassword, onBack, onCreateAccount }) => {
     const [showPassword, setShowPassword] = useState(false);
-    const navigate = useNavigate();
-
-    const handleCreateAccount = (e) => {
-        e.preventDefault();
-        console.log("Criando conta e redirecionando...");
-        navigate('/inicial');
-    };
 
     return (
         <div className="relative">
@@ -103,17 +107,23 @@ const ProfileStep = ({ onBack }) => {
                 <input
                     type="text"
                     placeholder="Nome (opcional)"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     className="w-full px-5 py-3 text-base bg-pink-100 rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-500 text-gray-800"
                 />
                 <input
                     type="email"
                     placeholder="E-mail"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-5 py-3 text-base bg-pink-100 rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-500 text-gray-800"
                 />
                 <div className="relative">
                     <input
                         type={showPassword ? 'text' : 'password'}
                         placeholder="Senha"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         className="w-full px-5 py-3 text-base bg-pink-100 rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-500 text-gray-800"
                     />
                     <button 
@@ -126,7 +136,7 @@ const ProfileStep = ({ onBack }) => {
             </div>
             
             <button 
-                onClick={handleCreateAccount}
+                onClick={onCreateAccount}
                 className="w-full mt-6 py-3 bg-pink-300 text-white font-bold text-base rounded-lg hover:bg-pink-400 transition-colors"
             >
                 CRIAR CONTA
@@ -138,7 +148,79 @@ const ProfileStep = ({ onBack }) => {
 // --- Componente Principal ---
 
 export default function SignUp() {
+    const navigate = useNavigate();
     const [step, setStep] = useState(1);
+    const [isAnimating, setIsAnimating] = useState(false);
+
+    const [age, setAge] = useState(18);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+
+    // EFEITO PARA CARREGAR DADOS SALVOS QUANDO O COMPONENTE É ABERTO
+    useEffect(() => {
+        const savedData = localStorage.getItem('cadastroFormData');
+        if (savedData) {
+            const parsedData = JSON.parse(savedData);
+            setAge(parsedData.age || 18);
+            setName(parsedData.name || '');
+            setEmail(parsedData.email || '');
+            setPassword(parsedData.password || '');
+        }
+    }, []); // O array vazio [] garante que isso só rode uma vez
+
+    // EFEITO PARA SALVAR DADOS NO LOCALSTORAGE SEMPRE QUE ALGO MUDAR
+    useEffect(() => {
+        const formData = { age, name, email, password };
+        localStorage.setItem('cadastroFormData', JSON.stringify(formData));
+    }, [age, name, email, password]); // Roda sempre que um desses estados for alterado
+
+    const handleStepChange = (newStep) => {
+        setError('');
+        setIsAnimating(true);
+        setTimeout(() => {
+            setStep(newStep);
+            setTimeout(() => {
+                setIsAnimating(false);
+            }, 50);
+        }, 800);
+    };
+
+    const validateAndProceedStep1 = () => {
+        if (age === null || age === '' || age <= 0) {
+            setError('Por favor, informe uma idade válida.');
+            return;
+        }
+        handleStepChange(2);
+    };
+    
+    const validateAndFinish = () => {
+        if (!email || !password) {
+            setError('E-mail e senha são obrigatórios.');
+            return;
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setError('Por favor, insira um e-mail válido.');
+            return;
+        }
+        if (password.length < 6) {
+            setError('A senha deve ter pelo menos 6 caracteres.');
+            return;
+        }
+        
+        console.log("Criando conta com:", { age, name, email, password });
+        setError('');
+        
+        // Limpa os dados salvos após criar a conta com sucesso
+        localStorage.removeItem('cadastroFormData');
+
+        setIsAnimating(true);
+        setTimeout(() => {
+            navigate('/home'); 
+        }, 800);
+    };
 
     return (
         <>
@@ -152,15 +234,21 @@ export default function SignUp() {
                     height: 100%;
                     overflow-x: hidden;
                 }
+                .content-box {
+                    transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                }
+                .content-box.melting {
+                    transform: translateY(100vh) scaleY(0.1) rotateX(45deg);
+                    opacity: 0;
+                    filter: blur(10px);
+                }
             `}</style>
-            <script src="https://cdn.tailwindcss.com"></script>
 
             <div className="font-sans bg-gray-50 text-gray-800 w-screen min-h-screen flex flex-col relative overflow-hidden">
                 
-                {/* Fundo Ondulado Animado */}
                 <div className="absolute inset-0 z-0 overflow-hidden">
                     <svg className="absolute bottom-0 left-0 w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="none">
-                         <path fill="#93c5fd" fillOpacity="0.7" d="M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z">
+                        <path fill="#93c5fd" fillOpacity="0.7" d="M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z">
                             <animate attributeName="d" dur="8s" repeatCount="indefinite"
                                 values="M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z;
                                         M0,450 C360,550 480,350 720,450 C960,550 1080,350 1440,450 L1440,800 L0,800 Z;
@@ -181,18 +269,32 @@ export default function SignUp() {
                     </svg>
                 </div>
                 
-                {/* ALTERADO: Usando a tag <img> com a constante do logo */}
                 <header className="absolute top-0 left-0 right-0 p-6 sm:p-8 z-10">
                     <img src={logoLiresImg} alt="Logo Lires" className="h-16 sm:h-20 w-auto" />
                 </header>
                 
                 <main className="w-full z-10 flex-grow flex flex-col justify-center items-center px-4 py-8">
-                    <div className="w-full max-w-sm p-8 sm:p-12 rounded-2xl bg-white shadow-lg">
+                    <div className={`content-box w-full max-w-sm p-8 sm:p-12 rounded-2xl bg-white shadow-lg ${isAnimating ? 'melting' : ''}`}>
                         {step === 1 ? (
-                            <AgeStep onNext={() => setStep(2)} />
+                            <AgeStep 
+                                age={age} 
+                                setAge={setAge} 
+                                onNext={validateAndProceedStep1} 
+                            />
                         ) : (
-                            <ProfileStep onBack={() => setStep(1)} />
+                            <ProfileStep 
+                                name={name} 
+                                setName={setName}
+                                email={email}
+                                setEmail={setEmail}
+                                password={password}
+                                setPassword={setPassword}
+                                onBack={() => handleStepChange(1)}
+                                onCreateAccount={validateAndFinish}
+                            />
                         )}
+                        
+                        {error && <p className="text-red-500 text-sm text-center mt-4">{error}</p>}
                         
                         <div className="flex items-center my-6">
                             <hr className="flex-grow border-gray-300" />

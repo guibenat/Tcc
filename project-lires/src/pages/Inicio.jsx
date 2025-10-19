@@ -1,12 +1,15 @@
 import React from 'react';
+// 1. Importar o hook useNavigate para navegação
+import { useNavigate } from 'react-router-dom';
+
 import logoLiresImg from '../assets/logo-lires.png';
 import roboPrincipalImg from '../assets/LoginLogo.png';
 import grupoInclusivoImg from '../assets/RoboPessoas.png';
 import conexaoImg from '../assets/GarotaNotebook.png';
-import bandeiraBrasilImg from  '../assets/Brasil.jpg';
+import bandeiraBrasilImg from '../assets/Brasil.jpg';
 
 
-// --- Componentes de Seção ---
+// --- Componentes de Seção (Sem alterações) ---
 
 const Header = () => (
   <header className="py-8">
@@ -82,8 +85,8 @@ const Hero = ({ imagemRobo, onStart, onLogin }) => (
             onClick={onLogin}
             className="bg-white text-lg font-semibold py-3 px-12 rounded-full border-2 transition-colors duration-300 hover:bg-violet-50"
              style={{
-                borderColor: '#b081ff',
-                color: '#b081ff',
+               borderColor: '#b081ff',
+               color: '#b081ff',
             }}
           >
             Já tenho uma conta
@@ -178,15 +181,17 @@ const Footer = () => (
 
 // --- Componente Principal ---
 
-export default function App() {
+export default function Inicio() {
   const [showSticky, setShowSticky] = React.useState(false);
   const heroRef = React.useRef(null);
+  
+  // 2. Inicializar a função de navegação
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const handleScroll = () => {
       const heroElement = heroRef.current;
       if (heroElement) {
-        // Show sticky header once the top of the hero section is out of the viewport
         if (window.scrollY > heroElement.offsetTop) {
           setShowSticky(true);
         } else {
@@ -202,20 +207,18 @@ export default function App() {
     };
   }, []);
 
-  // Funções de clique para os botões.
+  // 3. Atualizar as funções de clique para usar o navigate
   const handleStartNow = () => {
-    console.log("Botão 'Comece agora' clicado.");
+    navigate('/cadastro');
   };
 
   const handleAlreadyHaveAccount = () => {
-    console.log("Botão 'Já tenho uma conta' clicado.");
+    navigate('/login');
   };
 
   return (
-    // Container principal com fonte Poppins e fundo branco.
     <div className="font-sans bg-white text-gray-800">
       
-      {/* Estilos globais e animações */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
         body { font-family: 'Poppins', sans-serif; overflow-x: hidden; }
@@ -234,8 +237,7 @@ export default function App() {
           animation: floatAnimation 3s ease-in-out infinite alternate;
         }
       `}</style>
-      <script src="https://cdn.tailwindcss.com"></script>
-
+      
       <StickyActions 
         onStart={handleStartNow} 
         onLogin={handleAlreadyHaveAccount} 
@@ -264,4 +266,3 @@ export default function App() {
     </div>
   );
 }
-

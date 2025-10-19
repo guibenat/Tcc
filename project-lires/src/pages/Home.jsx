@@ -24,7 +24,15 @@ export default function Home() {
                 <main className="max-w-screen-xl mx-auto px-4 lg:px-8 pt-20 pb-24 lg:pt-8 lg:pb-8">
                     <MainContent />
                 </main>
+            <style>{`
+                import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+                body { font-family: 'Poppins', sans-serif; }
+                * { box-sizing: border-box; }
+            `}</style>
             </div>
         </div>
+
+        
     );
+
 }
