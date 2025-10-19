@@ -5,7 +5,6 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 // --- Placeholders para as imagens ---
 const checkIconImg = '../src/assets/check-icon.png';
 const diamondIconImg = '../src/assets/diamond-icon.png';
-const crownIconImg = '../src/assets/crown-icon.png'; 
 const lockIconImg = '../src/assets/locked-Achievement.png';
 
 // Componente reutilizável para os blocos de lição
@@ -19,11 +18,9 @@ const LessonBlock = ({ status, progress, iconSrc }) => {
         if (status === 'in-progress') {
             Swal.fire({
                 title: 'Em Breve!',
-                text: "Esta funcionalidade ainda não foi implementada, mas já estamos trabalhando nisso.",
+                text: "Esta funcionalidade ainda não foi implementada.",
                 icon: 'info',
                 confirmButtonText: 'Entendi',
-                
-                // ALTERADO: A classe do botão foi atualizada aqui
                 customClass: {
                     popup: 'font-poppins rounded-2xl',
                     title: 'text-slate-800',
@@ -38,12 +35,10 @@ const LessonBlock = ({ status, progress, iconSrc }) => {
             content = <img src={checkIconImg} alt="Concluído" className="w-20 h-20" />;
             colorStyles = "bg-purple-500 border-purple-700";
             break;
-
         case 'in-progress':
             content = <span className="font-bold text-4xl text-[#A195E1]">{progress}</span>;
             colorStyles = "bg-[#E9E4FF] border-[#C6BFF7]";
             break;
-
         case 'locked':
         default:
             content = <span className="font-bold text-4xl text-[#A195E1]">{progress}</span>;
@@ -54,18 +49,17 @@ const LessonBlock = ({ status, progress, iconSrc }) => {
     return <div onClick={handleLessonClick} className={`${baseLayout} ${colorStyles}`}>{content}</div>;
 };
 
-
 // Componente para o título da seção
 const SectionTitle = ({ children }) => (
     <div className="relative my-10 flex justify-center items-center">
         <div className="absolute w-full h-0.5 bg-slate-200"></div>
-        <h2 className="relative bg-gradient-to-r from-indigo-300 to-purple-400 text-white font-bold py-4 px-16 rounded-full text-2xl shadow-2xl shadow-purple-600/40 z-10">
+        <h2 className="relative bg-gradient-to-r from-indigo-300 to-purple-400 text-white font-bold py-4 px-12 sm:px-16 rounded-full text-xl sm:text-2xl text-center shadow-2xl shadow-purple-600/40 z-10">
             {children}
         </h2>
     </div>
 );
 
-// --- Estrutura de Dados Original ---
+// A lista completa de lições
 const lessonsData = [
     {
         title: 'Primeiros passos',
@@ -84,13 +78,11 @@ const lessonsData = [
 export default function MainContent() {
   return (
     <>
-      {/* ADICIONADO: CSS para o gradiente e sombra do novo botão */}
       <style>{`
         .btn-gradient-glow {
           background-image: linear-gradient(90deg, #b081ff, #59b1ff);
           box-shadow: 0 4px 15px rgba(90, 177, 255, 0.4);
         }
-
         @keyframes gradient-animation {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
@@ -101,20 +93,21 @@ export default function MainContent() {
         }
       `}</style>
 
-      <main className="px-16">
+      <main className="px-4 sm:px-8">
         {/* Welcome Banner */}
         <div 
           className="p-8 rounded-2xl text-white mb-12 relative h-40 flex flex-col justify-center shadow-lg bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-[length:200%_200%] animate-gradient"
         >
-          <h1 className="text-4xl font-bold" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.5)'}}>Bem vindo a experiência Lires</h1>
-          <p className="text-lg" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.5)'}}>Se divirta aprendendo!</p>
+          <h1 className="text-3xl md:text-4xl font-bold" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.5)'}}>Bem vindo a experiência Lires</h1>
+          <p className="text-md md:text-lg" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.5)'}}>Se divirta aprendendo!</p>
         </div>
 
         {/* Renderiza as seções de lições na grade */}
         {lessonsData.map((section, index) => (
           <section key={index}>
               <SectionTitle>{section.title}</SectionTitle>
-              <div className="grid grid-cols-3 gap-12 justify-items-center">
+              {/* ALTERADO: A grade agora é sempre de 1 coluna (vertical) para os blocos de atividades */}
+              <div className="grid grid-cols-1 gap-8 justify-items-center">
                   {section.blocks.map((block, blockIndex) => (
                       <LessonBlock 
                           key={blockIndex}
