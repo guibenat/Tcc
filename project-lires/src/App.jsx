@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import User from './pages/User';
+import UserPage from './pages/UserPage';
 import Home from './pages/Home';
 import Personagem from './pages/Personagem';
 import Inicio from './pages/Inicio';
-import Loja from './pages/Loja';
+import LojaPage from './pages/LojaPage';
 import Praticar from './pages/Praticar';
 import FeedLires from './components/FeedLires';
 import EncerramentoL from './components/EncerramentoLires';
@@ -43,9 +43,9 @@ function App() {
           <Route path="/configurações" element={<Configuracoes />} />
           <Route path="/feed" element={<FeedLires />} />
           <Route path="/" element={<Inicio />} />
-          <Route path="/perfil" element={<User />} />
+          <Route path="/perfil" element={<UserPage />} />
           <Route path='/home' element={<Home/>} />
-          <Route path='/loja' element={<Loja/>} />
+          <Route path='/loja' element={<LojaPage/>} />
           <Route path='/notificações' element={<Notificação/>} />
           <Route path='/segurança' element={<Segurança />} />
           <Route path='/login' element={<Login />} />

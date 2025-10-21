@@ -44,7 +44,7 @@ const PostCard = ({ post }) => (
   </div>
 );
 
-// Caixa para criar um novo post
+// Caixa para criar um novo post (COM CLASSES TAILWIND ATUALIZADAS)
 const PostCreator = () => {
     const handlePostTypeClick = (type) => {
         console.log(`Botão de postagem '${type}' clicado.`);
@@ -56,35 +56,46 @@ const PostCreator = () => {
             <div className="flex flex-col gap-3">
                 <div className="text-left font-semibold text-violet-500">Sobre o que você quer postar hoje?</div>
                 <div className="flex gap-2">
-                    <button onClick={() => handlePostTypeClick('Sequência')} className="btn-gradient-purple text-white font-semibold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity text-sm shadow-lg">Sequência</button>
-                    <button onClick={() => handlePostTypeClick('Meta')} className="btn-gradient-purple text-white font-semibold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity text-sm shadow-lg">Meta</button>
-                    <button onClick={() => handlePostTypeClick('Versus')} className="btn-gradient-purple text-white font-semibold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity text-sm shadow-lg">Versus</button>
+                    {/* Botões com gradiente e sombra aplicados via Tailwind */}
+                    <button onClick={() => handlePostTypeClick('Sequência')} className="bg-gradient-to-r from-purple-400 to-purple-600 text-white font-semibold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity text-sm shadow-lg shadow-purple-500/30">Sequência</button>
+                    <button onClick={() => handlePostTypeClick('Meta')} className="bg-gradient-to-r from-purple-400 to-purple-600 text-white font-semibold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity text-sm shadow-lg shadow-purple-500/30">Meta</button>
+                    <button onClick={() => handlePostTypeClick('Versus')} className="bg-gradient-to-r from-purple-400 to-purple-600 text-white font-semibold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity text-sm shadow-lg shadow-purple-500/30">Versus</button>
                 </div>
             </div>
         </div>
     );
 };
 
-// Abas de filtro "Geral" e "Amigos"
-const FeedTabs = ({ activeTab, setActiveTab }) => (
-    <div className="flex justify-center mb-6">
-        <div className="flex gap-4">
-            <button
-                onClick={() => setActiveTab('geral')}
-                className={`px-8 py-2 rounded-full font-bold text-white transition-all duration-300 shadow-lg ${activeTab === 'geral' ? 'bg-pink-400 shadow-pink-300/60' : 'bg-pink-300 shadow-pink-200/50 opacity-80'}`}
-            >
-                Geral
-            </button>
-            <button
-                onClick={() => setActiveTab('amigos')}
-                className={`px-8 py-2 rounded-full font-bold text-white transition-all duration-300 shadow-lg ${activeTab === 'amigos' ? 'bg-pink-400 shadow-pink-300/60' : 'bg-pink-300 shadow-pink-200/50 opacity-80'}`}
-            >
-                Amigos
-            </button>
-        </div>
-    </div>
-);
+// Abas de filtro "Geral" e "Amigos" (COM NOVO ESTILO)
+const FeedTabs = ({ activeTab, setActiveTab }) => {
+    // Classes base para ambos os botões
+    const baseClasses = "px-8 py-3 rounded-full font-bold transition-all duration-300 ease-in-out";
+    
+    // Classes para o botão ATIVO
+    const activeClasses = "bg-pink-500 text-white shadow-lg shadow-pink-500/40 transform -translate-y-0.5";
+    
+    // Classes para o botão INATIVO
+    const inactiveClasses = "bg-pink-100 text-pink-400";
 
+    return (
+        <div className="flex justify-center mb-8 mt-2"> {/* Aumentei um pouco a margem */}
+            <div className="flex gap-4">
+                <button
+                    onClick={() => setActiveTab('geral')}
+                    className={`${baseClasses} ${activeTab === 'geral' ? activeClasses : inactiveClasses}`}
+                >
+                    Geral
+                </button>
+                <button
+                    onClick={() => setActiveTab('amigos')}
+                    className={`${baseClasses} ${activeTab === 'amigos' ? activeClasses : inactiveClasses}`}
+                >
+                    Amigos
+                </button>
+            </div>
+        </div>
+    );
+};
 
 // --- COMPONENTE PRINCIPAL DA PÁGINA DE FEED ---
 export default function FeedPage() {
@@ -92,29 +103,28 @@ export default function FeedPage() {
 
     return (
         <div className="bg-gradient-to-b from-[#F9EFFF] to-white font-poppins relative min-h-screen flex flex-col">
-            <style>{`
-                .btn-gradient-purple {
-                    background-image: linear-gradient(90deg, #c084fc, #a855f7);
-                    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
-                }
-            `}</style>
             
             <SidebarLeft />
             <SidebarRight />
 
             <div className="w-full lg:pl-48 lg:pr-96 flex-grow flex flex-col">
-                <main className="px-4 lg:px-8 pt-20 pb-24 lg:py-8 w-full flex-grow">
+                <main className="px-4 lg:px-8 pt-20 pb-24 lg:py-8 w-full flex-grow flex flex-col">
                     <FeedTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-                    <div className="space-y-6">
+                    
+                    <div className="space-y-6 flex-grow flex flex-col">
                         <PostCreator />
                         <hr className="border-teal-200" />
                         
-                        {activeTab === 'geral' && postsData.map(post => (
-                            <PostCard key={post.id} post={post} />
-                        ))}
+                        {activeTab === 'geral' && (
+                            <div className="space-y-6">
+                                {postsData.map(post => <PostCard key={post.id} post={post} />)}
+                            </div>
+                        )}
                         
                         {activeTab === 'amigos' && (
-                            <div className="text-center text-slate-500">O feed de amigos ainda está em construção!</div>
+                            <div className="flex-grow flex items-center justify-center">
+                                <p className="text-center text-slate-500">O feed de amigos ainda está em construção!</p>
+                            </div>
                         )}
                     </div>
                 </main>

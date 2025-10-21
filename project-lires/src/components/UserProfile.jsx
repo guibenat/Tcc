@@ -1,9 +1,10 @@
-import Xp from '../assets/xp.png';
-import Foguinho from '../assets/foguinho.png';
-import Sequencia from '../assets/sequencia.png';
-import Lapis from '../assets/lapis.png';
-import Perfil from '../assets/Perfil.png';
 import React from 'react';
+// ALTERADO: Caminhos dos imports corrigidos
+import Xp from '../src/assets/xp.png';
+import Foguinho from '../src/assets/foguinho.png';
+import Sequencia from '../src/assets/sequencia.png';
+import Lapis from '../src/assets/lapis.png';
+import Perfil from '../src/assets/Perfil.png';
 
 const UserProfile = () => {
   return (
