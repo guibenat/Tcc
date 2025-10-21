@@ -153,7 +153,7 @@ export default function Login() {
                         
                         <div className="text-right mt-4">
                             <span className="text-sm text-gray-800">
-                                Esqueceu sua senha? <Link to="/esqueceusenha" className="text-blue-500 hover:underline">Clique aqui</Link>
+                                Esqueceu sua senha? <Link to="/esqueceu-senha" className="text-blue-500 hover:underline">Clique aqui</Link>
                             </span>
                         </div>
                         

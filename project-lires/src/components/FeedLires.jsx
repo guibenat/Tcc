@@ -1,90 +1,124 @@
-import Menino65AZ from '../assets/sequencia65Lires.png'
-import MeninoClockL from '../assets/MeninoClockLires.png'
-import PerfilPostar from '../assets/MeninoPerfilPostar.png'
+import React, { useState } from 'react';
+import SidebarLeft from '../components/SidebarLeft';
+import SidebarRight from '../components/SidebarRight';
 
-export default function FeedLires() {
-  return (<div className="flex flex-col items-center justify-center min-w-full bg-[#f8f5ff] p-6 ">
+// --- Ícones e Imagens de Exemplo ---
+const userAvatarImg = '../src/assets/perfil.png';
+const postImage1 = '../src/assets/feed-image-1.png';
+const postImage2 = '../src/assets/feed-image-2.png';
 
+// --- DADOS DE EXEMPLO PARA O FEED "GERAL" ---
+const postsData = [
+  {
+    id: 1,
+    avatar: userAvatarImg,
+    username: '@cauasilva_2006',
+    timestamp: 'há 1 hora atrás',
+    text: 'Hoje eu consegui bater a meta de 65 dias acumulados',
+    imageUrl: postImage1,
+  },
+  {
+    id: 2,
+    avatar: userAvatarImg,
+    username: '@gustavorocha_2007',
+    timestamp: 'há 2 horas atrás',
+    text: 'Minha meta diária de 10 minutos por dia está sendo um sucesso',
+    imageUrl: postImage2,
+  },
+];
 
-    <div className="flex justify-center gap-6 max-w-7x1 mx-auto">
+// --- SUB-COMPONENTES DA PÁGINA ---
 
-      <button className=" flex items-center justify-center w-[200px] h-[40px] bg-[#F6B8FF] rounded-full text-white font-semibold shadow-md">GRUPO</button>
-
-      <br />
-
-      <button className="flex items-center justify-center w-[200px] h-[40px] bg-[#F6B8FF] rounded-full text-white font-semibold shadow-md ">Amigos</button>
-
-    </div>
-
-    <div className="flex items-center gap-10 mt-12">
-      <img src={PerfilPostar} alt='' className='w-14  rounded-full' ></img>
-
-      <h2 className="text-purple-500 font-medium text-2xl">O que você aprendeu hoje?</h2>
-
-    </div>
-
-    <div className='flex items-center gap-5 mt-12'>
-
-      <button className='flex items-center justify-center w-[200px] h-[40px] bg-gradient-to-tr from-purple-500 to-pink-300 rounded-full text-white font-semibold shadow-md px-6 py-2 active:scale-95 transition duration-150 '>Evolução</button>
-
-      <button className='flex items-center justify-center w-[200px] h-[40px] bg-gradient-to-tr from-purple-500 to-pink-300 rounded-full text-white font-semibold shadow-md px-6 py-2 active:scale-95 transition duration-150'>Evolução</button>
-
-      <button className='flex items-center justify-center w-[200px] h-[40px] bg-gradient-to-tr from-purple-500 to-pink-300 rounded-full text-white font-semibold shadow-md px-6 py-2 active:scale-95 transition duration-150 '>Evolução</button>
-
-    </div>
-
-    <div className="flex items-center gap-10 md:mt-12 mt-12">
-
-      <img src={PerfilPostar} alt='' className='w-14 md:w-14  rounded-full mr-[650px] ' ></img>
-
-    </div>
-    <div className='flex items-center'>
-      <h2 className="text-purple-500 font-medium text-2xl md:text-3xl mr-96 -mt-10">@cauasilva_2006</h2>
-
-    </div>
-
-    <div className='flex items-center gap-10 mr-80 mt-12'>
-      <h2 className='text-purple-500 font-semibold text-xl'>Hoje eu consegui bater a meta de 65 dias < br />acumulados</h2>
-    </div>
-
-    <div className=" mt-10">
-      <div className="border-2 border-purple-400 rounded-3xl overflow-hidden shadow-md">
-        <img
-          src={Menino65AZ} // coloque o caminho da sua imagem aqui
-          alt="Meta alcançada"
-          className="w-[700px] h-auto"
-        />
+// Card de um único Post
+const PostCard = ({ post }) => (
+  <div className="bg-white/70 border border-slate-200 rounded-2xl p-6">
+    <div className="flex items-center mb-4">
+      <img src={post.avatar} alt="Avatar" className="w-10 h-10 rounded-full mr-4" />
+      <div>
+        <p className="font-bold text-slate-800">{post.username}</p>
+        <p className="text-sm text-slate-500">{post.timestamp}</p>
       </div>
     </div>
-
-    {/*Gustavo Rocha */}
-
-    <div className="flex items-center gap-10 mt-12">
-
-      <img src={PerfilPostar} alt='' className='w-14  rounded-full mr-[650px] ' ></img>
-
-    </div>
-    <div className='flex items-center'>
-      <h2 className="text-purple-500 font-medium text-2xl mr-80 -mt-10">@gustavorocha_2006</h2>
-
-    </div>
-
-    <div className='flex items-center gap-10 mr-80 mt-12'>
-      <h2 className='text-purple-500 font-semibold text-xl'>Minha meta diária de 10  minutos por dia < br />está sendo um sucesso acumulados</h2>
-    </div>
-
-    <div className=" mt-10">
-      <div className="border-2 border-purple-400 rounded-3xl overflow-hidden shadow-md">
-        <img
-          src={MeninoClockL} // coloque o caminho da sua imagem aqui
-          alt="Meta alcançada"
-          className="w-[700px] h-96 "
-        />
-      </div>
-    </div>
-
-
+    <p className="text-slate-700 mb-4">{post.text}</p>
+    <img src={post.imageUrl} alt="Imagem do post" className="w-full rounded-lg" />
   </div>
+);
 
-  )
+// Caixa para criar um novo post
+const PostCreator = () => {
+    const handlePostTypeClick = (type) => {
+        console.log(`Botão de postagem '${type}' clicado.`);
+    };
+
+    return (
+        <div className="bg-white/70 border border-slate-200 rounded-2xl p-4 flex items-start gap-4">
+            <img src={userAvatarImg} alt="Seu avatar" className="w-10 h-10 rounded-full" />
+            <div className="flex flex-col gap-3">
+                <div className="text-left font-semibold text-violet-500">Sobre o que você quer postar hoje?</div>
+                <div className="flex gap-2">
+                    <button onClick={() => handlePostTypeClick('Sequência')} className="btn-gradient-purple text-white font-semibold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity text-sm shadow-lg">Sequência</button>
+                    <button onClick={() => handlePostTypeClick('Meta')} className="btn-gradient-purple text-white font-semibold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity text-sm shadow-lg">Meta</button>
+                    <button onClick={() => handlePostTypeClick('Versus')} className="btn-gradient-purple text-white font-semibold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity text-sm shadow-lg">Versus</button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Abas de filtro "Geral" e "Amigos"
+const FeedTabs = ({ activeTab, setActiveTab }) => (
+    <div className="flex justify-center mb-6">
+        <div className="flex gap-4">
+            <button
+                onClick={() => setActiveTab('geral')}
+                className={`px-8 py-2 rounded-full font-bold text-white transition-all duration-300 shadow-lg ${activeTab === 'geral' ? 'bg-pink-400 shadow-pink-300/60' : 'bg-pink-300 shadow-pink-200/50 opacity-80'}`}
+            >
+                Geral
+            </button>
+            <button
+                onClick={() => setActiveTab('amigos')}
+                className={`px-8 py-2 rounded-full font-bold text-white transition-all duration-300 shadow-lg ${activeTab === 'amigos' ? 'bg-pink-400 shadow-pink-300/60' : 'bg-pink-300 shadow-pink-200/50 opacity-80'}`}
+            >
+                Amigos
+            </button>
+        </div>
+    </div>
+);
+
+
+// --- COMPONENTE PRINCIPAL DA PÁGINA DE FEED ---
+export default function FeedPage() {
+    const [activeTab, setActiveTab] = useState('geral');
+
+    return (
+        <div className="bg-gradient-to-b from-[#F9EFFF] to-white font-poppins relative min-h-screen flex flex-col">
+            <style>{`
+                .btn-gradient-purple {
+                    background-image: linear-gradient(90deg, #c084fc, #a855f7);
+                    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+                }
+            `}</style>
+            
+            <SidebarLeft />
+            <SidebarRight />
+
+            <div className="w-full lg:pl-48 lg:pr-96 flex-grow flex flex-col">
+                <main className="px-4 lg:px-8 pt-20 pb-24 lg:py-8 w-full flex-grow">
+                    <FeedTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <div className="space-y-6">
+                        <PostCreator />
+                        <hr className="border-teal-200" />
+                        
+                        {activeTab === 'geral' && postsData.map(post => (
+                            <PostCard key={post.id} post={post} />
+                        ))}
+                        
+                        {activeTab === 'amigos' && (
+                            <div className="text-center text-slate-500">O feed de amigos ainda está em construção!</div>
+                        )}
+                    </div>
+                </main>
+            </div>
+        </div>
+    );
 }

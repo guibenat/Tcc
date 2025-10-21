@@ -5,12 +5,11 @@ import AlphabetContent from '../components/Alfabeto';
 
 export default function AlfabetoPage() {
     return (
-        <div className="bg-[#F9F8FF] font-poppins relative">
+        <div className="bg-gradient-to-b from-[#F9EFFF] to-white font-poppins relative min-h-screen">
             <SidebarLeft />
             <SidebarRight />
 
             <div className="w-full lg:pl-48 lg:pr-96 min-h-screen">
-                {/* Removido 'max-w-screen-xl' e 'mx-auto' para a largura expandir */}
                 <main className="px-4 lg:px-8 py-8">
                     <AlphabetContent />
                 </main>

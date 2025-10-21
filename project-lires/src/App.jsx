@@ -41,7 +41,7 @@ function App() {
         {/* Define the routes for the application */}
         <Routes>
           <Route path="/configurações" element={<Configuracoes />} />
-          <Route path="/personagem" element={<FeedLires />} />
+          <Route path="/feed" element={<FeedLires />} />
           <Route path="/" element={<Inicio />} />
           <Route path="/perfil" element={<User />} />
           <Route path='/home' element={<Home/>} />
