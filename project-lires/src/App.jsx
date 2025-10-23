@@ -30,6 +30,8 @@ import EsqueceuSenha from './components/EsqueceuSenha';
 import Cadastro from './pages/Cadastro';
 import AlfabetoPage from './pages/AlfabetoPage';
 import VideosPage from './pages/VideosPage';
+import GerenciamentoConta from './pages/GerenciamentoConta';
+import EncerramentoLires from './pages/EncerramentoLires';
 
 
 
@@ -40,24 +42,26 @@ function App() {
       <div className="flex min-h-screen bg-white">
         {/* Define the routes for the application */}
         <Routes>
-          <Route path="/configurações" element={<Configuracoes />} />
-          <Route path="/feed" element={<FeedPage />} />
           <Route path="/" element={<Inicio />} />
+          <Route path='/cadastro' element={<Cadastro />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/esqueceu-senha' element={<EsqueceuSenha />} />
           <Route path="/perfil" element={<UserPage />} />
           <Route path='/home' element={<Home/>} />
           <Route path='/loja' element={<LojaPage/>} />
+          <Route path="/feed" element={<FeedPage />} />
+          <Route path="/videos" element={<VideosPage />} />
+          <Route path="/alfabeto" element={<AlfabetoPage />} />
           <Route path='/notificações' element={<Notificação/>} />
           <Route path='/segurança' element={<Segurança />} />
-          <Route path='/login' element={<Login />} />
+          <Route path="/configurações" element={<Configuracoes />} />
+          <Route path='/gerenciamento-de-conta' element={<GerenciamentoConta />} />
+          <Route path='/encerramento' element={<EncerramentoLires />} />
           <Route path='/inicial' element={<Inicial />} />
-          <Route path='/comecar-do-zero' element={<ComecarDoZero />} />
           <Route path='/descubra-nivel' element={<DescubraNivel1 />} />
+          <Route path='/comecar-do-zero' element={<ComecarDoZero />} />
           <Route path='/finalizado' element={<Finalizado1 />} />
-          <Route path='/esqueceu-senha' element={<EsqueceuSenha />} />
-          <Route path='/cadastro' element={<Cadastro />} />
-          <Route path="/alfabeto" element={<AlfabetoPage />} />
-          <Route path="/videos" element={<VideosPage />} />
-      
+          
           {/* Add more routes as needed */}
         </Routes>
       </div>

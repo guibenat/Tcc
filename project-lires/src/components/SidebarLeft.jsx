@@ -15,7 +15,7 @@ const menuItems = [
   { icon: '../src/assets/ajustes.png', label: 'Ajustes', id: 'ajustes', path: '#' },
 ];
 
-// --- Componente para o Popup de Ajustes ---
+// --- Componente para o Popup de Ajustes (ALTERADO) ---
 const SettingsPopup = ({ onClose, onLogout }) => (
   <div className="absolute left-full top-0 z-20 w-52 bg-white rounded-2xl shadow-lg border border-purple-200 shadow-purple-200/30 px-4 py-3 flex items-start gap-3">
     <button
@@ -26,7 +26,14 @@ const SettingsPopup = ({ onClose, onLogout }) => (
       ✕
     </button>
     <nav className="flex flex-col">
-      <a href="#" className="block font-bold text-slate-800 hover:text-purple-600">Configurações</a>
+      {/* ALTERADO: Trocado <a> por <Link> e adicionado onClick={onClose} */}
+      <Link 
+        to="/gerenciamento-de-conta" 
+        onClick={onClose} 
+        className="block font-bold text-slate-800 hover:text-purple-600"
+      >
+        Configurações
+      </Link>
       <a href="#" className="block font-bold text-slate-800 hover:text-purple-600">Ajuda</a>
       <button
         onClick={onLogout}
@@ -50,17 +57,19 @@ export default function SidebarLeft() {
       e.preventDefault();
       setIsSettingsOpen(!isSettingsOpen);
     } else {
+      // Para todos os outros links, apenas fecha o popup
       setIsSettingsOpen(false);
+      // A navegação padrão do Link é permitida
     }
   };
 
   const handleLogout = () => {
-    setIsSettingsOpen(false);
+    setIsSettingsOpen(false); // Fecha o popup
     Swal.fire({
       title: 'Deseja realmente sair?',
       text: "Você será redirecionado para a tela inicial.",
-      icon: 'info', // ALTERADO: Mudado de 'warning' para 'info' para ter um ícone de 'i'
-      iconColor: '#59b1ff', // NOVO: Cor ciano/azul para o ícone
+      icon: 'info',
+      iconColor: '#59b1ff',
       showCancelButton: true,
       confirmButtonText: 'Sim, sair!',
       cancelButtonText: 'Cancelar',
