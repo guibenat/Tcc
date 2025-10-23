@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'; // 1. Importar useState e useEffect
 
 // --- DADOS DO ALFABETO ---
 const alphabetData = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(letter => ({
@@ -24,26 +24,35 @@ const LetterCard = ({ letter }) => (
 
 // --- CONTEÚDO PRINCIPAL DA PÁGINA ---
 export default function AlphabetContent() {
+  // 2. Adicionar estado para a classe de animação
+  const [animationClass, setAnimationClass] = useState('');
+
+  // 3. Adicionar useEffect para aplicar a classe na montagem
+  useEffect(() => {
+    setAnimationClass('anim-enter');
+  }, []); // Array vazio garante que rode apenas uma vez
+
   return (
     <>
-        <style>{`
-            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-            body { font-family: 'Poppins', sans-serif; }
-            * { box-sizing: border-box; }
-        `}</style>
-        
-        <div className="w-full">
-            {/* ALTERADO: Cor do título ajustada de volta para o tom de roxo. */}
-            <h1 className="text-4xl font-bold text-[#8e6de3] mb-12 font-poppins">
-                Alfabeto
-            </h1>
+      {/* O <style> pode ser removido se a fonte já é global */}
+      <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+          body { font-family: 'Poppins', sans-serif; }
+          * { box-sizing: border-box; }
+      `}</style>
+      
+      {/* 4. Aplicar a classe de animação e 'content-box' ao container principal */}
+      <div className={`w-full content-box ${animationClass}`}>
+          <h1 className="text-4xl font-bold text-[#8e6de3] mb-12 font-poppins">
+              Alfabeto
+          </h1>
 
-            <div className="flex flex-wrap justify-center gap-6">
-                {alphabetData.map(letter => (
-                    <LetterCard key={letter.char} letter={letter} />
-                ))}
-            </div>
-        </div>
+          <div className="flex flex-wrap justify-center gap-6">
+              {alphabetData.map(letter => (
+                  <LetterCard key={letter.char} letter={letter} />
+              ))}
+          </div>
+      </div>
     </>
   );
 }

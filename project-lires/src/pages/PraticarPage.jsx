@@ -1,13 +1,13 @@
 import React from 'react';
 import SidebarLeft from '../components/SidebarLeft';
 import SidebarRight from '../components/SidebarRight';
-import LojaContent from '../components/Loja'; // Verifique se o caminho está correto
+import MainPraticar from '../components/MainPraticar'; // Conteúdo específico
 import MobileTopBar from '../components/MobileTopBar';
 import MobileBottomBar from '../components/MobileBottomBar';
 
-export default function LojaPage() {
+export default function PraticarPage() { 
     return (
-        <div className="bg-gradient-to-b from-[#F9EFFF] to-white font-poppins relative min-h-screen">
+        <div className="bg-gradient-to-b from-[#F9EFFF] to-white font-poppins min-h-screen">
             <SidebarLeft />
             <SidebarRight />
             <MobileTopBar />
@@ -15,7 +15,7 @@ export default function LojaPage() {
 
             <div className="w-full lg:pl-48 lg:pr-96 min-h-screen">
                 <main className="px-4 lg:px-8 pt-20 pb-24 lg:py-8">
-                    <LojaContent />
+                    <MainPraticar />
                 </main>
             </div>
         </div>

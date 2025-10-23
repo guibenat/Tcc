@@ -4,8 +4,8 @@ import Home from './pages/Home';
 import Personagem from './pages/Personagem';
 import Inicio from './pages/Inicio';
 import LojaPage from './pages/LojaPage';
-import Praticar from './pages/Praticar';
-import FeedLires from './components/FeedLires';
+import Praticar from './pages/PraticarPage';
+import FeedPage from './components/FeedPage';
 import EncerramentoL from './components/EncerramentoLires';
 import Configuracoes from './pages/Configurações';
 import Notificação from './pages/Notificação';
@@ -41,7 +41,7 @@ function App() {
         {/* Define the routes for the application */}
         <Routes>
           <Route path="/configurações" element={<Configuracoes />} />
-          <Route path="/feed" element={<FeedLires />} />
+          <Route path="/feed" element={<FeedPage />} />
           <Route path="/" element={<Inicio />} />
           <Route path="/perfil" element={<UserPage />} />
           <Route path='/home' element={<Home/>} />

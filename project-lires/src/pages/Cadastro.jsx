@@ -150,7 +150,10 @@ const ProfileStep = ({ name, setName, email, setEmail, password, setPassword, on
 export default function SignUp() {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
-    const [isAnimating, setIsAnimating] = useState(false);
+    // Controla a classe de animação da saída da etapa atual
+    const [exitAnimationClass, setExitAnimationClass] = useState('');
+    // Controla a classe de animação da entrada da próxima etapa
+    const [enterAnimationClass, setEnterAnimationClass] = useState('anim-enter');
 
     const [age, setAge] = useState(18);
     const [name, setName] = useState('');
@@ -158,7 +161,6 @@ export default function SignUp() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    // EFEITO PARA CARREGAR DADOS SALVOS QUANDO O COMPONENTE É ABERTO
     useEffect(() => {
         const savedData = localStorage.getItem('cadastroFormData');
         if (savedData) {
@@ -168,23 +170,23 @@ export default function SignUp() {
             setEmail(parsedData.email || '');
             setPassword(parsedData.password || '');
         }
-    }, []); // O array vazio [] garante que isso só rode uma vez
+    }, []);
 
-    // EFEITO PARA SALVAR DADOS NO LOCALSTORAGE SEMPRE QUE ALGO MUDAR
     useEffect(() => {
         const formData = { age, name, email, password };
         localStorage.setItem('cadastroFormData', JSON.stringify(formData));
-    }, [age, name, email, password]); // Roda sempre que um desses estados for alterado
+    }, [age, name, email, password]);
 
     const handleStepChange = (newStep) => {
         setError('');
-        setIsAnimating(true);
+        setEnterAnimationClass(''); // Remove a classe de entrada para aplicar a de saída
+        setExitAnimationClass('anim-exit'); // Aplica a animação de saída
+
         setTimeout(() => {
-            setStep(newStep);
-            setTimeout(() => {
-                setIsAnimating(false);
-            }, 50);
-        }, 800);
+            setStep(newStep); // Muda a etapa após a animação de saída
+            setExitAnimationClass(''); // Remove a classe de saída
+            setEnterAnimationClass('anim-enter'); // Aplica a animação de entrada para a nova etapa
+        }, 800); // Tempo da animação de saída
     };
 
     const validateAndProceedStep1 = () => {
@@ -212,59 +214,34 @@ export default function SignUp() {
         
         console.log("Criando conta com:", { age, name, email, password });
         setError('');
-        
-        // Limpa os dados salvos após criar a conta com sucesso
         localStorage.removeItem('cadastroFormData');
 
-        setIsAnimating(true);
+        // Animação de saída antes de navegar para /home
+        setExitAnimationClass('anim-exit');
         setTimeout(() => {
             navigate('/home'); 
-        }, 800);
+        }, 800); // Deve ser o mesmo tempo da animação de saída
     };
 
     return (
         <>
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-                body { 
-                    font-family: 'Poppins', sans-serif; 
-                    margin: 0;
-                    padding: 0;
-                    width: 100%;
-                    height: 100%;
-                    overflow-x: hidden;
-                }
-                .content-box {
-                    transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-                }
-                .content-box.melting {
-                    transform: translateY(100vh) scaleY(0.1) rotateX(45deg);
-                    opacity: 0;
-                    filter: blur(10px);
-                }
-            `}</style>
+            {/* Bloco <style> removido pois as animações estão no index.css */}
 
-            <div className="font-sans bg-gray-50 text-gray-800 w-screen min-h-screen flex flex-col relative overflow-hidden">
+            <div className="bg-gray-50 text-gray-800 w-screen min-h-screen flex flex-col relative overflow-hidden">
                 
                 <div className="absolute inset-0 z-0 overflow-hidden">
                     <svg className="absolute bottom-0 left-0 w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="none">
                         <path fill="#93c5fd" fillOpacity="0.7" d="M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z">
                             <animate attributeName="d" dur="8s" repeatCount="indefinite"
-                                values="M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z;
-                                        M0,450 C360,550 480,350 720,450 C960,550 1080,350 1440,450 L1440,800 L0,800 Z;
-                                        M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z" />
+                                values="M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z; M0,450 C360,550 480,350 720,450 C960,550 1080,350 1440,450 L1440,800 L0,800 Z; M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z" />
                         </path>
                         <path fill="#7dd3fc" fillOpacity="0.6" d="M0,500 C360,400 480,600 720,500 C960,400 1080,600 1440,500 L1440,800 L0,800 Z">
                             <animate attributeName="d" dur="12s" repeatCount="indefinite"
-                                values="M0,500 C360,400 480,600 720,500 C960,400 1080,600 1440,500 L1440,800 L0,800 Z;
-                                        M0,550 C360,650 480,450 720,550 C960,650 1080,450 1440,550 L1440,800 L0,800 Z;
-                                        M0,500 C360,400 480,600 720,500 C960,400 1080,600 1440,500 L1440,800 L0,800 Z" />
+                                values="M0,500 C360,400 480,600 720,500 C960,400 1080,600 1440,500 L1440,800 L0,800 Z; M0,550 C360,650 480,450 720,550 C960,650 1080,450 1440,550 L1440,800 L0,800 Z; M0,500 C360,400 480,600 720,500 C960,400 1080,600 1440,500 L1440,800 L0,800 Z" />
                         </path>
                         <path fill="#60a5fa" fillOpacity="0.5" d="M0,600 C360,500 480,700 720,600 C960,500 1080,700 1440,600 L1440,800 L0,800 Z">
                             <animate attributeName="d" dur="16s" repeatCount="indefinite"
-                                values="M0,600 C360,500 480,700 720,600 C960,500 1080,700 1440,600 L1440,800 L0,800 Z;
-                                        M0,650 C360,750 480,550 720,650 C960,750 1080,550 1440,650 L1440,800 L0,800 Z;
-                                        M0,600 C360,500 480,700 720,600 C960,500 1080,700 1440,600 L1440,800 L0,800 Z" />
+                                values="M0,600 C360,500 480,700 720,600 C960,500 1080,700 1440,600 L1440,800 L0,800 Z; M0,650 C360,750 480,550 720,650 C960,750 1080,550 1440,650 L1440,800 L0,800 Z; M0,600 C360,500 480,700 720,600 C960,500 1080,700 1440,600 L1440,800 L0,800 Z" />
                         </path>
                     </svg>
                 </div>
@@ -274,7 +251,8 @@ export default function SignUp() {
                 </header>
                 
                 <main className="w-full z-10 flex-grow flex flex-col justify-center items-center px-4 py-8">
-                    <div className={`content-box w-full max-w-sm p-8 sm:p-12 rounded-2xl bg-white shadow-lg ${isAnimating ? 'melting' : ''}`}>
+                    {/* Classes de animação aplicadas dinamicamente */}
+                    <div className={`content-box w-full max-w-sm p-8 sm:p-12 rounded-2xl bg-white shadow-lg ${exitAnimationClass} ${enterAnimationClass}`}>
                         {step === 1 ? (
                             <AgeStep 
                                 age={age} 

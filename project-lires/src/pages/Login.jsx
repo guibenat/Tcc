@@ -43,19 +43,18 @@ const FooterText = () => (
 
 export default function Login() {
     const navigate = useNavigate();
-
-    // Estados para os campos do formulário e controle de UI
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
-    const [isAnimating, setIsAnimating] = useState(false);
+    
+    // Estados para controlar as classes de animação
+    const [enterAnimationClass, setEnterAnimationClass] = useState('anim-enter'); // Começa com animação de entrada
+    const [exitAnimationClass, setExitAnimationClass] = useState('');
 
-    // Função para validar e efetuar o login
+
     const handleLogin = () => {
-        setError(''); // Limpa erros anteriores
-
-        // Validação de campos
+        setError('');
         if (!email || !password) {
             setError('Por favor, preencha o e-mail e a senha.');
             return;
@@ -65,41 +64,26 @@ export default function Login() {
             setError('Por favor, insira um e-mail válido.');
             return;
         }
-        // AQUI você adicionaria a sua lógica de autenticação real (ex: chamada a uma API)
-
-        // Se a validação passar, inicia a animação e navega
+        
         console.log("Login validado! Redirecionando para /home...");
-        setIsAnimating(true);
+        setEnterAnimationClass(''); // Remove animação de entrada
+        setExitAnimationClass('anim-exit'); // Aplica animação de saída
+        
         setTimeout(() => {
             navigate('/home');
-        }, 800); // Espera a animação terminar antes de navegar
+        }, 800); // Espera a animação terminar (mesmo tempo definido no CSS)
     };
 
     return (
         <>
-            {/* Estilos globais e da animação */}
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-                body { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
-                * { box-sizing: border-box; }
+            {/* Bloco <style> removido */}
+            
+            <div className="bg-gray-50 text-gray-800 w-screen min-h-screen flex flex-col relative overflow-hidden">
                 
-                .content-box {
-                    transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-                }
-                
-                .content-box.melting {
-                    transform: translateY(100vh) scaleY(0.1) rotateX(45deg);
-                    opacity: 0;
-                    filter: blur(10px);
-                }
-            `}</style>
-
-            <div className="font-sans bg-gray-50 text-gray-800 w-screen min-h-screen flex flex-col relative">
-                
-                {/* Fundo Ondulado */}
                 <div className="absolute inset-0 z-0 overflow-hidden">
                     <svg className="absolute bottom-0 left-0 w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="none">
-                        <path fill="#93c5fd" fillOpacity="0.7" d="M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z">
+                         {/* ... paths e animates do SVG ... */}
+                         <path fill="#93c5fd" fillOpacity="0.7" d="M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z">
                             <animate attributeName="d" dur="8s" repeatCount="indefinite"
                                 values="M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z; M0,450 C360,550 480,350 720,450 C960,550 1080,350 1440,450 L1440,800 L0,800 Z; M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z" />
                         </path>
@@ -119,7 +103,8 @@ export default function Login() {
                 </header>
                 
                 <main className="w-screen z-10 flex-grow flex flex-col justify-center items-center px-4 py-20">
-                    <div className={`content-box w-full max-w-md bg-white p-8 sm:p-12 rounded-2xl shadow-lg ${isAnimating ? 'melting' : ''}`}>
+                    {/* Classes de animação aplicadas dinamicamente */}
+                    <div className={`content-box w-full max-w-md bg-white p-8 sm:p-12 rounded-2xl shadow-lg ${exitAnimationClass} ${enterAnimationClass}`}>
                         <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
                             Logar no LIRES
                         </h2>

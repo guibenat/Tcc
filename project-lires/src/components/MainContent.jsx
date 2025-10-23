@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'; // Importar useState e useEffect
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
@@ -76,6 +76,15 @@ const lessonsData = [
 ];
 
 export default function MainContent() {
+  
+  // Adicionado estado para a classe de animação
+  const [animationClass, setAnimationClass] = useState('');
+
+  // Adicionado useEffect para aplicar a classe na montagem
+  useEffect(() => {
+    setAnimationClass('anim-enter');
+  }, []); // Array vazio garante que rode apenas uma vez
+
   return (
     <>
       <style>{`
@@ -93,7 +102,8 @@ export default function MainContent() {
         }
       `}</style>
 
-      <main className="px-4 sm:px-8">
+      {/* Aplicar as classes 'content-box' e a classe de animação */}
+      <main className={`px-4 sm:px-8 content-box ${animationClass}`}>
         {/* Welcome Banner */}
         <div 
           className="p-8 rounded-2xl text-white mb-12 relative h-40 flex flex-col justify-center shadow-lg bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-[length:200%_200%] animate-gradient"
@@ -106,7 +116,7 @@ export default function MainContent() {
         {lessonsData.map((section, index) => (
           <section key={index}>
               <SectionTitle>{section.title}</SectionTitle>
-              {/* ALTERADO: A grade agora é sempre de 1 coluna (vertical) para os blocos de atividades */}
+              {/* ALTERADO: Grade de volta para 'grid-cols-1' */}
               <div className="grid grid-cols-1 gap-8 justify-items-center">
                   {section.blocks.map((block, blockIndex) => (
                       <LessonBlock 

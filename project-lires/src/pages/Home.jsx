@@ -1,38 +1,26 @@
+import React from 'react';
 import SidebarLeft from '../components/SidebarLeft';
 import SidebarRight from '../components/SidebarRight';
 import MainContent from '../components/MainContent';
-// NOVO: Importe os componentes mobile
 import MobileTopBar from '../components/MobileTopBar';
 import MobileBottomBar from '../components/MobileBottomBar';
 
-
 export default function Home() {
     return (
-        <div className="bg-[#F9F8FF] font-poppins">
-            {/* Componentes do Desktop (já configurados para aparecer só em 'lg') */}
+        <div className="bg-gradient-to-b from-[#F9EFFF] to-white font-poppins min-h-screen flex flex-col">
             <SidebarLeft />
             <SidebarRight />
-
-            {/* NOVO: Componentes do Mobile (configurados para aparecer só até 'lg') */}
             <MobileTopBar />
             <MobileBottomBar />
 
-            {/* O conteúdo principal agora se ajusta para não ficar embaixo das barras mobile */}
-            <div className="w-full lg:pl-48 lg:pr-96">
-                {/* ALTERADO: Adicionado padding no topo (pt) e embaixo (pb) para telas pequenas,
-                    e resetado para zero (lg:pt-0, lg:pb-0) em telas grandes */}
-                <main className="max-w-screen-xl mx-auto px-4 lg:px-8 pt-20 pb-24 lg:pt-8 lg:pb-8">
+            <div className="w-full lg:pl-48 lg:pr-96 flex-grow flex flex-col">
+                {/* ALTERADO: Adicionado 'max-w-screen-xl' e 'mx-auto' 
+                  para centralizar o conteúdo e limitar sua largura máxima.
+                */}
+                <main className="max-w-screen-xl mx-auto px-4 lg:px-8 pt-20 pb-24 lg:py-8 w-full flex-grow">
                     <MainContent />
                 </main>
-            <style>{`
-                import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-                body { font-family: 'Poppins', sans-serif; }
-                * { box-sizing: border-box; }
-            `}</style>
             </div>
         </div>
-
-        
     );
-
 }

@@ -1,5 +1,4 @@
 import React from 'react';
-// 1. Importar o hook useNavigate para navegação
 import { useNavigate } from 'react-router-dom';
 
 import logoLiresImg from '../assets/logo-lires.png';
@@ -9,7 +8,7 @@ import conexaoImg from '../assets/GarotaNotebook.png';
 import bandeiraBrasilImg from '../assets/Brasil.jpg';
 
 
-// --- Componentes de Seção (Sem alterações) ---
+// --- Componentes de Seção ---
 
 const Header = () => (
   <header className="py-8">
@@ -62,26 +61,28 @@ const StickyActions = ({ onStart, onLogin, isVisible }) => (
 const Hero = ({ imagemRobo, onStart, onLogin }) => (
   <section className="text-center md:text-left py-16 md:py-24">
     <div className="px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-center gap-8 lg:gap-12">
+      {/* Classes de animação aplicadas */}
       <div className="md:w-1/2 flex justify-center fade-in-up" style={{ animationDelay: '0.2s' }}>
         <img src={imagemRobo} alt="Robô Lires amigável" className="w-64 h-64 md:w-80 md:h-80 object-cover rounded-lg floating-robot" />
       </div>
+      {/* Classes de animação aplicadas */}
       <div className="md:w-1/2 flex flex-col items-center md:items-start fade-in-up" style={{ animationDelay: '0.4s' }}>
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4">
-          Aprender libras ficou mais fácil e 
+          Aprender libras ficou mais fácil e
           <span className="text-purple-500"> divertido com a gente!</span>
         </h2>
         <div className="flex flex-col gap-4 mt-6 w-full max-w-xs">
-          <button 
+          <button
             onClick={onStart}
             className="text-lg font-semibold py-3 px-12 border-none rounded-full cursor-pointer text-white transition transform duration-200 hover:scale-105"
-            style={{ 
-              backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', 
-              boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)' 
+            style={{
+              backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)',
+              boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)'
             }}
           >
             Comece agora
           </button>
-          <button 
+          <button
             onClick={onLogin}
             className="bg-white text-lg font-semibold py-3 px-12 rounded-full border-2 transition-colors duration-300 hover:bg-violet-50"
              style={{
@@ -102,6 +103,7 @@ const Features = ({ imagemGrupo, imagemConexao }) => (
     {/* Seção de Features 1 */}
     <section className="py-16 text-center md:text-left">
       <div className="px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-12">
+        {/* Classes de animação aplicadas */}
         <div className="md:w-1/2 fade-in-up flex flex-col justify-center">
           <h3 className="text-3xl sm:text-4xl font-bold mb-4 text-teal-500">
             Acessível, Inclusivo e Transformador.
@@ -110,6 +112,7 @@ const Features = ({ imagemGrupo, imagemConexao }) => (
             Aprender Libras com o Lires abre um mundo de comunicação e conexão! Com aulas claras e interativas, você descobre como construir pontes e promover a verdadeira inclusão. Comece sua jornada transformadora hoje mesmo!
           </p>
         </div>
+        {/* Classes de animação aplicadas */}
         <div className="md:w-1/2 flex justify-center fade-in-up" style={{ animationDelay: '0.2s' }}>
           <img src={imagemGrupo} alt="Grupo de pessoas diversas com o robô Lires" className="max-w-md w-full rounded-lg" />
         </div>
@@ -119,6 +122,7 @@ const Features = ({ imagemGrupo, imagemConexao }) => (
     {/* Seção de Features 2 */}
     <section className="py-16 text-center md:text-left">
       <div className="px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row-reverse items-center gap-12">
+        {/* Classes de animação aplicadas */}
         <div className="md:w-1/2 fade-in-up flex flex-col justify-center">
           <h3 className="text-3xl sm:text-4xl font-bold mb-4 text-teal-500">
             Mantenha a conexão
@@ -127,6 +131,7 @@ const Features = ({ imagemGrupo, imagemConexao }) => (
             É simples criar o hábito de se comunicar em Libras com recursos visuais claros, atividades interativas e a inspiração da nossa comunidade de aprendizes no Lires.
           </p>
         </div>
+        {/* Classes de animação aplicadas */}
         <div className="md:w-1/2 flex justify-center fade-in-up" style={{ animationDelay: '0.2s' }}>
           <img src={imagemConexao} alt="Pessoa aprendendo Libras em um laptop" className="max-w-md w-full rounded-lg" />
         </div>
@@ -184,8 +189,6 @@ const Footer = () => (
 export default function Inicio() {
   const [showSticky, setShowSticky] = React.useState(false);
   const heroRef = React.useRef(null);
-  
-  // 2. Inicializar a função de navegação
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -207,7 +210,6 @@ export default function Inicio() {
     };
   }, []);
 
-  // 3. Atualizar as funções de clique para usar o navigate
   const handleStartNow = () => {
     navigate('/cadastro');
   };
@@ -217,27 +219,7 @@ export default function Inicio() {
   };
 
   return (
-    <div className="font-sans bg-white text-gray-800">
-      
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; overflow-x: hidden; }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in-up {
-          animation: fadeInUp 0.8s ease-out forwards;
-        }
-        @keyframes floatAnimation {
-          from { transform: translateY(0); }
-          to { transform: translateY(-20px); }
-        }
-        .floating-robot {
-          animation: floatAnimation 3s ease-in-out infinite alternate;
-        }
-      `}</style>
-      
+    <div className="bg-white text-gray-800">      
       <StickyActions 
         onStart={handleStartNow} 
         onLogin={handleAlreadyHaveAccount} 

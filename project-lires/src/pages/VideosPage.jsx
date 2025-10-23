@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SidebarLeft from '../components/SidebarLeft';
 import SidebarRight from '../components/SidebarRight';
+import MobileTopBar from '../components/MobileTopBar';
+import MobileBottomBar from '../components/MobileBottomBar';
 
 // --- Ícones ---
 const PlayIcon = () => <svg className="w-10 h-10 text-slate-500 group-hover:text-violet-500 transition-colors" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path></svg>;
@@ -23,8 +25,8 @@ const videoModules = [
   { id: 2, title: 'Alfabeto', unlocked: false, videosWatched: 0, totalVideos: 10, videos: Array(10).fill({ unlocked: false, title: 'Indisponível' }) },
   { id: 3, title: 'Símbolos e marcas', unlocked: false, videosWatched: 0, totalVideos: 10, videos: Array(10).fill({ unlocked: false, title: 'Indisponível' }) },
   { id: 4, title: 'Não definido', unlocked: false, videosWatched: 0, totalVideos: 10, videos: Array(10).fill({ unlocked: false, title: 'Indisponível' }) },
-  { id: 5, title: 'Não definido', unlocked: false, videosWatched: 0, totalVideos: 10, videos: Array(10).fill({ unlocked: false }) },
-  { id: 6, title: 'Não definido', unlocked: false, videosWatched: 0, totalVideos: 10, videos: Array(10).fill({ unlocked: false }) },
+  { id: 5, title: 'Não definido', unlocked: false, videosWatched: 0, totalVideos: 10, videos: Array(10).fill({ unlocked: false, title: 'Indisponível' }) },
+  { id: 6, title: 'Não definido', unlocked: false, videosWatched: 0, totalVideos: 10, videos: Array(10).fill({ unlocked: false, title: 'Indisponível' }) },
 ];
 
 
@@ -32,10 +34,10 @@ const videoModules = [
 const PageTitle = ({ title, subtitle }) => (
     <div className="text-left">
         <div className="relative inline-block mb-1">
-            <h1 className="text-4xl font-bold text-violet-500">{title}</h1>
+            <h1 className="text-4xl font-bold text-violet-400">{title}</h1>
             <div className="absolute -bottom-1 left-0 w-full h-1 bg-violet-300 rounded-full" />
         </div>
-        {subtitle && <p className="text-lg text-violet-400 mt-2">{subtitle}</p>}
+        {subtitle && <p className="text-lg text-violet-400 opacity-80 mt-2">{subtitle}</p>}
     </div>
 );
 
@@ -51,8 +53,8 @@ const VideoPlayerModal = ({ videoUrl, onClose }) => (
 );
 
 const ModuleListView = ({ onSelectModule }) => (
-    <div className="flex flex-col h-full">
-        <div className="mb-12">
+    <div className="flex flex-col h-full w-full">
+        <div className="mb-12 w-full">
             <PageTitle title="Vídeos aprendidos" subtitle="Revise agora os vídeos que você já aprendeu" />
         </div>
         <div className="flex-grow flex flex-col justify-center space-y-6">
@@ -73,12 +75,12 @@ const ModuleListView = ({ onSelectModule }) => (
 );
 
 const VideoGridView = ({ module, onBack, onPlayVideo }) => (
-  <div>
-    <div className="flex items-center mb-12">
+  <div className="flex flex-col h-full w-full">
+    <div className="flex items-center mb-12 w-full">
       <button onClick={onBack} className="p-2 rounded-full hover:bg-slate-200 transition-colors mr-4"><BackArrowIcon /></button>
       <PageTitle title={module.title} subtitle="Revise agora os vídeos que você já aprendeu" />
     </div>
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-10">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-10 flex-grow">
       {module.videos.map((video, index) => (
         <div key={index}>
           <button
@@ -102,24 +104,50 @@ export default function VideosPage() {
   const [currentView, setCurrentView] = useState('list');
   const [selectedModule, setSelectedModule] = useState(null);
   const [playingVideo, setPlayingVideo] = useState(null);
+  const [enterAnimationClass, setEnterAnimationClass] = useState('anim-enter');
+  const [exitAnimationClass, setExitAnimationClass] = useState('');
 
-  const handleSelectModule = (module) => { setSelectedModule(module); setCurrentView('grid'); };
-  const handleBackToList = () => { setSelectedModule(null); setCurrentView('list'); };
+  const handleSelectModule = (module) => {
+    setEnterAnimationClass('');
+    setExitAnimationClass('anim-exit');
+    setTimeout(() => {
+      setSelectedModule(module);
+      setCurrentView('grid');
+      setExitAnimationClass('');
+      setEnterAnimationClass('anim-enter');
+    }, 800);
+  };
+
+  const handleBackToList = () => {
+    setEnterAnimationClass('');
+    setExitAnimationClass('anim-exit');
+    setTimeout(() => {
+      setSelectedModule(null);
+      setCurrentView('list');
+      setExitAnimationClass('');
+      setEnterAnimationClass('anim-enter');
+    }, 800);
+  };
 
   return (
     <div className="bg-gradient-to-b from-[#F9EFFF] to-white font-poppins relative min-h-screen flex flex-col">
       <SidebarLeft />
       <SidebarRight />
+      <MobileTopBar />
+      <MobileBottomBar />
       {playingVideo && <VideoPlayerModal videoUrl={playingVideo} onClose={() => setPlayingVideo(null)} />}
 
       <div className="w-full lg:pl-48 lg:pr-96 flex-grow flex flex-col">
+        {/* ALTERADO: Removidas as classes 'max-w-screen-xl' e 'mx-auto' */}
         <main className="px-6 lg:px-12 pt-20 pb-24 lg:pt-8 lg:pb-8 w-full flex-grow flex flex-col">
-          {currentView === 'list' && (
-            <ModuleListView onSelectModule={handleSelectModule} />
-          )}
-          {currentView === 'grid' && selectedModule && (
-            <VideoGridView module={selectedModule} onBack={handleBackToList} onPlayVideo={(url) => setPlayingVideo(url)} />
-          )}
+          <div className={`content-box w-full flex-grow flex flex-col ${enterAnimationClass} ${exitAnimationClass}`}>
+            {currentView === 'list' && (
+              <ModuleListView onSelectModule={handleSelectModule} />
+            )}
+            {currentView === 'grid' && selectedModule && (
+              <VideoGridView module={selectedModule} onBack={handleBackToList} onPlayVideo={(url) => setPlayingVideo(url)} />
+            )}
+          </div>
         </main>
       </div>
     </div>

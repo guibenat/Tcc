@@ -1,15 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react"; // 1. Importar useState e useEffect
 import { FaCoins } from "react-icons/fa"; 
 import SuperCaixaGema from '../assets/SuperCaixaGema.png';
 import CaixaGema from '../assets/CaixaGema.png';
 import CaixaGrandeGema from '../assets/caixaGrandeGema.png';
 import Presente from '../assets/Presente.png';
 
-// Renomeado para LojaContent para clareza
 export default function LojaContent() {
+    
+    // 2. Adicionar estado para a classe de animação
+    const [animationClass, setAnimationClass] = useState('');
+
+    // 3. Adicionar useEffect para aplicar a classe na montagem
+    useEffect(() => {
+        setAnimationClass('anim-enter');
+    }, []); // Array vazio garante que rode apenas uma vez
+
     return (
-        // Este container agora representa apenas a coluna do meio
-        <div className="flex flex-col gap-8 w-full"> 
+        // 4. Aplicar a classe de animação e 'content-box' ao container principal
+        <div className={`flex flex-col gap-8 w-full content-box ${animationClass}`}> 
     
             {/* Banner Premium */}
             <div className="bg-gradient-to-r from-purple-400 to-purple-200 rounded-2xl p-6 text-white shadow-lg flex justify-between items-center">

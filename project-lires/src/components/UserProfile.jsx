@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react"; // 1. Importar useState e useEffect
 
 // --- Ícones e Imagens ---
 import Perfil from "../assets/Perfil.png";
@@ -14,7 +14,6 @@ import Exploracao from "../assets/Exploração.png";
 
 
 // --- Sub-componentes Reestilizados ---
-
 const ProfileHeader = () => (
     <div className="w-full max-w-4xl bg-white rounded-3xl p-6 flex justify-center relative shadow-lg border border-purple-100">
         <div className="bg-gradient-to-b from-purple-200 to-pink-200 p-1 rounded-full relative">
@@ -35,7 +34,6 @@ const UserInfo = () => (
             </button>
         </div>
         <p className="text-violet-400">Por aqui desde junho de 2025</p>
-
         <div className="flex gap-4 pt-2">
             <span className="font-bold text-purple-600">10</span>
             <span className="text-gray-500">Seguidores</span>
@@ -138,8 +136,18 @@ const Objectives = () => {
 
 // --- Componente Principal ---
 export default function UserProfile() {
+  
+  // 2. Adicionar estado para a classe de animação
+  const [animationClass, setAnimationClass] = useState('');
+
+  // 3. Adicionar useEffect para aplicar a classe na montagem
+  useEffect(() => {
+    setAnimationClass('anim-enter');
+  }, []); // Array vazio garante que rode apenas uma vez
+
   return (
-    <main className="flex flex-col items-center p-0 sm:p-0 gap-6 w-full max-w-4xl mx-auto"> 
+    // 4. Aplicar a classe de animação e 'content-box' ao container principal
+    <main className={`flex flex-col items-center p-0 sm:p-0 gap-6 w-full max-w-4xl mx-auto content-box ${animationClass}`}> 
         <ProfileHeader />
         <UserInfo />
         <Achievements />
