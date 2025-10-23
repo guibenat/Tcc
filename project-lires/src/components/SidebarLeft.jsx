@@ -28,7 +28,7 @@ const SettingsPopup = ({ onClose, onLogout }) => (
     <nav className="flex flex-col">
       {/* ALTERADO: Trocado <a> por <Link> e adicionado onClick={onClose} */}
       <Link 
-        to="/gerenciamento-de-conta" 
+        to="/configuracoes" 
         onClick={onClose} 
         className="block font-bold text-slate-800 hover:text-purple-600"
       >
