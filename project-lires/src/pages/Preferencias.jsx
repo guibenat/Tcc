@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
-// REMOVIDO: import SidebarLeft from '../components/SidebarLeft';
-// (O import do MeninoPerfil não está sendo usado, pode ser removido se quiser)
-// import MeninoPerfil from '../assets/MeninoPerfilPostar.png';
+// IMPORTA O HOOK QUE CRIAMOS
+import { useSettings } from '../components/SettingsContext';
 
-export default function Preferencias() { // Nome do componente corrigido
-  const [fontSize, setFontSize] = useState('medio');
-  const [theme, setTheme] = useState('claro');
-  const [colorBlindFilter, setColorBlindFilter] = useState('nenhum');
-  const [autoLegends, setAutoLegends] = useState('desativado');
+export default function Preferencias() {
+  // --- USA O CONTEXTO GLOBAL ---
+  const {
+    fontSize,
+    setFontSize,
+    theme,
+    setTheme,
+    colorBlindFilter,
+    setColorBlindFilter,
+    autoLegends,
+    setAutoLegends
+  } = useSettings();
 
   // Animação de entrada
   const [animationClass, setAnimationClass] = useState('');
@@ -15,81 +21,31 @@ export default function Preferencias() { // Nome do componente corrigido
       setAnimationClass('anim-enter');
   }, []);
 
-  useEffect(() => {
-    const root = document.documentElement;
-
-    // Tamanhos de fonte
-    const fontSizes = {
-      pequeno: '14px',
-      medio: '16px',
-      grande: '18px',
-      'extra-grande': '20px'
-    };
-    root.style.fontSize = fontSizes[fontSize];
-
-    // Tema
-    if (theme === 'escuro') {
-      document.body.classList.add('tema-escuro');
-      root.classList.add('tema-escuro');
-    } else {
-      document.body.classList.remove('tema-escuro');
-      root.classList.remove('tema-escuro');
-    }
-
-    // Filtros daltonismo
-    const filters = {
-      nenhum: 'none',
-      protanopia: 'url(#protanopia)',
-      deuteranopia: 'url(#deuteranopia)',
-      tritanopia: 'url(#tritanopia)',
-      monocromatico: 'grayscale(100%)'
-    };
-    root.style.filter = filters[colorBlindFilter] || 'none';
-  }, [fontSize, theme, colorBlindFilter]);
-
   return (
     <>
-      {/* SVG Filters para daltonismo (mantido) */}
-      <svg style={{ position: 'absolute', width: 0, height: 0 }}>
-        <defs>
-          <filter id="protanopia">
-            <feColorMatrix type="matrix" values="0.567, 0.433, 0, 0, 0 0.558, 0.442, 0, 0, 0 0, 0.242, 0.758, 0, 0 0, 0, 0, 1, 0"/>
-          </filter>
-          <filter id="deuteranopia">
-            <feColorMatrix type="matrix" values="0.625, 0.375, 0, 0, 0 0.7, 0.3, 0, 0, 0 0, 0.3, 0.7, 0, 0 0, 0, 0, 1, 0"/>
-          </filter>
-          <filter id="tritanopia">
-            <feColorMatrix type="matrix" values="0.95, 0.05, 0, 0, 0 0, 0.433, 0.567, 0, 0 0, 0.475, 0.525, 0, 0 0, 0, 0, 1, 0"/>
-          </filter>
-        </defs>
-      </svg>
-
-      {/* REMOVIDO: A estrutura de layout antiga (divs externos, sidebars, margens) */}
-      {/* ADICIONADO: O wrapper 'content-box' para animação */}
       <div className={`content-box w-full ${animationClass} ${theme === 'escuro' ? 'tema-escuro' : ''}`}>
         
-        {/* Título principal */}
+        {/* Título principal - REAGE AO TEMA */}
         <h1 className={`font-bold text-2xl md:text-3xl lg:text-5xl mb-8 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
           Preferências De Ajustes
         </h1>
 
-        {/* Conteúdo principal - configurações */}
         <div className="space-y-8">
-          {/* Seção Visuais */}
+          {/* Seção Visuais - REAGE AO TEMA */}
           <div className={`rounded-lg shadow-md p-6 ${theme === 'escuro' ? 'bg-gray-800' : 'bg-white'}`}>
             <h2 className={`font-bold text-xl md:text-2xl lg:text-3xl mb-6 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
               Visuais
             </h2>
 
-            {/* Tamanho do texto */}
+            {/* Tamanho do texto - REAGE AO TEMA */}
             <div className="mb-6">
               <label className={`block font-semibold mb-2 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
                 Tamanho do texto
               </label>
               <div className="relative">
                 <select
-                  value={fontSize}
-                  onChange={(e) => setFontSize(e.target.value)}
+                  value={fontSize} 
+                  onChange={(e) => setFontSize(e.target.value)} 
                   className={`w-full appearance-none border-2 rounded-full px-6 py-3 pr-12 font-medium cursor-pointer transition-colors focus:outline-none ${
                     theme === 'escuro'
                       ? 'bg-gray-700 border-purple-500 text-gray-200 hover:border-purple-400 focus:border-purple-300'
@@ -107,15 +63,15 @@ export default function Preferencias() { // Nome do componente corrigido
               </div>
             </div>
 
-            {/* Tema */}
+            {/* Tema - REAGE AO TEMA */}
             <div className="mb-6">
               <label className={`block font-semibold mb-2 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
                 Tema
               </label>
               <div className="relative">
                 <select
-                  value={theme}
-                  onChange={(e) => setTheme(e.target.value)}
+                  value={theme} 
+                  onChange={(e) => setTheme(e.target.value)} 
                   className={`w-full appearance-none border-2 rounded-full px-6 py-3 pr-12 font-medium cursor-pointer transition-colors focus:outline-none ${
                     theme === 'escuro'
                       ? 'bg-gray-700 border-purple-500 text-gray-200 hover:border-purple-400 focus:border-purple-300'
@@ -131,15 +87,15 @@ export default function Preferencias() { // Nome do componente corrigido
               </div>
             </div>
 
-            {/* Filtros para daltonismo */}
+            {/* Filtros para daltonismo - REAGE AO TEMA */}
             <div className="mb-6">
               <label className={`block font-semibold mb-2 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
                 Filtros para daltonismo
               </label>
               <div className="relative">
                 <select
-                  value={colorBlindFilter}
-                  onChange={(e) => setColorBlindFilter(e.target.value)}
+                  value={colorBlindFilter} 
+                  onChange={(e) => setColorBlindFilter(e.target.value)} 
                   className={`w-full appearance-none border-2 rounded-full px-6 py-3 pr-12 font-medium cursor-pointer transition-colors focus:outline-none ${
                     theme === 'escuro'
                       ? 'bg-gray-700 border-purple-500 text-gray-200 hover:border-purple-400 focus:border-purple-300'
@@ -158,7 +114,7 @@ export default function Preferencias() { // Nome do componente corrigido
               </div>
             </div>
 
-            {/* Áudio e Vídeo */}
+            {/* Áudio e Vídeo - REAGE AO TEMA */}
             <h3 className={`font-bold text-lg mt-8 mb-4 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
               Áudio e Vídeo
             </h3>
@@ -168,14 +124,15 @@ export default function Preferencias() { // Nome do componente corrigido
               </label>
               <div className="relative">
                 <select
-                  value={autoLegends}
-                  onChange={(e) => setAutoLegends(e.target.value)}
+                  value={autoLegends} 
+                  onChange={(e) => setAutoLegends(e.target.value)} 
                   className={`w-full appearance-none border-2 rounded-full px-6 py-3 pr-12 font-medium cursor-pointer transition-colors focus:outline-none ${
                     theme === 'escuro'
                       ? 'bg-gray-700 border-purple-500 text-gray-200 hover:border-purple-400 focus:border-purple-300'
                       : 'bg-white border-purple-300 text-gray-700 hover:border-purple-400 focus:border-purple-500'
                   }`}
                 >
+                  {/* --- AQUI ESTAVA O ERRO --- */}
                   <option value="desativado">Desativado</option>
                   <option value="ativado">Ativado</option>
                 </select>
@@ -185,7 +142,7 @@ export default function Preferencias() { // Nome do componente corrigido
               </div>
             </div>
 
-            {/* Demonstração de cores */}
+            {/* Demonstração de cores - REAGE AO TEMA */}
             <div className={`mt-8 p-6 rounded-xl border-2 ${
               theme === 'escuro'
                 ? 'bg-gray-700 border-purple-500'
