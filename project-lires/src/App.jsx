@@ -10,6 +10,9 @@ import Inicio from './pages/Inicio';
 import Cadastro from './pages/Cadastro';
 import Login from './pages/Login';
 import EsqueceuSenha from './components/EsqueceuSenha';
+import Inicial from './pages/Inicial';
+import ComecarDoZero from './pages/ComecarDoZero';
+import Finalizado1 from './components/Finalizado1';
 
 // Páginas Principais (assumindo que todas estão em /pages)
 import Home from './pages/Home';
@@ -48,6 +51,9 @@ function App() {
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/login" element={<Login />} />
         <Route path="/esqueceu-senha" element={<EsqueceuSenha />} />
+        <Route path="/inicial" element={<Inicial />} />
+        <Route path="/comecar-do-zero" element={<ComecarDoZero />} />
+        <Route path="/finalizado" element={<Finalizado1 />} />
         
         {/* Rotas Principais do App */}
         <Route path="/home" element={<Home />} />
