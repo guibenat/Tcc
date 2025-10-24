@@ -29,16 +29,7 @@ import ConfiguracoesPrivacidade from './pages/Configurações';
 import Seguranca from './pages/Segurança';
 import Encerramento from './pages/EncerramentoLires';
 import Notificacoes from './pages/Notificacoes';
-
-// --- Componentes Placeholder ---
-// Componentes temporários para as rotas que ainda não foram criadas
-// Isso evita que o aplicativo quebre ao tentar importar arquivos inexistentes.
-const Preferencias = () => (
-    <div className="content-box anim-enter">
-        <h1 className="text-purple-600 font-bold text-5xl">Preferências</h1>
-        <p>Página em construção...</p>
-    </div>
-);
+import Preferencias from './pages/Preferencias';
 
 // --- Componente Principal App ---
 function App() {
