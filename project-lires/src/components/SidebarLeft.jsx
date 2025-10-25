@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import logoLiresImg from '../assets/logo-lires.png';
+// --- ALTERAÇÃO 1: Importar as duas logos ---
+import logoLiresClaraImg from '../assets/logo-lires.png'; // Sua logo escura/original
+import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; // A nova logo branca
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
-import { useSettings } from '../components/SettingsContext'; // <<<--- IMPORTAR O HOOK
+import { useSettings } from '../components/SettingsContext'; // Importar o hook
 
-// --- Dados do Menu ---
+// --- Dados do Menu (sem alteração) ---
 const menuItems = [
   { icon: '../src/assets/aprender.png', label: 'Aprender', id: 'aprender', path: '/home' },
   { icon: '../src/assets/praticar.png', label: 'Alfabeto', id: 'alfabeto', path: '/alfabeto' },
@@ -16,8 +18,7 @@ const menuItems = [
   { icon: '../src/assets/ajustes.png', label: 'Ajustes', id: 'ajustes', path: '#' },
 ];
 
-// --- Componente para o Popup de Ajustes (ALTERADO) ---
-// Adicionamos 'theme' como prop para reagir
+// --- Componente para o Popup de Ajustes (reage ao tema) ---
 const SettingsPopup = ({ onClose, onLogout, theme }) => (
   <div className={`
     absolute left-full top-0 z-20 w-52 rounded-2xl shadow-lg border px-4 py-3 flex items-start gap-3
@@ -57,7 +58,7 @@ export default function SidebarLeft() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { theme } = useSettings(); // <<<--- LER O TEMA DO CONTEXTO
+  const { theme } = useSettings(); // Lê o tema do contexto
 
   const handleItemClick = (e, item) => {
     if (item.id === 'ajustes') {
@@ -69,7 +70,7 @@ export default function SidebarLeft() {
   };
 
   const handleLogout = () => {
-    setIsSettingsOpen(false); // Fecha o popup
+    setIsSettingsOpen(false); 
     Swal.fire({
       title: 'Deseja realmente sair?',
       text: "Você será redirecionado para a tela inicial.",
@@ -79,14 +80,12 @@ export default function SidebarLeft() {
       confirmButtonText: 'Sim, sair!',
       cancelButtonText: 'Cancelar',
       customClass: {
-        // Adiciona classes para o tema escuro no SweetAlert
         popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-800 text-slate-200' : 'bg-white'}`,
         title: `${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`,
         confirmButton: 'btn-gradient-glow font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105',
         cancelButton: 'bg-gray-400 hover:bg-gray-500 font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105 ml-4'
       },
       buttonsStyling: false,
-      // Adiciona cor de fundo para o modo escuro
       background: theme === 'escuro' ? '#1f2937' : '#fff' 
     }).then((result) => {
       if (result.isConfirmed) {
@@ -97,7 +96,7 @@ export default function SidebarLeft() {
   };
 
   return (
-    // <<<--- APLICA CLASSES DE TEMA ESCURO AQUI ---
+    // Aplica classes de tema escuro na <aside>
     <aside className={`
       w-48 flex-col p-4 fixed left-0 top-0 h-full hidden lg:flex z-10
       ${theme === 'escuro' ? 'bg-gray-900 border-r border-gray-700' : 'bg-white border-r border-slate-200'}
@@ -110,11 +109,11 @@ export default function SidebarLeft() {
       `}</style>
 
       <div className="px-2 mb-12 mt-4">
-        {/* Inverte a logo no modo escuro para melhor visibilidade */}
+        {/* --- ALTERAÇÃO 2: Renderização condicional da logo --- */}
         <img 
-          src={logoLiresImg} 
+          src={theme === 'escuro' ? logoLiresEscuraImg : logoLiresClaraImg} 
           alt="Logo Lires" 
-          className={`w-24 ${theme === 'escuro' ? 'invert filter brightness-200' : ''}`} // Ajuste para logo
+          className="w-24" // Removemos as classes 'invert' e 'filter'
         />
       </div>
 
@@ -130,9 +129,9 @@ export default function SidebarLeft() {
                 className={`
                   flex items-center gap-4 px-4 py-2.5 rounded-lg font-semibold transition-all duration-200 w-full
                   ${isActive
-                    ? 'bg-purple-100 text-purple-700' // O 'ativo' já contrasta bem
+                    ? 'bg-purple-100 text-purple-700'
                     : (theme === 'escuro'
-                        ? 'text-slate-400 hover:bg-gray-700 hover:text-purple-400' // <<<--- MODO ESCURO INATIVO
+                        ? 'text-slate-400 hover:bg-gray-700 hover:text-purple-400' // Modo Escuro Inativo
                         : 'text-slate-500 hover:bg-slate-100 hover:text-purple-600' // Modo Claro Inativo
                       )
                   }

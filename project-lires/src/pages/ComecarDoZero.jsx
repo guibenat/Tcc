@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
+// --- IMPORTA O HOOK DE CONFIGURAÇÕES ---
+import { useSettings } from '../components/SettingsContext';
+
 import robotImage from '../assets/robot-happy.png';
+// --- LOGOS DINÂMICAS ---
 import liresLogoImage from '../assets/logo-lires.png';
+import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; // Logo para o modo escuro
+// ---
 import coracaoImage from '../assets/coracaoo.png';
 import robotReviewImage from '../assets/robot-review.png';
 // --- Fim da seção de imagens ---
@@ -57,12 +63,12 @@ function BottomNotification({ type, message, onContinue }) {
     const messageStyle = isCorrect ? "text-purple-200" : "text-red-200";
     const Icon = () => isCorrect ? (
          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-purple-300" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-        </svg>
+             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+         </svg>
     ) : (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-red-300" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-        </svg>
+             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+         </svg>
     );
      const buttonStyle = isCorrect
         ? { backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(176, 129, 255, 0.4)' }
@@ -105,16 +111,28 @@ const HeartIcon = ({ filled }) => (
     />
 );
 function FirstIncorrectAnswerModal({ lives, onClose }) {
+    // --- USA O TEMA ---
+    const { theme } = useSettings();
+
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 font-poppins">
-            <div className="bg-white p-8 rounded-2xl border-2 border-blue-400 max-w-lg text-center" style={{ boxShadow: '0 0 50px rgba(90, 177, 255, 0.6)' }}>
+            <div 
+                className={`p-8 rounded-2xl border-2 max-w-lg text-center ${
+                    theme === 'escuro' ? 'bg-gray-800 border-blue-700' : 'bg-white border-blue-400'
+                }`} 
+                style={{ boxShadow: '0 0 50px rgba(90, 177, 255, 0.6)' }}
+            >
                 <div className="flex justify-center mb-4">
                     {[...Array(5)].map((_, i) => (
                        <HeartIcon key={i} filled={i < lives} />
                     ))}
                 </div>
-                <h2 className="text-2xl font-bold mb-2" style={{ color: '#4b3670' }}>Cada erro tira 1 vida!</h2>
-                <p className="text-lg mb-6 text-gray-700">Tenha foco e cuidado pra não perder suas vidas. Vai, você consegue!</p>
+                <h2 className={`text-2xl font-bold mb-2 ${theme === 'escuro' ? 'text-purple-300' : 'text-[#4b3670]'}`}>
+                    Cada erro tira 1 vida!
+                </h2>
+                <p className={`text-lg mb-6 ${theme === 'escuro' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Tenha foco e cuidado pra não perder suas vidas. Vai, você consegue!
+                </p>
                 <button
                     onClick={onClose}
                     className="mt-4 w-full text-lg font-semibold py-3 px-8 border-none rounded-2xl cursor-pointer text-white transition transform duration-200 hover:scale-105"
@@ -133,11 +151,23 @@ function FirstIncorrectAnswerModal({ lives, onClose }) {
 
 // --- Componente para o Modal de Fim de Jogo ---
 function GameOverModal({ onClose }) {
+    // --- USA O TEMA ---
+    const { theme } = useSettings();
+
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 font-poppins">
-            <div className="bg-white p-8 rounded-2xl border-2 border-gray-400 max-w-lg text-center" style={{ boxShadow: '0 0 50px rgba(156, 163, 175, 0.6)' }}>
-                <h2 className="text-2xl font-bold mb-4 text-gray-800">Fim de Jogo!</h2>
-                <p className="text-lg mb-6 text-gray-700">Você ficou sem vidas. Mas não desista, tente novamente!</p>
+            <div 
+                className={`p-8 rounded-2xl border-2 max-w-lg text-center ${
+                    theme === 'escuro' ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-400'
+                }`} 
+                style={{ boxShadow: '0 0 50px rgba(156, 163, 175, 0.6)' }}
+            >
+                <h2 className={`text-2xl font-bold mb-4 ${theme === 'escuro' ? 'text-gray-200' : 'text-gray-800'}`}>
+                    Fim de Jogo!
+                </h2>
+                <p className={`text-lg mb-6 ${theme === 'escuro' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Você ficou sem vidas. Mas não desista, tente novamente!
+                </p>
                 <button
                     onClick={onClose}
                     className="mt-4 w-full text-lg font-semibold py-3 px-8 border-none rounded-2xl cursor-pointer text-white transition transform duration-200 hover:scale-105"
@@ -155,20 +185,25 @@ function GameOverModal({ onClose }) {
 
 // --- Componente da Tela de Revisão ---
 function ReviewScreen({ errorCount, onContinue }) {
+    // --- USA O TEMA ---
+    const { theme } = useSettings();
+
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 font-poppins p-4">
             <div 
-                className="bg-white p-8 sm:p-12 rounded-3xl flex flex-col items-center gap-6 sm:gap-8 w-full max-w-xl"
+                className={`p-8 sm:p-12 rounded-3xl flex flex-col items-center gap-6 sm:gap-8 w-full max-w-xl ${
+                    theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
+                }`}
                 style={{boxShadow: '0px 0px 70px 0px rgba(176, 129, 255, 0.5)'}}
             >
                 <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-12">
                     <p 
-                      className="text-2xl sm:text-3xl font-semibold text-center sm:text-left"
-                      style={{
-                        backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                      }}
+                        className="text-2xl sm:text-3xl font-semibold text-center sm:text-left"
+                        style={{
+                            backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                        }}
                     >
                         Agora vamos refazer<br/>os exercícios que<br/>você errou!
                     </p>
@@ -199,9 +234,14 @@ function ReviewScreen({ errorCount, onContinue }) {
 
 // --- Componente da Barra de Progresso ---
 function ProgressBar({ progress }) {
+  // --- USA O TEMA ---
+  const { theme } = useSettings();
+
   return (
     <div 
-      className="w-full max-w-3xl h-[14px] bg-gray-200 rounded-full overflow-hidden mb-10" 
+      className={`w-full max-w-3xl h-[14px] rounded-full overflow-hidden mb-10 ${
+        theme === 'escuro' ? 'bg-gray-700' : 'bg-gray-200'
+      }`} 
     >
       <div 
         className="h-full"
@@ -220,20 +260,38 @@ function ProgressBar({ progress }) {
 
 // Tela 1: Modal de Início
 function Step1({ onNext }) {
+  // --- USA O TEMA ---
+  const { theme } = useSettings();
+
   return (
-    <div className="flex flex-col justify-center items-center h-screen w-screen bg-gray-100 text-gray-800 font-poppins">
-      <div className="bg-white shadow-lg rounded-2xl p-10 w-full h-full box-border text-center flex flex-col">
+    <div 
+      className={`flex flex-col justify-center items-center h-screen w-screen font-poppins ${
+        theme === 'escuro' ? 'bg-gray-900 text-gray-200' : 'bg-gray-100 text-gray-800'
+      }`}
+    >
+      <div 
+        className={`shadow-lg rounded-2xl p-10 w-full h-full box-border text-center flex flex-col ${
+          theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
+        }`}
+      >
         <div className="flex flex-col flex-shrink-0">
           <div className="pb-2 flex justify-start">
-            <img src={liresLogoImage} alt="Lires Logo" className="h-24" />
+            {/* --- LOGO DINÂMICA --- */}
+            <img 
+              src={theme === 'escuro' ? logoLiresEscuraImg : liresLogoImage} 
+              alt="Lires Logo" 
+              className="h-24" 
+            />
           </div>
-          <hr className="my-0 mb-4" />
+          <hr className={`my-0 mb-4 ${theme === 'escuro' ? 'border-gray-700' : ''}`} />
         </div>
         <div className="flex-grow flex items-center justify-center"></div>
       </div>
       <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
         <div
-          className="bg-white p-8 rounded-2xl border-2 border-blue-400 flex items-center gap-8 max-w-2xl"
+          className={`p-8 rounded-2xl border-2 flex items-center gap-8 max-w-2xl ${
+            theme === 'escuro' ? 'bg-gray-800 border-blue-700' : 'bg-white border-blue-400'
+          }`}
           style={{
             boxShadow: '0 0 50px rgba(90, 177, 255, 0.6)',
           }}
@@ -272,14 +330,30 @@ function Step1({ onNext }) {
 
 // Tela 2: Vídeo 1
 function Step2({ onNext, progress, lives }) {
+    // --- USA O TEMA ---
+    const { theme } = useSettings();
+
     return (
-        <div className="flex flex-col h-screen w-screen bg-gray-100 text-gray-800 font-poppins">
-            <div className="bg-white shadow-lg rounded-2xl w-full h-full box-border text-center flex flex-col">
+        <div 
+          className={`flex flex-col h-screen w-screen font-poppins ${
+            theme === 'escuro' ? 'bg-gray-900 text-gray-200' : 'bg-gray-100 text-gray-800'
+          }`}
+        >
+            <div 
+              className={`shadow-lg rounded-2xl w-full h-full box-border text-center flex flex-col ${
+                theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
+              }`}
+            >
                 <div className="flex-shrink-0 px-10 pt-10">
                     <div className="pb-2 flex justify-start">
-                        <img src={liresLogoImage} alt="Lires Logo" className="h-24" />
+                      {/* --- LOGO DINÂMICA --- */}
+                      <img 
+                        src={theme === 'escuro' ? logoLiresEscuraImg : liresLogoImage} 
+                        alt="Lires Logo" 
+                        className="h-24" 
+                      />
                     </div>
-                    <hr className="my-0 mb-4" />
+                    <hr className={`my-0 mb-4 ${theme === 'escuro' ? 'border-gray-700' : ''}`} />
                 </div>
 
                 <div className="flex-shrink-0 flex flex-col items-center px-10">
@@ -311,7 +385,10 @@ function Step2({ onNext, progress, lives }) {
                 
                 <div className="flex-grow flex flex-col items-center overflow-y-auto px-10">
                     <div className="w-full max-w-2xl aspect-[16/10] p-1 cursor-pointer my-auto" style={{ backgroundImage: 'linear-gradient(to bottom right, #e0b0ff, #c0d8ff)', borderRadius: '1.5rem', boxShadow: '0 0 50px rgba(181, 130, 255, 0.6)' }}>
-                        <div className="relative w-full h-full rounded-2xl flex justify-center items-center" style={{ backgroundColor: '#f0e0ff' }}>
+                        <div 
+                          className="relative w-full h-full rounded-2xl flex justify-center items-center" 
+                          style={{ backgroundColor: theme === 'escuro' ? '#37304a' : '#f0e0ff' }}
+                        >
                             <PlayIconPlaceholder />
                         </div>
                     </div>
@@ -319,10 +396,20 @@ function Step2({ onNext, progress, lives }) {
 
                  <div className="flex-shrink-0 px-10 pb-10">
                     <div className="w-full max-w-2xl mx-auto">
-                        <hr className="w-full my-6 border-gray-200" />
+                        <hr 
+                          className={`w-full my-6 ${
+                            theme === 'escuro' ? 'border-gray-700' : 'border-gray-200'
+                          }`} 
+                        />
                         <div className="flex justify-center items-center gap-4">
-                            <button onClick={onNext} className="text-lg font-semibold py-3 px-8 rounded-2xl cursor-pointer text-gray-600 transition transform duration-200 hover:scale-105" style={{ backgroundImage: 'linear-gradient(to right, #b081ff, #59b1ff)', padding: '2px' }}>
-                              <span className="block px-7 py-2 rounded-xl bg-white text-gray-600">Pular</span>
+                            <button onClick={onNext} className="text-lg font-semibold py-3 px-8 rounded-2xl cursor-pointer transition transform duration-200 hover:scale-105" style={{ backgroundImage: 'linear-gradient(to right, #b081ff, #59b1ff)', padding: '2px' }}>
+                              <span 
+                                className={`block px-7 py-2 rounded-xl ${
+                                  theme === 'escuro' ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-600'
+                                }`}
+                              >
+                                Pular
+                              </span>
                             </button>
                             <button onClick={onNext} className="text-lg font-semibold py-3 px-8 border-none rounded-2xl cursor-pointer text-white transition transform duration-200 hover:scale-105" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)' }}>
                                 Próximo
@@ -338,14 +425,30 @@ function Step2({ onNext, progress, lives }) {
 
 // Tela 3: Pergunta 1
 function Step3({ onNext, onCheckAnswer, progress, onSelectAnswer, selectedAnswer, lives, isChecking }) {
+    // --- USA O TEMA ---
+    const { theme } = useSettings();
+
     return (
-        <div className="flex flex-col h-screen w-screen bg-gray-100 text-gray-800 font-poppins">
-            <div className="bg-white shadow-lg rounded-2xl w-full h-full box-border text-center flex flex-col">
+        <div 
+          className={`flex flex-col h-screen w-screen font-poppins ${
+            theme === 'escuro' ? 'bg-gray-900 text-gray-200' : 'bg-gray-100 text-gray-800'
+          }`}
+        >
+            <div 
+              className={`shadow-lg rounded-2xl w-full h-full box-border text-center flex flex-col ${
+                theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
+              }`}
+            >
                 <div className="flex-shrink-0 px-10 pt-10">
                     <div className="pb-2 flex justify-start">
-                        <img src={liresLogoImage} alt="Lires Logo" className="h-24" />
+                      {/* --- LOGO DINÂMICA --- */}
+                      <img 
+                        src={theme === 'escuro' ? logoLiresEscuraImg : liresLogoImage} 
+                        alt="Lires Logo" 
+                        className="h-24" 
+                      />
                     </div>
-                    <hr className="my-0 mb-4" />
+                    <hr className={`my-0 mb-4 ${theme === 'escuro' ? 'border-gray-700' : ''}`} />
                 </div>
                  <div className="flex-shrink-0 flex flex-col items-center px-10">
                     <div className="w-full max-w-3xl mb-5">
@@ -375,11 +478,30 @@ function Step3({ onNext, onCheckAnswer, progress, onSelectAnswer, selectedAnswer
                 </div>
                 <div className="flex-grow flex flex-col items-center overflow-y-auto px-10">
                     <div className="w-full max-w-3xl text-left my-auto">
-                        <p className="text-xl font-semibold mb-6" style={{ color: '#4b3670' }}>Qual desses sinais significa Oi?</p>
+                        <p className="text-xl font-semibold mb-6" style={{ color: theme === 'escuro' ? '#d8b4fe' : '#4b3670' }}>
+                            Qual desses sinais significa Oi?
+                        </p>
                         <div className="flex justify-center flex-wrap gap-4 sm:gap-8 w-full">
                             {[...Array(5)].map((_, index) => (
-                                <div key={index} onClick={() => !isChecking && onSelectAnswer(index)} className={`w-20 h-20 sm:w-24 sm:h-24 flex justify-center items-center rounded-2xl p-1 flex-shrink-0 transition transform duration-200 hover:scale-105 ${isChecking ? 'cursor-not-allowed' : 'cursor-pointer'}`} style={{ backgroundImage: selectedAnswer === index ? 'linear-gradient(to bottom right, #59b1ff, #b081ff)' : 'linear-gradient(to bottom right, #e0b0ff, #c0d8ff)', boxShadow: selectedAnswer === index ? '0 0 30px rgba(90, 177, 255, 0.8)' : '0 0 20px rgba(181, 130, 255, 0.3)' }}>
-                                    <div className="w-full h-full rounded-xl" style={{ backgroundColor: selectedAnswer === index ? '#c0d8ff' : '#f0e0ff' }}></div>
+                                <div 
+                                  key={index} 
+                                  onClick={() => !isChecking && onSelectAnswer(index)} 
+                                  className={`w-20 h-20 sm:w-24 sm:h-24 flex justify-center items-center rounded-2xl p-1 flex-shrink-0 transition transform duration-200 hover:scale-105 ${isChecking ? 'cursor-not-allowed' : 'cursor-pointer'}`} 
+                                  style={{ 
+                                    backgroundImage: selectedAnswer === index 
+                                      ? 'linear-gradient(to bottom right, #59b1ff, #b081ff)' 
+                                      : (theme === 'escuro' ? 'linear-gradient(to bottom right, #4b3670, #3a2b57)' : 'linear-gradient(to bottom right, #e0b0ff, #c0d8ff)'), 
+                                    boxShadow: selectedAnswer === index ? '0 0 30px rgba(90, 177, 255, 0.8)' : '0 0 20px rgba(181, 130, 255, 0.3)' 
+                                  }}
+                                >
+                                    <div 
+                                      className="w-full h-full rounded-xl" 
+                                      style={{ 
+                                        backgroundColor: selectedAnswer === index 
+                                          ? (theme === 'escuro' ? '#5a4b7a' : '#c0d8ff') 
+                                          : (theme === 'escuro' ? '#4b3670' : '#f0e0ff') 
+                                      }}
+                                    ></div>
                                 </div>
                             ))}
                         </div>
@@ -387,10 +509,20 @@ function Step3({ onNext, onCheckAnswer, progress, onSelectAnswer, selectedAnswer
                 </div>
                  <div className="flex-shrink-0 px-10 pb-10">
                     <div className="w-full max-w-3xl mx-auto">
-                        <hr className="w-full my-6 border-gray-200" />
+                        <hr 
+                          className={`w-full my-6 ${
+                            theme === 'escuro' ? 'border-gray-700' : 'border-gray-200'
+                          }`} 
+                        />
                         <div className="flex justify-center items-center gap-4">
-                            <button onClick={onNext} disabled={isChecking} className="text-lg font-semibold py-3 px-8 rounded-2xl cursor-pointer text-gray-600 transition transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" style={{ backgroundImage: 'linear-gradient(to right, #b081ff, #59b1ff)', padding: '2px' }}>
-                                <span className="block px-7 py-2 rounded-xl bg-white text-gray-600">Pular</span>
+                            <button onClick={onNext} disabled={isChecking} className="text-lg font-semibold py-3 px-8 rounded-2xl cursor-pointer transition transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" style={{ backgroundImage: 'linear-gradient(to right, #b081ff, #59b1ff)', padding: '2px' }}>
+                                <span 
+                                  className={`block px-7 py-2 rounded-xl ${
+                                    theme === 'escuro' ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-600'
+                                  }`}
+                                >
+                                    Pular
+                                </span>
                             </button>
                             <button onClick={onCheckAnswer} disabled={isChecking} className="text-lg font-semibold py-3 px-8 border-none rounded-2xl cursor-pointer text-white transition transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)' }}>
                                 Próximo
@@ -412,14 +544,30 @@ function Step4({ onNext, progress, lives }) {
 
 // Tela 5: Pergunta 2
 function Step5({ onNext, onCheckAnswer, progress, onSelectAnswer, selectedAnswer, lives, isChecking }) {
+    // --- USA O TEMA ---
+    const { theme } = useSettings();
+
     return (
-        <div className="flex flex-col h-screen w-screen bg-gray-100 text-gray-800 font-poppins">
-            <div className="bg-white shadow-lg rounded-2xl w-full h-full box-border text-center flex flex-col">
+        <div 
+          className={`flex flex-col h-screen w-screen font-poppins ${
+            theme === 'escuro' ? 'bg-gray-900 text-gray-200' : 'bg-gray-100 text-gray-800'
+          }`}
+        >
+            <div 
+              className={`shadow-lg rounded-2xl w-full h-full box-border text-center flex flex-col ${
+                theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
+              }`}
+            >
                  <div className="flex-shrink-0 px-10 pt-10">
                     <div className="pb-2 flex justify-start">
-                        <img src={liresLogoImage} alt="Lires Logo" className="h-24" />
+                      {/* --- LOGO DINÂMICA --- */}
+                      <img 
+                        src={theme === 'escuro' ? logoLiresEscuraImg : liresLogoImage} 
+                        alt="Lires Logo" 
+                        className="h-24" 
+                      />
                     </div>
-                    <hr className="my-0 mb-4" />
+                    <hr className={`my-0 mb-4 ${theme === 'escuro' ? 'border-gray-700' : ''}`} />
                 </div>
                 <div className="flex-grow flex flex-col items-center overflow-y-auto px-10">
                     <div className="w-full max-w-3xl mb-5">
@@ -447,11 +595,30 @@ function Step5({ onNext, onCheckAnswer, progress, onSelectAnswer, selectedAnswer
                     </div>
                     <ProgressBar progress={progress} />
                     <div className="w-full max-w-3xl text-center my-auto">
-                        <p className="text-xl font-semibold mb-6" style={{ color: '#4b3670' }}>Qual desses sinais significa Tchau?</p>
+                        <p className="text-xl font-semibold mb-6" style={{ color: theme === 'escuro' ? '#d8b4fe' : '#4b3670' }}>
+                            Qual desses sinais significa Tchau?
+                        </p>
                         <div className="flex justify-center flex-wrap gap-4 sm:gap-8 w-full">
                             {[...Array(5)].map((_, index) => (
-                                <div key={index} onClick={() => !isChecking && onSelectAnswer(index)} className={`w-20 h-20 sm:w-24 sm:h-24 flex justify-center items-center rounded-2xl p-1 flex-shrink-0 transition transform duration-200 hover:scale-105 ${isChecking ? 'cursor-not-allowed' : 'cursor-pointer'}`} style={{ backgroundImage: selectedAnswer === index ? 'linear-gradient(to bottom right, #59b1ff, #b081ff)' : 'linear-gradient(to bottom right, #e0b0ff, #c0d8ff)', boxShadow: selectedAnswer === index ? '0 0 30px rgba(90, 177, 255, 0.8)' : '0 0 20px rgba(181, 130, 255, 0.3)' }}>
-                                    <div className="w-full h-full rounded-xl" style={{ backgroundColor: selectedAnswer === index ? '#c0d8ff' : '#f0e0ff' }}></div>
+                                <div 
+                                  key={index} 
+                                  onClick={() => !isChecking && onSelectAnswer(index)} 
+                                  className={`w-20 h-20 sm:w-24 sm:h-24 flex justify-center items-center rounded-2xl p-1 flex-shrink-0 transition transform duration-200 hover:scale-105 ${isChecking ? 'cursor-not-allowed' : 'cursor-pointer'}`} 
+                                  style={{ 
+                                    backgroundImage: selectedAnswer === index 
+                                      ? 'linear-gradient(to bottom right, #59b1ff, #b081ff)' 
+                                      : (theme === 'escuro' ? 'linear-gradient(to bottom right, #4b3670, #3a2b57)' : 'linear-gradient(to bottom right, #e0b0ff, #c0d8ff)'), 
+                                    boxShadow: selectedAnswer === index ? '0 0 30px rgba(90, 177, 255, 0.8)' : '0 0 20px rgba(181, 130, 255, 0.3)' 
+                                  }}
+                                >
+                                    <div 
+                                      className="w-full h-full rounded-xl" 
+                                      style={{ 
+                                        backgroundColor: selectedAnswer === index 
+                                          ? (theme === 'escuro' ? '#5a4b7a' : '#c0d8ff') 
+                                          : (theme === 'escuro' ? '#4b3670' : '#f0e0ff') 
+                                      }}
+                                    ></div>
                                 </div>
                             ))}
                         </div>
@@ -459,10 +626,20 @@ function Step5({ onNext, onCheckAnswer, progress, onSelectAnswer, selectedAnswer
                 </div>
                  <div className="flex-shrink-0 px-10 pb-10">
                     <div className="w-full max-w-3xl mx-auto">
-                        <hr className="w-full my-6 border-gray-200" />
+                        <hr 
+                          className={`w-full my-6 ${
+                            theme === 'escuro' ? 'border-gray-700' : 'border-gray-200'
+                          }`} 
+                        />
                         <div className="flex justify-center items-center gap-4">
-                            <button onClick={onNext} disabled={isChecking} className="text-lg font-semibold py-3 px-8 rounded-2xl cursor-pointer text-gray-600 transition transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" style={{ backgroundImage: 'linear-gradient(to right, #b081ff, #59b1ff)', padding: '2px' }}>
-                                <span className="block px-7 py-2 rounded-xl bg-white text-gray-600">Pular</span>
+                            <button onClick={onNext} disabled={isChecking} className="text-lg font-semibold py-3 px-8 rounded-2xl cursor-pointer transition transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" style={{ backgroundImage: 'linear-gradient(to right, #b081ff, #59b1ff)', padding: '2px' }}>
+                                <span 
+                                  className={`block px-7 py-2 rounded-xl ${
+                                    theme === 'escuro' ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-600'
+                                  }`}
+                                >
+                                    Pular
+                                </span>
                             </button>
                             <button onClick={onCheckAnswer} disabled={isChecking} className="text-lg font-semibold py-3 px-8 border-none rounded-2xl cursor-pointer text-white transition transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)' }}>
                                 Próximo
@@ -483,14 +660,30 @@ function Step6({ onNext, progress, lives }) {
 
 // Tela 7: Pergunta 3
 function Step7({ onNext, onCheckAnswer, progress, onSelectAnswer, selectedAnswer, lives, isChecking }) {
+    // --- USA O TEMA ---
+    const { theme } = useSettings();
+
     return (
-        <div className="flex flex-col h-screen w-screen bg-gray-100 text-gray-800 font-poppins">
-            <div className="bg-white shadow-lg rounded-2xl w-full h-full box-border text-center flex flex-col">
+        <div 
+          className={`flex flex-col h-screen w-screen font-poppins ${
+            theme === 'escuro' ? 'bg-gray-900 text-gray-200' : 'bg-gray-100 text-gray-800'
+          }`}
+        >
+            <div 
+              className={`shadow-lg rounded-2xl w-full h-full box-border text-center flex flex-col ${
+                theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
+              }`}
+            >
                 <div className="flex-shrink-0 px-10 pt-10">
                     <div className="pb-2 flex justify-start">
-                        <img src={liresLogoImage} alt="Lires Logo" className="h-24" />
+                      {/* --- LOGO DINÂMICA --- */}
+                      <img 
+                        src={theme === 'escuro' ? logoLiresEscuraImg : liresLogoImage} 
+                        alt="Lires Logo" 
+                        className="h-24" 
+                      />
                     </div>
-                    <hr className="my-0 mb-4" />
+                    <hr className={`my-0 mb-4 ${theme === 'escuro' ? 'border-gray-700' : ''}`} />
                 </div>
                 <div className="flex-grow flex flex-col items-center overflow-y-auto px-10">
                     <div className="w-full max-w-3xl mb-5">
@@ -518,11 +711,30 @@ function Step7({ onNext, onCheckAnswer, progress, onSelectAnswer, selectedAnswer
                     </div>
                     <ProgressBar progress={progress} />
                     <div className="w-full max-w-3xl text-center my-auto">
-                        <p className="text-xl font-semibold mb-6" style={{ color: '#4b3670' }}>Qual desses sinais significa Obrigado?</p>
+                        <p className="text-xl font-semibold mb-6" style={{ color: theme === 'escuro' ? '#d8b4fe' : '#4b3670' }}>
+                            Qual desses sinais significa Obrigado?
+                        </p>
                         <div className="flex justify-center flex-wrap gap-4 sm:gap-8 w-full">
                             {[...Array(5)].map((_, index) => (
-                                <div key={index} onClick={() => !isChecking && onSelectAnswer(index)} className={`w-20 h-20 sm:w-24 sm:h-24 flex justify-center items-center rounded-2xl p-1 flex-shrink-0 transition transform duration-200 hover:scale-105 ${isChecking ? 'cursor-not-allowed' : 'cursor-pointer'}`} style={{ backgroundImage: selectedAnswer === index ? 'linear-gradient(to bottom right, #59b1ff, #b081ff)' : 'linear-gradient(to bottom right, #e0b0ff, #c0d8ff)', boxShadow: selectedAnswer === index ? '0 0 30px rgba(90, 177, 255, 0.8)' : '0 0 20px rgba(181, 130, 255, 0.3)' }}>
-                                    <div className="w-full h-full rounded-xl" style={{ backgroundColor: selectedAnswer === index ? '#c0d8ff' : '#f0e0ff' }}></div>
+                                <div 
+                                  key={index} 
+                                  onClick={() => !isChecking && onSelectAnswer(index)} 
+                                  className={`w-20 h-20 sm:w-24 sm:h-24 flex justify-center items-center rounded-2xl p-1 flex-shrink-0 transition transform duration-200 hover:scale-105 ${isChecking ? 'cursor-not-allowed' : 'cursor-pointer'}`} 
+                                  style={{ 
+                                    backgroundImage: selectedAnswer === index 
+                                      ? 'linear-gradient(to bottom right, #59b1ff, #b081ff)' 
+                                      : (theme === 'escuro' ? 'linear-gradient(to bottom right, #4b3670, #3a2b57)' : 'linear-gradient(to bottom right, #e0b0ff, #c0d8ff)'), 
+                                    boxShadow: selectedAnswer === index ? '0 0 30px rgba(90, 177, 255, 0.8)' : '0 0 20px rgba(181, 130, 255, 0.3)' 
+                                  }}
+                                >
+                                    <div 
+                                      className="w-full h-full rounded-xl" 
+                                      style={{ 
+                                        backgroundColor: selectedAnswer === index 
+                                          ? (theme === 'escuro' ? '#5a4b7a' : '#c0d8ff') 
+                                          : (theme === 'escuro' ? '#4b3670' : '#f0e0ff') 
+                                      }}
+                                    ></div>
                                 </div>
                             ))}
                         </div>
@@ -530,10 +742,20 @@ function Step7({ onNext, onCheckAnswer, progress, onSelectAnswer, selectedAnswer
                 </div>
                  <div className="flex-shrink-0 px-10 pb-10">
                     <div className="w-full max-w-3xl mx-auto">
-                        <hr className="w-full my-6 border-gray-200" />
+                        <hr 
+                          className={`w-full my-6 ${
+                            theme === 'escuro' ? 'border-gray-700' : 'border-gray-200'
+                          }`} 
+                        />
                         <div className="flex justify-center items-center gap-4">
-                            <button onClick={onNext} disabled={isChecking} className="text-lg font-semibold py-3 px-8 rounded-2xl cursor-pointer text-gray-600 transition transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" style={{ backgroundImage: 'linear-gradient(to right, #b081ff, #59b1ff)', padding: '2px' }}>
-                                <span className="block px-7 py-2 rounded-xl bg-white text-gray-600">Pular</span>
+                            <button onClick={onNext} disabled={isChecking} className="text-lg font-semibold py-3 px-8 rounded-2xl cursor-pointer transition transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" style={{ backgroundImage: 'linear-gradient(to right, #b081ff, #59b1ff)', padding: '2px' }}>
+                                <span 
+                                  className={`block px-7 py-2 rounded-xl ${
+                                    theme === 'escuro' ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-600'
+                                  }`}
+                                >
+                                    Pular
+                                </span>
                             </button>
                             <button onClick={onCheckAnswer} disabled={isChecking} className="text-lg font-semibold py-3 px-8 border-none rounded-2xl cursor-pointer text-white transition transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)' }}>
                                 Finalizar
@@ -793,4 +1015,3 @@ export default function App() {
     </>
   );
 }
-

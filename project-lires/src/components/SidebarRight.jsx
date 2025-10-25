@@ -1,4 +1,6 @@
 import React from 'react';
+// 1. IMPORTAR O HOOK DE CONFIGURAÇÕES
+import { useSettings } from '../components/SettingsContext';
 
 // --- Imagens ---
 const userAvatarImg = '../src/assets/perfil.png';
@@ -18,17 +20,29 @@ const UserStat = ({ iconSrc, value, color }) => (
 );
 
 export default function SidebarRight() {
+  // 2. LER O TEMA DO CONTEXTO
+  const { theme } = useSettings();
+
   return (
-    // A classe 'hidden' esconde em telas pequenas, 'lg:block' mostra em telas grandes.
-    <aside className="w-96 p-6 space-y-6 fixed top-0 right-0 h-screen overflow-y-auto bg-[#F9F8FF] border-l border-slate-200 hidden lg:block">
-      {/* User Stats */}
-      <div className="flex justify-around items-center bg-slate-50 p-2 rounded-xl">
+    // 3. ATUALIZAR O CONTAINER PRINCIPAL DA SIDEBAR
+    <aside className={`
+      w-96 p-6 space-y-6 fixed top-0 right-0 h-screen overflow-y-auto hidden lg:block
+      ${theme === 'escuro' 
+        ? 'bg-gray-900 border-l border-gray-700' 
+        : 'bg-[#F9F8FF] border-l border-slate-200'}
+    `}>
+      
+      {/* 4. ATUALIZAR O CARD DE USER STATS */}
+      <div className={`
+        flex justify-around items-center p-2 rounded-xl
+        ${theme === 'escuro' ? 'bg-gray-800' : 'bg-slate-50'}
+      `}>
         <UserStat iconSrc={fireIconImg} value="1" color="text-orange-500" />
         <UserStat iconSrc={lcoinIconImg} value="50" color="text-amber-500" />
         <UserStat iconSrc={heartIconImg} value="5" color="text-red-500" />
       </div>
 
-      {/* Lires Master Card */}
+      {/* Lires Master Card (Já é escuro, não precisa de mudança) */}
       <div className="p-1 rounded-[24px] bg-gradient-to-br from-teal-200 to-blue-300">
         <div className="bg-gradient-to-br from-blue-800 via-indigo-900 to-black text-white rounded-[20px] relative overflow-hidden p-5">
             <div className="flex justify-between items-center">
@@ -49,18 +63,30 @@ export default function SidebarRight() {
         </div>
       </div>
 
-      {/* Card de Missões */}
-      <div className="bg-purple-50 p-5 rounded-2xl border border-purple-200 space-y-4">
+      {/* 5. ATUALIZAR O CARD DE MISSÕES */}
+      <div className={`
+        p-5 rounded-2xl space-y-4
+        ${theme === 'escuro' 
+          ? 'bg-gray-800 border border-purple-800' 
+          : 'bg-purple-50 border border-purple-200'}
+      `}>
         <div className="flex flex-col">
-          <h3 className="font-bold text-lg text-purple-800">Missões</h3>
-          <span className="text-sm text-purple-600">Complete para ganhar recompensas</span>
+          <h3 className={`font-bold text-lg ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-800'}`}>
+            Missões
+          </h3>
+          <span className={`text-sm ${theme === 'escuro' ? 'text-purple-500' : 'text-purple-600'}`}>
+            Complete para ganhar recompensas
+          </span>
         </div>
         <div className="flex items-center gap-4">
           <div>
             <img src={userAvatarImg} alt="Avatar do Usuário" className="w-12 h-12 rounded-full border-2 border-purple-200 p-1" />
           </div>
           <div className="flex-1 relative">
-            <div className="bg-slate-200 rounded-full h-6 w-full">
+            <div className={`
+              rounded-full h-6 w-full
+              ${theme === 'escuro' ? 'bg-gray-600' : 'bg-slate-200'}
+            `}>
               <div 
                 className="bg-gradient-to-r from-purple-400 to-indigo-500 h-6 rounded-full" 
                 style={{ width: '60%' }}
@@ -77,15 +103,23 @@ export default function SidebarRight() {
         </div>
       </div>
       
-      {/* Anúncio */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 text-center flex-shrink-0">
+      {/* 6. ATUALIZAR O CARD DE ANÚNCIO */}
+      <div className={`
+        p-4 rounded-2xl border text-center flex-shrink-0
+        ${theme === 'escuro' 
+          ? 'bg-gray-800 border-gray-700' 
+          : 'bg-white border-slate-200'}
+      `}>
         <div className="bg-slate-800 rounded-lg h-32 flex items-center justify-center">
           <img src={AdImage} alt="Anúncio" className="h-full w-full object-cover rounded-lg"/>
         </div>
       </div>
       
-      {/* Footer */}
-      <footer className="text-xs text-slate-500 text-center space-x-2 pt-4 flex-shrink-0">
+      {/* 7. ATUALIZAR O FOOTER */}
+      <footer className={`
+        text-xs text-center space-x-2 pt-4 flex-shrink-0
+        ${theme === 'escuro' ? 'text-slate-400' : 'text-slate-500'}
+      `}>
         <a href="#" className="hover:underline">Sobre</a>
         <a href="#" className="hover:underline">Loja</a>
         <a href="#" className="hover:underline">Investidores</a>
@@ -94,9 +128,6 @@ export default function SidebarRight() {
       </footer>
     </aside>
   );
-          <style>{`
-            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-            body { font-family: 'Poppins', sans-serif; }
-            * { box-sizing: border-box; }
-        `}</style>
 }
+// OBS: O <style> que estava aqui foi removido pois não é um JSX válido 
+// e provavelmente deve estar no seu index.css ou App.jsx

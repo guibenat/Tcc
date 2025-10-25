@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
+// 1. IMPORTAR O HOOK DE CONFIGURAÇÕES
+import { useSettings } from '../components/SettingsContext';
 
 export default function EncerramentoLires() {
     const navigate = useNavigate();
+    // 2. LER O TEMA DO CONTEXTO
+    const { theme } = useSettings();
     
     // Animação de entrada
     const [animationClass, setAnimationClass] = useState('');
@@ -12,7 +16,7 @@ export default function EncerramentoLires() {
         setAnimationClass('anim-enter');
     }, []);
 
-    // Função para Sair (Logout)
+    // Função para Sair (Logout) - ATUALIZADA
     const handleLogout = () => {
         Swal.fire({
             title: 'Deseja realmente sair?',
@@ -22,54 +26,63 @@ export default function EncerramentoLires() {
             showCancelButton: true,
             confirmButtonText: 'Sim, sair!',
             cancelButtonText: 'Cancelar',
+            // ATUALIZADO: customClass reage ao tema
             customClass: {
-                popup: 'font-poppins rounded-2xl',
-                title: 'text-slate-800',
+                popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-800 text-slate-200' : 'bg-white'}`,
+                title: `${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`,
                 confirmButton: 'btn-gradient-glow font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105',
                 cancelButton: 'bg-gray-400 hover:bg-gray-500 font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105 ml-4'
             },
-            buttonsStyling: false
+            buttonsStyling: false,
+            // ATUALIZADO: background reage ao tema
+            background: theme === 'escuro' ? '#1f2937' : '#fff'
         }).then((result) => {
             if (result.isConfirmed) {
-                navigate('/'); // Redireciona para a tela inicial
+                navigate('/'); 
             }
         });
     };
 
-    // Função para Desativar Conta
+    // Função para Desativar Conta - ATUALIZADA
     const handleDeactivate = () => {
         Swal.fire({
             title: 'Desativar sua conta?',
             text: "Seu perfil ficará oculto. Você pode reativá-lo a qualquer momento.",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#f59e0b', // Laranja
+            confirmButtonColor: '#f59e0b', 
             confirmButtonText: 'Sim, desativar',
             cancelButtonText: 'Cancelar',
-            customClass: { popup: 'font-poppins rounded-2xl' }
+            customClass: {
+                popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-800 text-slate-200' : 'bg-white'}`,
+                title: `${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`,
+            },
+            background: theme === 'escuro' ? '#1f2937' : '#fff'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Adicione a lógica de desativação aqui
                 console.log("Conta desativada...");
                 navigate('/');
             }
         });
     };
 
-    // Função para Excluir Conta
+    // Função para Excluir Conta - ATUALIZADA
     const handleDelete = () => {
         Swal.fire({
             title: 'Excluir sua conta?',
             text: "Esta ação é irreversível! Todos os seus dados serão perdidos.",
             icon: 'error',
             showCancelButton: true,
-            confirmButtonColor: '#ef4444', // Vermelho
+            confirmButtonColor: '#ef4444',
             confirmButtonText: 'Sim, excluir',
             cancelButtonText: 'Cancelar',
-            customClass: { popup: 'font-poppins rounded-2xl' }
+            customClass: {
+                popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-800 text-slate-200' : 'bg-white'}`,
+                title: `${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`,
+            },
+            background: theme === 'escuro' ? '#1f2937' : '#fff'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Adicione a lógica de exclusão aqui
                 console.log("Conta excluída permanentemente...");
                 navigate('/');
             }
@@ -77,39 +90,47 @@ export default function EncerramentoLires() {
     };
 
     return (
-        // REMOVIDO: O <div flex-col> e todas as classes de posicionamento fixo
-        // ADICIONADO: O wrapper 'content-box' para animação
         <div className={`content-box w-full ${animationClass}`}>
-            <h1 className="text-purple-600 font-bold text-2xl md:text-3xl lg:text-5xl mb-8">
+            {/* TÍTULO PRINCIPAL ATUALIZADO */}
+            <h1 className={`font-bold text-2xl md:text-3xl lg:text-5xl mb-8 ${
+                theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'
+            }`}>
                 Encerramento
             </h1>
 
-            <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
-                <h2 className="text-purple-600 font-bold text-xl md:text-2xl lg:text-3xl">
+            {/* CARD PRINCIPAL ATUALIZADO */}
+            <div className={`space-y-6 rounded-lg shadow-md p-6 ${
+                theme === 'escuro' ? 'bg-gray-800 border border-gray-700' : 'bg-white'
+            }`}>
+                <h2 className={`font-bold text-xl md:text-2xl lg:text-3xl ${
+                    theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'
+                }`}>
                     Opções de Encerramento
                 </h2>
                 
                 <div className="space-y-4">
-                    <div className="border-b pb-4">
-                        <h3 className="text-xl font-semibold text-slate-800">Sair da conta</h3>
-                        <p className="text-slate-600">Desconecta sua conta deste dispositivo.</p>
+                    {/* OPÇÃO 1 ATUALIZADA */}
+                    <div className={`pb-4 border-b ${theme === 'escuro' ? 'border-gray-700' : 'border-gray-200'}`}>
+                        <h3 className={`text-xl font-semibold ${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`}>Sair da conta</h3>
+                        <p className={theme === 'escuro' ? 'text-slate-400' : 'text-slate-600'}>Desconecta sua conta deste dispositivo.</p>
                         <button onClick={handleLogout} className="mt-2 text-blue-500 hover:underline font-semibold">Sair</button>
                     </div>
 
-                    <div className="border-b pb-4">
-                        <h3 className="text-xl font-semibold text-slate-800">Desativar conta</h3>
-                        <p className="text-slate-600">Seu perfil ficará oculto e você poderá reativá-lo a qualquer momento.</p>
+                    {/* OPÇÃO 2 ATUALIZADA */}
+                    <div className={`pb-4 border-b ${theme === 'escuro' ? 'border-gray-700' : 'border-gray-200'}`}>
+                        <h3 className={`text-xl font-semibold ${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`}>Desativar conta</h3>
+                        <p className={theme === 'escuro' ? 'text-slate-400' : 'text-slate-600'}>Seu perfil ficará oculto e você poderá reativá-lo a qualquer momento.</p>
                         <button onClick={handleDeactivate} className="mt-2 text-orange-500 hover:underline font-semibold">Desativar</button>
                     </div>
 
+                    {/* OPÇÃO 3 ATUALIZADA */}
                     <div>
-                        <h3 className="text-xl font-semibold text-red-700">Excluir conta permanentemente</h3>
-                        <p className="text-red-600">Esta ação é irreversível. Todos os seus dados, progresso e Lcoins serão perdidos.</p>
+                        <h3 className={`text-xl font-semibold ${theme === 'escuro' ? 'text-red-500' : 'text-red-700'}`}>Excluir conta permanentemente</h3>
+                        <p className={theme === 'escuro' ? 'text-red-500' : 'text-red-600'}>Esta ação é irreversível. Todos os seus dados, progresso e Lcoins serão perdidos.</p>
                         <button onClick={handleDelete} className="mt-2 text-red-500 hover:underline font-semibold">Excluir conta</button>
                     </div>
                 </div>
             </div>
-            {/* REMOVIDO: O menu lateral que estava duplicado aqui */}
         </div>
     );
 }
