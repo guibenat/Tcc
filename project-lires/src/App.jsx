@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // IMPORTA O PROVEDOR DE CONTEXTO
 import { SettingsProvider } from './components/SettingsContext'; // <-- ADICIONADO
 
+
 // Layouts
 import SettingsLayout from './layouts/SettingsLayout'; // Layout para Configurações
 
@@ -32,13 +33,15 @@ import Seguranca from './pages/Segurança';
 import Encerramento from './pages/EncerramentoLires';
 import Notificacoes from './pages/Notificacoes';
 import Preferencias from './pages/Preferencias';
+import Assinatura from './pages/Assinatura';
 
 // --- Componente Principal App ---
 function App() {
   return (
+
     // "Abraça" toda a aplicação com o Provedor de Configurações
     <SettingsProvider> 
-
+      
       {/* Filtros SVG globais (movidos de Preferencias.jsx)
         Isso garante que os filtros de daltonismo estejam disponíveis
         em todas as páginas, pois o Contexto (que está acima) 
@@ -87,6 +90,7 @@ function App() {
             <Route path="encerramento" element={<Encerramento />} />
             <Route path="preferencias" element={<Preferencias />} />
             <Route path="notificacoes" element={<Notificacoes />} />
+            <Route path="assinatura" element={<Assinatura />} />
             
             {/* Rota padrão para /configuracoes (mantida) */}
             <Route index element={<GerenciamentoConta />} /> 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom'; 
+import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 // 1. IMPORTAR O HOOK DE CONFIGURAÇÕES
@@ -22,11 +22,11 @@ const SidebarRightDesktop = () => {
             confirmButtonText: 'Sim, sair!',
             cancelButtonText: 'Cancelar',
             customClass: {
-              // 3. ADICIONAR CLASSES DE TEMA ESCURO AO SWAL
-              popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-800 text-slate-200' : 'bg-white'}`,
-              title: `${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`,
-              confirmButton: 'btn-gradient-glow font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105',
-              cancelButton: 'bg-gray-400 hover:bg-gray-500 font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105 ml-4'
+                // 3. ADICIONAR CLASSES DE TEMA ESCURO AO SWAL
+                popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-800 text-slate-200' : 'bg-white'}`,
+                title: `${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`,
+                confirmButton: 'btn-gradient-glow font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105',
+                cancelButton: 'bg-gray-400 hover:bg-gray-500 font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105 ml-4'
             },
             buttonsStyling: false,
             background: theme === 'escuro' ? '#1f2937' : '#fff' // Fundo do SweetAlert
@@ -65,8 +65,10 @@ const SidebarRightDesktop = () => {
               hidden xl:flex xl:fixed xl:right-0 xl:top-0 xl:w-80 xl:h-screen xl:p-3 xl:pt-0
               ${theme === 'escuro' ? 'bg-gray-900' : 'bg-gray-50'}
             `}>
-                <div className="w-full space-y-2 xl:mt-4">
-                    {/* Menu Conta */}
+                {/* Alterado para space-y-4 para espaçar os blocos */}
+                <div className="w-full space-y-4 xl:mt-4"> 
+                    
+                    {/* Menu Conta (Botão Sair removido daqui) */}
                     <div className={`
                       rounded-3xl p-4
                       ${theme === 'escuro' 
@@ -74,7 +76,7 @@ const SidebarRightDesktop = () => {
                         : 'bg-white border-2 border-purple-400'}
                     `}>
                         <h2 className={`text-xl font-semibold mb-6 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
-                          Conta
+                            Conta
                         </h2>
                         
                         <nav className="space-y-3">
@@ -116,20 +118,42 @@ const SidebarRightDesktop = () => {
                                 Encerramento
                             </button>
                         </nav>
-
-                        {/* 6. ATUALIZAR BOTÃO SAIR PARA REAGIR AO TEMA */}
-                        <button 
-                          onClick={handleLogout} 
-                          className={`
-                            w-full mt-6 rounded-3xl py-3 text-lg font-bold transition-colors
-                            ${theme === 'escuro' 
-                              ? 'border-2 border-purple-700 text-purple-400 hover:bg-gray-700' 
-                              : 'border-2 border-purple-400 text-purple-600 hover:bg-purple-50'}
-                          `}
-                        >
-                            Sair
-                        </button>
+                        {/* Botão Sair foi movido para fora deste bloco */}
                     </div>
+
+                    {/* --- NOVO BLOCO ASSINATURA --- */}
+                    <div className={`
+                      rounded-3xl p-4
+                      ${theme === 'escuro' 
+                        ? 'bg-gray-800 border-2 border-purple-800' 
+                        : 'bg-white border-2 border-purple-400'}
+                    `}>
+                        <h2 className={`text-xl font-semibold mb-6 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
+                            Assinatura
+                        </h2>
+                        <nav>
+                            <button 
+                                // Navega para a tela de assinatura
+                                onClick={() => navigate('/configuracoes/assinatura')} 
+                                className={getButtonClass('/configuracoes/assinatura')}
+                            >
+                                Seja assinante agora!
+                            </button>
+                        </nav>
+                    </div>
+
+                    {/* --- BOTÃO SAIR (AGORA SEPARADO) --- */}
+                    <button 
+                        onClick={handleLogout} 
+                        className={`
+                          w-full rounded-3xl py-3 text-lg font-bold transition-colors
+                          ${theme === 'escuro' 
+                            ? 'border-2 border-purple-700 text-purple-400 hover:bg-gray-700' 
+                            : 'border-2 border-purple-400 text-purple-600 hover:bg-purple-50'}
+                        `}
+                    >
+                        Sair
+                    </button>
                 </div>
             </div>
         </>
@@ -149,10 +173,10 @@ export const SidebarRightMobile = () => {
             title: 'Deseja realmente sair?',
             /* ... (mesma configuração do SweetAlert do desktop) ... */
             customClass: {
-              popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-800 text-slate-200' : 'bg-white'}`,
-              title: `${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`,
-              confirmButton: 'btn-gradient-glow font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105',
-              cancelButton: 'bg-gray-400 hover:bg-gray-500 font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105 ml-4'
+                popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-800 text-slate-200' : 'bg-white'}`,
+                title: `${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`,
+                confirmButton: 'btn-gradient-glow font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105',
+                cancelButton: 'bg-gray-400 hover:bg-gray-500 font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105 ml-4'
             },
             buttonsStyling: false,
             background: theme === 'escuro' ? '#1f2937' : '#fff'
@@ -184,8 +208,9 @@ export const SidebarRightMobile = () => {
     };
 
     return (
+        // O space-y-8 aqui já cuidará do espaçamento entre os blocos
         <div className="xl:hidden mt-8 space-y-8">
-            {/* 4. ATUALIZAR CARD (MOBILE) */}
+            {/* 4. ATUALIZAR CARD (MOBILE) - Botão Sair removido */}
             <div className={`
               rounded-3xl p-6
               ${theme === 'escuro' 
@@ -193,7 +218,7 @@ export const SidebarRightMobile = () => {
                 : 'bg-white border-2 border-purple-400'}
             `}>
                 <h2 className={`text-xl md:text-2xl font-semibold mb-6 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
-                  Conta
+                    Conta
                 </h2>
                 <nav className="space-y-3">
                     {/* Botões usam a nova função */}
@@ -234,20 +259,41 @@ export const SidebarRightMobile = () => {
                         Encerramento
                     </button>
                 </nav>
-        
-                {/* 5. ATUALIZAR BOTÃO SAIR (MOBILE) */}
-                <button 
-                    onClick={handleLogout} 
-                    className={`
-                      w-full mt-6 rounded-3xl py-3 text-lg md:text-xl font-bold transition-colors
-                      ${theme === 'escuro' 
-                        ? 'border-2 border-purple-700 text-purple-400 hover:bg-gray-700' 
-                        : 'border-2 border-purple-400 text-purple-600 hover:bg-purple-50'}
-                    `}
-                >
-                    Sair
-                </button>
+              {/* Botão Sair foi movido para fora deste bloco */}
             </div>
+
+            {/* --- NOVO BLOCO ASSINATURA (MOBILE) --- */}
+            <div className={`
+              rounded-3xl p-6
+              ${theme === 'escuro' 
+                ? 'bg-gray-800 border-2 border-purple-800' 
+                : 'bg-white border-2 border-purple-400'}
+            `}>
+                <h2 className={`text-xl md:text-2xl font-semibold mb-6 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
+                    Assinatura
+                </h2>
+                <nav>
+                    <button 
+                        onClick={() => navigate('/configuracoes/assinatura')} 
+                        className={getButtonClass('/configuracoes/assinatura')}
+                    >
+                        Seja assinante agora!
+                    </button>
+                </nav>
+            </div>
+
+            {/* --- BOTÃO SAIR (AGORA SEPARADO E SEM mt-6) --- */}
+            <button 
+                onClick={handleLogout} 
+                className={`
+                  w-full rounded-3xl py-3 text-lg md:text-xl font-bold transition-colors
+                  ${theme === 'escuro' 
+                    ? 'border-2 border-purple-700 text-purple-400 hover:bg-gray-700' 
+                    : 'border-2 border-purple-400 text-purple-600 hover:bg-purple-50'}
+                `}
+            >
+                Sair
+            </button>
         </div>
     );
 };
