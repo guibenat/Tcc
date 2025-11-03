@@ -2,15 +2,15 @@ import React from 'react';
 // 1. IMPORTAR O HOOK DE CONFIGURAÇÕES
 import { useSettings } from '../components/SettingsContext';
 
-// --- Imagens ---
-const userAvatarImg = '../src/assets/perfil.png';
-const moneyBagImg = '../src/assets/bolsinha-dinheiro.png';
-const fireIconImg = '../src/assets/foguinho.png';
-const lcoinIconImg = '../src/assets/lcoin.png';
-const heartIconImg = '../src/assets/coracaoo.png';
-const liresMasterLogoImg = '../src/assets/lires-master-logo.png'; 
-const robotMascotImg = '../src/assets/robot-mascot.png';     
-const AdImage = '../src/assets/anuncio.png';
+// --- Imagens (Caminhos corrigidos) ---
+import userAvatarImg from '../assets/perfil.png';
+import moneyBagImg from '../assets/bolsinha-dinheiro.png';
+import fireIconImg from '../assets/foguinho.png';
+import lcoinIconImg from '../assets/lcoin.png';
+import heartIconImg from '../assets/coracaoo.png';
+import liresMasterLogoImg from '../assets/lires-master-logo.png'; 
+import robotMascotImg from '../assets/robot-mascot.png';     
+import AdImage from '../assets/anuncio.png';
 
 const UserStat = ({ iconSrc, value, color }) => (
     <div className="flex items-center gap-3">
@@ -20,11 +20,10 @@ const UserStat = ({ iconSrc, value, color }) => (
 );
 
 export default function SidebarRight() {
-  // 2. LER O TEMA DO CONTEXTO
-  const { theme } = useSettings();
+  // 2. LER O TEMA, VIDAS E MOEDAS DO CONTEXTO
+  const { theme, lives, lcoins } = useSettings();
 
   return (
-    // 3. ATUALIZAR O CONTAINER PRINCIPAL DA SIDEBAR
     <aside className={`
       w-96 p-6 space-y-6 fixed top-0 right-0 h-screen overflow-y-auto hidden lg:block
       ${theme === 'escuro' 
@@ -32,17 +31,17 @@ export default function SidebarRight() {
         : 'bg-[#F9F8FF] border-l border-slate-200'}
     `}>
       
-      {/* 4. ATUALIZAR O CARD DE USER STATS */}
+      {/* 3. ATUALIZAR O CARD DE USER STATS (AGORA DINÂMICO) */}
       <div className={`
         flex justify-around items-center p-2 rounded-xl
         ${theme === 'escuro' ? 'bg-gray-800' : 'bg-slate-50'}
       `}>
         <UserStat iconSrc={fireIconImg} value="1" color="text-orange-500" />
-        <UserStat iconSrc={lcoinIconImg} value="50" color="text-amber-500" />
-        <UserStat iconSrc={heartIconImg} value="5" color="text-red-500" />
+        <UserStat iconSrc={lcoinIconImg} value={lcoins} color="text-amber-500" />
+        <UserStat iconSrc={heartIconImg} value={lives} color="text-red-500" />
       </div>
 
-      {/* Lires Master Card (Já é escuro, não precisa de mudança) */}
+      {/* Lires Master Card */}
       <div className="p-1 rounded-[24px] bg-gradient-to-br from-teal-200 to-blue-300">
         <div className="bg-gradient-to-br from-blue-800 via-indigo-900 to-black text-white rounded-[20px] relative overflow-hidden p-5">
             <div className="flex justify-between items-center">
@@ -63,7 +62,7 @@ export default function SidebarRight() {
         </div>
       </div>
 
-      {/* 5. ATUALIZAR O CARD DE MISSÕES */}
+      {/* Card de Missões */}
       <div className={`
         p-5 rounded-2xl space-y-4
         ${theme === 'escuro' 
@@ -103,7 +102,7 @@ export default function SidebarRight() {
         </div>
       </div>
       
-      {/* 6. ATUALIZAR O CARD DE ANÚNCIO */}
+      {/* Card de Anúncio */}
       <div className={`
         p-4 rounded-2xl border text-center flex-shrink-0
         ${theme === 'escuro' 
@@ -115,7 +114,7 @@ export default function SidebarRight() {
         </div>
       </div>
       
-      {/* 7. ATUALIZAR O FOOTER */}
+      {/* Footer */}
       <footer className={`
         text-xs text-center space-x-2 pt-4 flex-shrink-0
         ${theme === 'escuro' ? 'text-slate-400' : 'text-slate-500'}
@@ -129,5 +128,3 @@ export default function SidebarRight() {
     </aside>
   );
 }
-// OBS: O <style> que estava aqui foi removido pois não é um JSX válido 
-// e provavelmente deve estar no seu index.css ou App.jsx

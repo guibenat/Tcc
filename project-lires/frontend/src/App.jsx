@@ -2,38 +2,39 @@ import React from 'react';
 // Importe o BrowserRouter corretamente
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // IMPORTA O PROVEDOR DE CONTEXTO
-import { SettingsProvider } from './components/SettingsContext'; // <-- ADICIONADO
+import { SettingsProvider } from './components/SettingsContext'; // <-- Caminho corrigido
+import ActivityPlayer from './pages/ActivityPlayer';
 
 
 // Layouts
-import SettingsLayout from './layouts/SettingsLayout'; // Layout para Configurações
+import SettingsLayout from './layouts/SettingsLayout'; // <-- Caminho corrigido
 
 // Páginas de Autenticação
-import Inicio from './pages/Inicio';
-import Cadastro from './pages/Cadastro';
-import Login from './pages/Login';
-import EsqueceuSenha from './components/EsqueceuSenha';
-import Inicial from './pages/Inicial';
-import ComecarDoZero from './pages/ComecarDoZero';
-import Finalizado1 from './components/Finalizado1';
+import Inicio from './pages/Inicio'; // <-- Caminho corrigido
+import Cadastro from './pages/Cadastro'; // <-- Caminho corrigido
+import Login from './pages/Login'; // <-- Caminho corrigido
+import EsqueceuSenha from './components/EsqueceuSenha'; // <-- Caminho corrigido
+import Inicial from './pages/Inicial'; // <-- Caminho corrigido
+// import ComecarDoZero from './pages/ComecarDoZero'; // <-- REMOVIDO
+import Finalizado1 from './components/finalizado1'; // <-- Caminho corrigido
 
 // Páginas Principais (assumindo que todas estão em /pages)
-import Home from './pages/Home';
-import AlfabetoPage from './pages/AlfabetoPage';
-import VideosPage from './pages/VideosPage';
-import FeedPage from './components/FeedPage';
-import LojaPage from './pages/LojaPage';
-import UserPage from './pages/UserPage';
-import PraticarPage from './pages/PraticarPage'; // Assumindo que você renomeou Praticar.jsx
+import Home from './pages/Home'; // <-- Caminho corrigido
+import AlfabetoPage from './pages/AlfabetoPage'; // <-- Caminho corrigido
+import VideosPage from './pages/VideosPage'; // <-- Caminho corrigido
+import FeedPage from './pages/FeedPage'; // <-- Caminho corrigido
+import LojaPage from './pages/LojaPage'; // <-- Caminho corrigido
+import UserPage from './pages/UserPage'; // <-- Caminho corrigido
+import PraticarPage from './pages/PraticarPage'; // <-- Caminho corrigido// <-- ADICIONADO e caminho corrigido
 
 // Páginas de Conteúdo das Configurações (assumindo que estão em /pages)
-import GerenciamentoConta from './pages/GerenciamentoConta';
-import ConfiguracoesPrivacidade from './pages/Configurações';
-import Seguranca from './pages/Segurança';
-import Encerramento from './pages/EncerramentoLires';
-import Notificacoes from './pages/Notificacoes';
-import Preferencias from './pages/Preferencias';
-import Assinatura from './pages/Assinatura';
+import GerenciamentoConta from './pages/GerenciamentoConta'; // <-- Caminho corrigido
+import ConfiguracoesPrivacidade from './pages/Configurações'; // <-- Caminho corrigido
+import Seguranca from './pages/Segurança'; // <-- Caminho corrigido
+import Encerramento from './pages/EncerramentoLires'; // <-- Caminho corrigido
+import Notificacoes from './pages/Notificacoes'; // <-- Caminho corrigido
+import Preferencias from './pages/Preferencias'; // <-- Caminho corrigido
+import Assinatura from './pages/Assinatura'; // <-- Caminho corrigido
 
 // --- Componente Principal App ---
 function App() {
@@ -70,17 +71,19 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/esqueceu-senha" element={<EsqueceuSenha />} />
           <Route path="/inicial" element={<Inicial />} />
-          <Route path="/comecar-do-zero" element={<ComecarDoZero />} />
+          <Route path="/comecar-do-zero" element={<ActivityPlayer />} /> {/* <-- ALTERADO */}
           <Route path="/finalizado" element={<Finalizado1 />} />
           
           {/* Rotas Principais do App */}
           <Route path="/home" element={<Home />} />
+          <Route path="/activity" element={<ActivityPlayer />} /> {/* <-- ADICIONADO */}
           <Route path="/alfabeto" element={<AlfabetoPage />} />
           <Route path="/videos" element={<VideosPage />} />
           <Route path="/feed" element={<FeedPage />} />
           <Route path="/loja" element={<LojaPage />} />
           <Route path="/perfil" element={<UserPage />} />
           <Route path="/praticar" element={<PraticarPage />} />
+          <Route path="/activity" element={<ActivityPlayer />} />
           
           {/* Rotas de Configurações Aninhadas */}
           <Route path="/configuracoes" element={<SettingsLayout />}>
@@ -102,3 +105,4 @@ function App() {
 }
 
 export default App;
+

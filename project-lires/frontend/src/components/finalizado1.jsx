@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-// --- IMPORTA O HOOK DE CONFIGURAÇÕES ---
-import { useSettings } from '../components/SettingsContext';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useSettings } from './SettingsContext'; // Caminho corrigido
 
-// --- IMPORTA AS LOGOS ---
+// --- Imports dos Assets ---
 import liresLogoImage from '../assets/logo-lires.png';
-import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; // Logo para o modo escuro
-// ---
+import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; 
 import robotCongratsImage from '../assets/robo-congrats.png'; 
 import flameImage from '../assets/flame.png'; 
 import lockedAchievementImage from '../assets/locked-Achievement.png';
@@ -13,9 +12,8 @@ import unlockedAchievementImage from '../assets/unlocked-Achievement.png';
 import achievementBadgeImage from '../assets/achievement-Badge.png';
 import robotIconImage from '../assets/robot-Icon.png';
 import lcoinImage from '../assets/lcoin.png';
-// --- Fim da seção de media ---
 
-// Animações
+// Animações (sem alteração)
 const animations = `
   @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -27,8 +25,7 @@ const animations = `
   @keyframes coin-drop-glow { 0% { transform: translateY(-200px) scale(0.5); opacity: 0; } 50% { transform: translateY(0) scale(1.1); opacity: 1; } 70% { transform: translateY(-15px) scale(0.95); } 80% { transform: translateY(0) scale(1.05); } 100% { transform: translateY(0) scale(1); } }
 `;
 
-// --- Componentes de Telas Individuais ---
-
+// --- Componente CountUp (sem alteração) ---
 const CountUp = ({ end, duration, start }) => {
     const [count, setCount] = useState(0);
     useEffect(() => {
@@ -37,10 +34,11 @@ const CountUp = ({ end, duration, start }) => {
     return <span>{count}</span>;
 };
 
-function CongratulationsScreen({ onContinue }) {
-    // --- USA O TEMA ---
+// --- Sub-componentes (CongratulationsScreen, etc.) ---
+
+function CongratulationsScreen({ onContinue, errorCount, totalExercises }) {
     const { theme } = useSettings();
-    const errorCount = 0; const totalExercises = 7; const [startCounting, setStartCounting] = useState(false);
+    const [startCounting, setStartCounting] = useState(false);
     useEffect(() => { const timer = setTimeout(() => setStartCounting(true), 600); return () => clearTimeout(timer); }, []);
     const animationStyle = (delay) => ({ animation: `fadeInUp 0.5s ease-out ${delay}s forwards`, opacity: 0, });
     
@@ -74,7 +72,6 @@ function CongratulationsScreen({ onContinue }) {
 }
 
 function SequenciaAtivaScreen({ onContinue }) {
-    // --- USA O TEMA ---
     const { theme } = useSettings();
     const [isAnimating, setIsAnimating] = useState(false); const sequenceCount = 1;
     useEffect(() => { const timer = setTimeout(() => { setIsAnimating(true); }, 100); return () => clearTimeout(timer); }, []);
@@ -103,7 +100,6 @@ function SequenciaAtivaScreen({ onContinue }) {
 }
 
 function AchievementsScreen({ onContinue }) {
-    // --- USA O TEMA ---
     const { theme } = useSettings();
     const [progress, setProgress] = useState(0);
     const [isShaking, setIsShaking] = useState(false);
@@ -138,7 +134,7 @@ function AchievementsScreen({ onContinue }) {
                      <div className={`w-full h-4 rounded-full relative ${
                        theme === 'escuro' ? 'bg-gray-700' : 'bg-purple-200'
                      }`}>
-                       <div className="h-full bg-purple-600 rounded-full" style={{ width: `${progress}%`, transition: 'width 2s ease-out' }}></div>
+                        <div className="h-full bg-purple-600 rounded-full" style={{ width: `${progress}%`, transition: 'width 2s ease-out' }}></div>
                      </div>
                      <div className="absolute -bottom-8 w-full flex justify-between px-2">
                          {achievements.map((_, index) => (<div key={index} className="relative w-16 h-16 flex items-center justify-center">{index < unlockedIndex ? <img src={unlockedAchievementImage} alt="Conquista Anterior" className="h-14 w-14"/> : index === unlockedIndex && isUnlocked ? <img src={unlockedAchievementImage} alt="Conquista Desbloqueada" className="h-16 w-16"/> : <img src={lockedAchievementImage} alt="Cadeado" className="h-16 w-16" style={{ animation: index === unlockedIndex && isShaking ? 'shake 1.5s' : 'none' }} />}</div>))}
@@ -151,13 +147,19 @@ function AchievementsScreen({ onContinue }) {
 }
 
 function LcoinsScreen({ onContinue }) {
-    // --- USA O TEMA ---
-    const { theme } = useSettings();
+    const { theme, setLcoins } = useSettings(); // 1. PEGAMOS O 'setLcoins'
     const [startAnimations, setStartAnimations] = useState(false);
+    const rewardAmount = 50; // A recompensa
+
     useEffect(() => {
         const timer = setTimeout(() => setStartAnimations(true), 100);
+        
+        // 2. ATUALIZAMOS AS MOEDAS QUANDO A TELA APARECE
+        // Usamos um 'useEffect' para garantir que isso rode apenas uma vez
+        setLcoins(prevLcoins => prevLcoins + rewardAmount);
+        
         return () => clearTimeout(timer);
-    }, []);
+    }, [setLcoins]); // 3. Adicionamos setLcoins à dependência
     
     return (
         <div className={`w-full h-full flex flex-col items-center font-poppins p-10 ${
@@ -173,7 +175,8 @@ function LcoinsScreen({ onContinue }) {
             <div className="flex-grow flex flex-col items-center justify-center text-center">
                 <img src={lcoinImage} alt="Lcoin" className="w-32 h-32 mb-4" style={{ animation: startAnimations ? 'coin-drop-glow 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards' : 'none' }} />
                 <p className="text-2xl font-bold" style={{ animation: startAnimations ? 'fadeInUp 0.5s ease-out 1s forwards' : 'none', opacity: 0 }}>
-                    <span style={{ color: '#FBC02D' }}>+<CountUp end={50} duration={3000} start={startAnimations} /></span>
+                    {/* 4. O 'CountUp' agora é apenas visual */}
+                    <span style={{ color: '#FBC02D' }}>+<CountUp end={rewardAmount} duration={3000} start={startAnimations} /></span>
                     <span style={{ color: '#1E88E5' }}> LCOINS</span>
                 </p>
             </div>
@@ -182,26 +185,37 @@ function LcoinsScreen({ onContinue }) {
     );
 }
 
-// --- Componente Principal que gere as telas ---
-function App() {
-    const [screen, setScreen] = useState('congrats'); // 'congrats', 'sequence', 'achievements', ou 'lcoins'
+// --- Componente Principal ---
+export default function Finalizado1() {
+    const [screen, setScreen] = useState('congrats');
+    const navigate = useNavigate();
+    const { state } = useLocation();
+    
+    const errorCount = state?.errorCount ?? 0;
+    const totalExercises = state?.totalExercises ?? 7; 
 
     const handleNavigation = () => {
         if (screen === 'congrats') setScreen('sequence');
         else if (screen === 'sequence') setScreen('achievements');
         else if (screen === 'achievements') setScreen('lcoins');
-        else if (screen === 'lcoins') alert("Fim da demonstração!");
+        else if (screen === 'lcoins') navigate('/home'); 
     }
 
     return (
         <div className="fixed inset-0 z-50">
             <style>{animations}</style>
-            {screen === 'congrats' && <CongratulationsScreen onContinue={handleNavigation} />}
+            
+            {screen === 'congrats' && (
+                <CongratulationsScreen 
+                    onContinue={handleNavigation} 
+                    errorCount={errorCount}
+                    totalExercises={totalExercises}
+                />
+            )}
+            
             {screen === 'sequence' && <SequenciaAtivaScreen onContinue={handleNavigation} />}
             {screen === 'achievements' && <AchievementsScreen onContinue={handleNavigation} />}
             {screen === 'lcoins' && <LcoinsScreen onContinue={handleNavigation} />}
         </div>
     );
 }
-
-export default App;
