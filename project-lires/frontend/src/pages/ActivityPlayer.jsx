@@ -1,10 +1,10 @@
 import React, { useState, useEffect, Fragment } from 'react';
-// --- MUDANÇA 1: Importar 'useParams' e remover 'useLocation' ---
+// Importar 'useNavigate' e 'useParams'
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2'; 
 import { useSettings } from '../components/SettingsContext'; 
 
-// ... (imports da lição e assets - sem mudança) ...
+import { lessonLookup } from '../lessons/lessonMap.jsx';
 import { comecarDoZeroLesson } from '../lessons/comecarDoZeroLesson.jsx';
 import coracaoImage from '../assets/coracaoo.png';
 import robotReviewImage from '../assets/robot-review.png'; 
@@ -13,7 +13,7 @@ const lessonDatabase = {
     'comecar-do-zero': comecarDoZeroLesson,
 };
 
-// ... (Componentes visuais - BottomNotification, Modais, etc. - sem mudança) ...
+// --- Componentes Visuais (Modais, Notificações, etc. - Sem alteração) ---
 function BottomNotification({ type, message, onContinue }) {
     const { theme } = useSettings(); 
     const isCorrect = type === 'correct';
@@ -42,32 +42,28 @@ function ReviewScreen({ errorCount, onContinue }) {
 // --- COMPONENTE PRINCIPAL DO PLAYER ---
 export default function ActivityPlayer() {
     const navigate = useNavigate();
-    // --- MUDANÇA 2: Usar 'useParams' para ler a URL ---
     const { lessonId } = useParams();
     
     const { 
         lives, setLives, 
         lcoins, setLcoins,
         dailyStreak, setDailyStreak,
-        completedLessons, setCompletedLessons 
+      	 lessonProgress, setLessonProgress 
     } = useSettings(); 
     
-    // --- (location.state não é mais usado) ---
+    const lessonData = lessonDatabase[lessonId];
+    const lessonInfo = lessonLookup[lessonId]; 
 
-    // Trava de segurança (agora mais robusta)
-    if (!lessonId || !lessonDatabase[lessonId]) {
+    if (!lessonData || !lessonInfo) {
         useEffect(() => {
-            console.error(`ActivityPlayer: ID da lição ('${lessonId}') não encontrado na URL. Redirecionando...`);
+            console.error(`ActivityPlayer: ID da lição ('${lessonId}') não encontrado. Redirecionando...`);
             navigate('/'); 
         }, [navigate, lessonId]);
-        return null; // Retorna nulo (tela branca) antes de redirecionar
+        return null;
     }
 
-    const lesson = lessonDatabase[lessonId];
-    const LESSON_REWARD = 50; 
+    const LESSON_REWARD = 50;
     
-    // ... (O resto do componente é IDÊNTICO) ...
-    // --- Estados Locais da Lição ---
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [isChecking, setIsChecking] = useState(false);
@@ -80,45 +76,37 @@ export default function ActivityPlayer() {
     const [redoIndex, setRedoIndex] = useState(0); 
     const [showReviewScreen, setShowReviewScreen] = useState(false);
 
-    const totalSteps = lesson.steps.length;
+    const allLessonSteps = lessonData.steps; 
+    const totalLessonSteps = allLessonSteps.length; 
+    const totalInteractiveSteps = lessonInfo.totalSteps; 
     
-    const handleCloseFirstMistakeModal = () => setShowFirstMistakeModal(false);
-    const resetGame = () => {
-        setShowGameOverModal(false);
-        navigate('/'); 
-    };
-    const startRedoMode = () => {
-        setShowReviewScreen(false);
-        setIsRedoMode(true);
-        setRedoIndex(0);
-        setCurrentStepIndex(incorrectSteps[0]); 
-        setSelectedAnswer(null);
-    };
-    const handleSelectAnswer = (index) => {
-        if (isChecking) return; 
-        setSelectedAnswer(index);
-    };
+  	const handleCloseFirstMistakeModal = () => setShowFirstMistakeModal(false);
+  	const resetGame = () => {
+    	setShowGameOverModal(false);
+    	navigate('/'); // Navegação suave para a home
+  	};
+  	const startRedoMode = () => {
+    	setShowReviewScreen(false);
+    	setIsRedoMode(true);
+    	setRedoIndex(0);
+    	setCurrentStepIndex(incorrectSteps[0]); 
+    	setSelectedAnswer(null);
+  	};
+  	const handleSelectAnswer = (index) => {
+    	if (isChecking) return; 
+    	setSelectedAnswer(index);
+  	};
 
-    const completeLessonAndGiveRewards = () => {
-        const isFirstCompletion = !completedLessons[lessonId];
-        
-        setCompletedLessons(prev => ({...prev, [lessonId]: true}));
-
-        if (isFirstCompletion) {
-            console.log("Primeira vez completando! Dando recompensas.");
-            if (dailyStreak === 0) {
-                setDailyStreak(1);
-            }
-            setLcoins(lcoins + LESSON_REWARD);
-        }
-
-        navigate('/finalizado', { 
-            state: { 
-                errorCount: incorrectSteps.length, 
-                totalExercises: totalSteps 
-            } 
-        });
-    };
+    const completeLessonAndGiveRewards = () => {
+        const isFirstTimeFullCompletion = lessonProgress[lessonId]?.completed !== totalInteractiveSteps;
+        if (isFirstTimeFullCompletion) {
+            console.log("Primeira vez completando! Dando recompensas.");
+            if (dailyStreak === 0) {
+            	 setDailyStreak(1);
+            }
+            setLcoins(lcoins + LESSON_REWARD);
+        }
+    };
 
     const proceedToNextStep = () => {
         setNotification({ visible: false, type: '', message: '' }); 
@@ -130,29 +118,33 @@ export default function ActivityPlayer() {
             return;
         }
 
+        const isLessonComplete = lessonProgress[lessonId]?.completed === totalInteractiveSteps;
+
         if (isRedoMode) {
             const nextRedoIndex = redoIndex + 1;
             if (nextRedoIndex < incorrectSteps.length) {
-                setRedoIndex(nextRedoIndex);
-                setCurrentStepIndex(incorrectSteps[nextRedoIndex]);
+            	 setRedoIndex(nextRedoIndex);
+            	 setCurrentStepIndex(incorrectSteps[nextRedoIndex]);
             } else {
-                completeLessonAndGiveRewards();
+            	 console.log("Redo concluído. Navegando para /finalizado");
+            	 navigate('/finalizado', { state: { errorCount: incorrectSteps.length, totalExercises: totalInteractiveSteps } });
             }
-            return; 
-        }
-
-        const isFinalQuestion = currentStepIndex === totalSteps - 1;
-        if (isFinalQuestion) {
+        } else if (isLessonComplete) {
             if (incorrectSteps.length > 0) {
-                setShowReviewScreen(true);
+            	 setShowReviewScreen(true);
             } else {
-                completeLessonAndGiveRewards();
+            	 console.log("Lição perfeita. Navegando para /finalizado");
+          	 	 navigate('/finalizado', { state: { errorCount: 0, totalExercises: totalInteractiveSteps } });
             }
-            return; 
+        } else {
+        	 const nextStepIndex = currentStepIndex + 1;
+      	 	 if (nextStepIndex < totalLessonSteps) {
+      	 	 	 setCurrentStepIndex(nextStepIndex);
+      	 	 } else {
+      	 	 	 console.warn("Chegou ao fim dos passos, mas a lição não está marcada como completa.");
+      	 	 	 navigate('/home'); // Fallback
+      	 	 }
         }
-
-        const nextStepIndex = currentStepIndex + 1;
-        setCurrentStepIndex(nextStepIndex);
     };
 
     const handleSkip = () => {
@@ -166,69 +158,90 @@ export default function ActivityPlayer() {
         }
 
         setIsChecking(true); 
-        const currentStep = lesson.steps[currentStepIndex];
+        const currentStep = allLessonSteps[currentStepIndex];
         const correctAnswer = currentStep.correctAnswer;
-        const message = `A resposta correta era a Opção ${correctAnswer + 1}.`;
+      	 const message = `A resposta correta era a Opção ${correctAnswer + 1}.`;
 
-        if (selectedAnswer === correctAnswer) {
-            setNotification({
-                visible: true,
-                type: 'correct',
-                message: 'Você acertou!'
-            });
+      	 if (selectedAnswer === correctAnswer) {
+      	 	 let isLastStep = false;
+
+            if (!isRedoMode) {
+            	 const currentCompleted = lessonProgress[lessonId]?.completed || 0;
+            	 const newCompleted = currentCompleted + 1;
+            	 
+          	 	 // Atualiza o progresso no contexto
+            	 setLessonProgress(prev => ({
+            	 	 ...prev,
+            	 	 [lessonId]: { completed: newCompleted, total: totalInteractiveSteps }
+            	 }));
+          	 
+          	 	 if (newCompleted === totalInteractiveSteps) {
+        	 		 // Se este acerto completou a lição
+        	 		 isLastStep = true;
+        	 		 completeLessonAndGiveRewards(); // Dá Lcoins e Streak
+        	 		 
+        	 		 if (incorrectSteps.length === 0) {
+        	 		 	 // Lição perfeita! Navega direto para /finalizado
+        	 		 	 console.log("Lição perfeita, navegando para /finalizado");
+        	 		 	 navigate('/finalizado', { state: { errorCount: 0, totalExercises: totalInteractiveSteps } });
+        	 		 	 return; // Sai da função
+        	 		 }
+        	 	 }
+        	 }
+        	 
+        	 // Se não for o último passo, ou se estiver em redo, mostra notificação
+      	 	 if (!isLastStep || isRedoMode) {
+      	 	 	 setNotification({ visible: true, type: 'correct', message: 'Você acertou!' });
+      	 	 }
+
         } else {
+            // Resposta errada
             setLives(lives - 1); 
-            
             if (!isRedoMode && !incorrectSteps.includes(currentStepIndex)) {
-                setIncorrectSteps(prev => [...prev, currentStepIndex].sort((a, b) => a - b));
+            	 setIncorrectSteps(prev => [...prev, currentStepIndex].sort((a, b) => a - b));
             }
-            if (!hasSeenFirstMistakeModal) {
-                setShowFirstMistakeModal(true);
-                setHasSeenFirstMistakeModal(true);
+    	     if (!hasSeenFirstMistakeModal) {
+      	     	 setShowFirstMistakeModal(true);
+          	 	 setHasSeenFirstMistakeModal(true);
             }
-            setNotification({
-                visible: true,
-                type: 'incorrect',
-                message: message,
-            });
+            setNotification({ visible: true, type: 'incorrect', message: message });
         }
     };
     
-    let progress;
+    let progressPercent;
     if (isRedoMode) {
-        const redoProgress = (redoIndex + 1) / incorrectSteps.length;
-        progress = 85 + (redoProgress * 15);
+    	 progressPercent = 85 + ((redoIndex / incorrectSteps.length) * 15);
     } else {
-        progress = totalSteps > 1 ? (currentStepIndex / (totalSteps - 1)) * 100 : 0;
+    	 progressPercent = totalLessonSteps > 1 ? (currentStepIndex / (totalLessonSteps - 1)) * 100 : 0;
     }
     
-    const CurrentStepComponent = lesson.steps[currentStepIndex].component;
+    const CurrentStepComponent = allLessonSteps[currentStepIndex].component;
 
     return (
         <Fragment>
             <CurrentStepComponent 
-                onNext={handleSkip} 
-                onCheckAnswer={handleCheckAnswer}
-                onSelectAnswer={handleSelectAnswer}
-                selectedAnswer={selectedAnswer}
-            	 isChecking={isChecking} 
-            	 progress={progress}
-                lives={lives}
-                lessonTitle={lesson.title}
-                lessonSubtitle={lesson.subtitle}
-                isFinal={currentStepIndex === totalSteps - 1 && !isRedoMode}
+            	 onNext={handleSkip} 
+            	 onCheckAnswer={handleCheckAnswer}
+          	 	 onSelectAnswer={handleSelectAnswer}
+          	 	 selectedAnswer={selectedAnswer}
+          	 	 isChecking={isChecking} 
+        	 	 	 progress={progressPercent} 
+          	 	 lives={lives}
+          	 	 lessonTitle={lessonData.title}
+          	 	 lessonSubtitle={lessonData.subtitle}
+          	 	 isFinal={currentStepIndex === totalLessonSteps - 1 && !isRedoMode}
             />
             
             {showGameOverModal && <GameOverModal onClose={resetGame} />}
-            {showFirstMistakeModal && <FirstIncorrectAnswerModal lives={lives} onClose={handleCloseFirstMistakeModal} />}
-            {showReviewScreen && <ReviewScreen errorCount={incorrectSteps.length} onContinue={startRedoMode} />}
-            {notification.visible && (
-                <BottomNotification
-                    type={notification.type}
-                    message={notification.message}
-                    onContinue={proceedToNextStep}
-                />
-            )}
+	       {showFirstMistakeModal && <FirstIncorrectAnswerModal lives={lives} onClose={handleCloseFirstMistakeModal} />}
+          	 {showReviewScreen && <ReviewScreen errorCount={incorrectSteps.length} onContinue={startRedoMode} />}
+          	 {notification.visible && (
+          	 	 <BottomNotification
+          	 	 	 type={notification.type}
+          	 	 	 message={notification.message}
+          	 	 	 onContinue={proceedToNextStep}
+          	 	 />
+          	 )}
         </Fragment>
     );
 }
