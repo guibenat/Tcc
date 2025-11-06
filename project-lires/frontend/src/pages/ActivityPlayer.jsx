@@ -48,7 +48,7 @@ export default function ActivityPlayer() {
         lives, setLives, 
         lcoins, setLcoins,
         dailyStreak, setDailyStreak,
-      	 lessonProgress, setLessonProgress 
+         lessonProgress, setLessonProgress 
     } = useSettings(); 
     
     const lessonData = lessonDatabase[lessonId];
@@ -80,29 +80,33 @@ export default function ActivityPlayer() {
     const totalLessonSteps = allLessonSteps.length; 
     const totalInteractiveSteps = lessonInfo.totalSteps; 
     
-  	const handleCloseFirstMistakeModal = () => setShowFirstMistakeModal(false);
-  	const resetGame = () => {
-    	setShowGameOverModal(false);
-    	navigate('/'); // Navegação suave para a home
-  	};
-  	const startRedoMode = () => {
-    	setShowReviewScreen(false);
-    	setIsRedoMode(true);
-    	setRedoIndex(0);
-    	setCurrentStepIndex(incorrectSteps[0]); 
-    	setSelectedAnswer(null);
-  	};
-  	const handleSelectAnswer = (index) => {
-    	if (isChecking) return; 
-    	setSelectedAnswer(index);
-  	};
+    const handleCloseFirstMistakeModal = () => setShowFirstMistakeModal(false);
+    const resetGame = () => {
+        setShowGameOverModal(false);
+        navigate('/'); // Navegação suave para a home
+    };
+
+    const startRedoMode = () => {
+        setShowReviewScreen(false);
+        setIsRedoMode(true);
+        setRedoIndex(0);
+        setCurrentStepIndex(incorrectSteps[0]); 
+        setSelectedAnswer(null);
+        setIsChecking(false);
+    };
+
+    const handleSelectAnswer = (index) => {
+        if (isChecking) return; 
+        setSelectedAnswer(index);
+    };
 
     const completeLessonAndGiveRewards = () => {
         const isFirstTimeFullCompletion = lessonProgress[lessonId]?.completed !== totalInteractiveSteps;
+        
         if (isFirstTimeFullCompletion) {
             console.log("Primeira vez completando! Dando recompensas.");
             if (dailyStreak === 0) {
-            	 setDailyStreak(1);
+                 setDailyStreak(1);
             }
             setLcoins(lcoins + LESSON_REWARD);
         }
@@ -118,101 +122,171 @@ export default function ActivityPlayer() {
             return;
         }
 
-        const isLessonComplete = lessonProgress[lessonId]?.completed === totalInteractiveSteps;
-
         if (isRedoMode) {
             const nextRedoIndex = redoIndex + 1;
             if (nextRedoIndex < incorrectSteps.length) {
-            	 setRedoIndex(nextRedoIndex);
-            	 setCurrentStepIndex(incorrectSteps[nextRedoIndex]);
+                setRedoIndex(nextRedoIndex);
+                setCurrentStepIndex(incorrectSteps[nextRedoIndex]);
             } else {
-            	 console.log("Redo concluído. Navegando para /finalizado");
-            	 navigate('/finalizado', { state: { errorCount: incorrectSteps.length, totalExercises: totalInteractiveSteps } });
-            }
-        } else if (isLessonComplete) {
-            if (incorrectSteps.length > 0) {
-            	 setShowReviewScreen(true);
-            } else {
-            	 console.log("Lição perfeita. Navegando para /finalizado");
-          	 	 navigate('/finalizado', { state: { errorCount: 0, totalExercises: totalInteractiveSteps } });
+                console.log("Redo concluído. Navegando para /finalizado");
+                navigate('/finalizado', { state: { errorCount: incorrectSteps.length, totalExercises: totalInteractiveSteps } });
             }
         } else {
-        	 const nextStepIndex = currentStepIndex + 1;
-      	 	 if (nextStepIndex < totalLessonSteps) {
-      	 	 	 setCurrentStepIndex(nextStepIndex);
-      	 	 } else {
-      	 	 	 console.warn("Chegou ao fim dos passos, mas a lição não está marcada como completa.");
-      	 	 	 navigate('/home'); // Fallback
-      	 	 }
+             // Avanço normal de passo
+             const nextStepIndex = currentStepIndex + 1;
+             
+             if (nextStepIndex < totalLessonSteps) {
+                 setCurrentStepIndex(nextStepIndex);
+             } else {
+                 // --- INÍCIO DA CORREÇÃO DO FLUXO ---
+                 // Esta situação (chegar ao fim da lição via "proceedToNextStep")
+                 // deve ser tratada como o fim da lição, levando à revisão,
+                 // para garantir que o usuário passe por /finalizado ANTES de /home.
+                 console.warn("proceedToNextStep: Fim da lição atingido. Direcionando para a tela de revisão.");
+                 
+                 // Assegura que o progresso está salvo e recompensas dadas
+                 // (Lógica de segurança, similar ao 'handleSkip')
+                 setLessonProgress(prev => ({
+                    ...prev,
+                    [lessonId]: { completed: totalInteractiveSteps, total: totalInteractiveSteps }
+                 }));
+                 completeLessonAndGiveRewards();
+
+                 // Mostra a tela de revisão, que então navegará para /finalizado
+                 setShowReviewScreen(true);
+                 // A linha abaixo foi removida pois violava o fluxo:
+                 // navigate('/home'); 
+                 // --- FIM DA CORREÇÃO DO FLUXO ---
+             }
         }
     };
 
+    // Esta função é chamada pelo botão "Pular" ou "Próximo" (onNext)
     const handleSkip = () => {
-        proceedToNextStep();
-    };
+        const isLastStep = currentStepIndex === totalLessonSteps - 1;
+        const currentStep = allLessonSteps[currentStepIndex];
 
+        if (isLastStep && !isRedoMode) {
+            // Se "Pular" for clicado no último passo, trate como "lição concluída"
+            
+            // 1. Salve o progresso
+            // Força o progresso para o total, pois o usuário está terminando a lição
+            setLessonProgress(prev => ({
+                ...prev,
+                [lessonId]: { completed: totalInteractiveSteps, total: totalInteractiveSteps }
+            }));
+            
+            completeLessonAndGiveRewards(); // Dar Lcoins/Streak
+
+            // 2. Adicione este passo aos "incorretos" para revisão, SE for um passo interativo
+            if (currentStep.correctAnswer !== undefined && !incorrectSteps.includes(currentStepIndex)) {
+                // Usamos a forma de função do 'setState' para garantir que a atualização
+                // seja processada antes de mostrarmos a próxima tela.
+                setIncorrectSteps(prev => {
+                    const newErrors = [...prev, currentStepIndex].sort((a, b) => a - b);
+                    setShowReviewScreen(true); // Mostra a revisão AQUI
+                    return newErrors;
+                });
+                console.log("Lição 'pulada' no final. Adicionando erro e mostrando revisão.");
+            } else {
+                // Se não for um passo interativo (ex: só teoria), apenas mostre a tela de revisão
+                console.log("Lição 'pulada' no final (passo não-interativo). Mostrando tela de revisão.");
+                setShowReviewScreen(true);
+            }
+            
+            return; // Impede que o 'proceedToNextStep' seja chamado
+
+        } else {
+            // Se não for o último passo, apenas pule
+            proceedToNextStep();
+        }
+    };
+    
     const handleCheckAnswer = () => {
         if (selectedAnswer === null) {
             Swal.fire('Opa!', 'Você precisa selecionar uma resposta primeiro.', 'info');
             return;
         }
 
-        setIsChecking(true); 
         const currentStep = allLessonSteps[currentStepIndex];
         const correctAnswer = currentStep.correctAnswer;
-      	 const message = `A resposta correta era a Opção ${correctAnswer + 1}.`;
+         const message = `A resposta correta era a Opção ${correctAnswer + 1}.`;
+        const isLastStep = currentStepIndex === totalLessonSteps - 1;
 
-      	 if (selectedAnswer === correctAnswer) {
-      	 	 let isLastStep = false;
-
+         if (selectedAnswer === correctAnswer) {
+            // --- RESPOSTA CORRETA ---
             if (!isRedoMode) {
-            	 const currentCompleted = lessonProgress[lessonId]?.completed || 0;
-            	 const newCompleted = currentCompleted + 1;
-            	 
-          	 	 // Atualiza o progresso no contexto
-            	 setLessonProgress(prev => ({
-            	 	 ...prev,
-            	 	 [lessonId]: { completed: newCompleted, total: totalInteractiveSteps }
-            	 }));
-          	 
-          	 	 if (newCompleted === totalInteractiveSteps) {
-        	 		 // Se este acerto completou a lição
-        	 		 isLastStep = true;
-        	 		 completeLessonAndGiveRewards(); // Dá Lcoins e Streak
-        	 		 
-        	 		 if (incorrectSteps.length === 0) {
-        	 		 	 // Lição perfeita! Navega direto para /finalizado
-        	 		 	 console.log("Lição perfeita, navegando para /finalizado");
-        	 		 	 navigate('/finalizado', { state: { errorCount: 0, totalExercises: totalInteractiveSteps } });
-        	 		 	 return; // Sai da função
-        	 		 }
-        	 	 }
-        	 }
-        	 
-        	 // Se não for o último passo, ou se estiver em redo, mostra notificação
-      	 	 if (!isLastStep || isRedoMode) {
-      	 	 	 setNotification({ visible: true, type: 'correct', message: 'Você acertou!' });
-      	 	 }
+                const currentCompleted = lessonProgress[lessonId]?.completed || 0;
+                const newCompleted = currentCompleted + 1;
+                
+                setLessonProgress(prev => ({
+                    ...prev,
+                    [lessonId]: { completed: newCompleted, total: totalInteractiveSteps }
+                }));
+            
+                if (newCompleted === totalInteractiveSteps) {
+                    // Lição concluída (acertou a última)
+                    completeLessonAndGiveRewards();
+                    
+                    if (incorrectSteps.length === 0) {
+                        // Lição perfeita
+                        console.log("Lição perfeita, navegando para /finalizado");
+                        navigate('/finalizado', { state: { errorCount: 0, totalExercises: totalInteractiveSteps } });
+                        return;
+                    } else {
+                        // Lição concluída, mas com erros anteriores
+                        console.log("Lição concluída (com erros). Mostrando tela de revisão.");
+                        setShowReviewScreen(true);
+                        return;
+                    }
+                }
+            }
+            
+            // Se NÃO for o último passo, mostre a notificação e trave a tela
+            setNotification({ visible: true, type: 'correct', message: 'Você acertou!' });
+            setIsChecking(true);
 
         } else {
-            // Resposta errada
+            // --- RESPOSTA ERRADA ---
             setLives(lives - 1); 
+            
             if (!isRedoMode && !incorrectSteps.includes(currentStepIndex)) {
-            	 setIncorrectSteps(prev => [...prev, currentStepIndex].sort((a, b) => a - b));
+                setIncorrectSteps(prev => [...prev, currentStepIndex].sort((a, b) => a - b));
             }
-    	     if (!hasSeenFirstMistakeModal) {
-      	     	 setShowFirstMistakeModal(true);
-          	 	 setHasSeenFirstMistakeModal(true);
+            
+             if (!hasSeenFirstMistakeModal) {
+                 setShowFirstMistakeModal(true);
+                 setHasSeenFirstMistakeModal(true);
             }
+
+            if (isLastStep && !isRedoMode) {
+                // Lição concluída (errou a última)
+                const currentCompleted = lessonProgress[lessonId]?.completed || 0;
+                const newCompleted = currentCompleted + 1; // Este é o último passo
+                
+                setLessonProgress(prev => ({
+                    ...prev,
+                    [lessonId]: { completed: newCompleted, total: totalInteractiveSteps }
+                }));
+                
+                completeLessonAndGiveRewards(); // Dar Lcoins/Streak
+                
+                console.log("Lição concluída (última errada). Mostrando tela de revisão.");
+                setShowReviewScreen(true);
+                return; 
+            }
+
+            // Se NÃO for o último passo, mostre a notificação de 'incorreto' e trave a tela
             setNotification({ visible: true, type: 'incorrect', message: message });
+            setIsChecking(true);
         }
     };
     
     let progressPercent;
     if (isRedoMode) {
-    	 progressPercent = 85 + ((redoIndex / incorrectSteps.length) * 15);
+         progressPercent = 85 + ((redoIndex / incorrectSteps.length) * 15);
     } else {
-    	 progressPercent = totalLessonSteps > 1 ? (currentStepIndex / (totalLessonSteps - 1)) * 100 : 0;
+         progressPercent = totalLessonSteps > 1 ? (currentStepIndex / (totalLessonSteps - 1)) * 100 : 0;
     }
     
     const CurrentStepComponent = allLessonSteps[currentStepIndex].component;
@@ -220,28 +294,28 @@ export default function ActivityPlayer() {
     return (
         <Fragment>
             <CurrentStepComponent 
-            	 onNext={handleSkip} 
-            	 onCheckAnswer={handleCheckAnswer}
-          	 	 onSelectAnswer={handleSelectAnswer}
-          	 	 selectedAnswer={selectedAnswer}
-          	 	 isChecking={isChecking} 
-        	 	 	 progress={progressPercent} 
-          	 	 lives={lives}
-          	 	 lessonTitle={lessonData.title}
-          	 	 lessonSubtitle={lessonData.subtitle}
-          	 	 isFinal={currentStepIndex === totalLessonSteps - 1 && !isRedoMode}
+                onNext={handleSkip} // <-- Assegure que onNext chame handleSkip
+                onCheckAnswer={handleCheckAnswer}
+                onSelectAnswer={handleSelectAnswer}
+                selectedAnswer={selectedAnswer}
+                isChecking={isChecking} 
+                    progress={progressPercent} 
+                lives={lives}
+                lessonTitle={lessonData.title}
+                lessonSubtitle={lessonData.subtitle}
+                isFinal={currentStepIndex === totalLessonSteps - 1 && !isRedoMode}
             />
             
             {showGameOverModal && <GameOverModal onClose={resetGame} />}
-	       {showFirstMistakeModal && <FirstIncorrectAnswerModal lives={lives} onClose={handleCloseFirstMistakeModal} />}
-          	 {showReviewScreen && <ReviewScreen errorCount={incorrectSteps.length} onContinue={startRedoMode} />}
-          	 {notification.visible && (
-          	 	 <BottomNotification
-          	 	 	 type={notification.type}
-          	 	 	 message={notification.message}
-          	 	 	 onContinue={proceedToNextStep}
-          	 	 />
-          	 )}
+             {showFirstMistakeModal && <FirstIncorrectAnswerModal lives={lives} onClose={handleCloseFirstMistakeModal} />}
+             {showReviewScreen && <ReviewScreen errorCount={incorrectSteps.length} onContinue={startRedoMode} />}
+             {notification.visible && (
+                 <BottomNotification
+                     type={notification.type}
+                     message={notification.message}
+                     onContinue={proceedToNextStep}
+                 />
+             )}
         </Fragment>
     );
 }

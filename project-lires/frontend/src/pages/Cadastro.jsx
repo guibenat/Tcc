@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // useNavigate ainda é usado para outros links
+import { Link, useNavigate } from 'react-router-dom'; 
 import logoLiresClaraImg from '../assets/logo-lires.png';
 import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; 
 import { useSettings } from '../components/SettingsContext';
@@ -75,9 +75,9 @@ const AgeStep = ({ age, setAge, onNext, theme }) => (
                 onClick={() => setAge(prev => Math.min(100, prev + 1))}
                 disabled={age >= 100}
                 className={`w-12 h-12 text-3xl font-bold rounded-full transition-colors ${
-                        theme === 'escuro'
-                        ? 'text-white bg-pink-600 hover:bg-pink-700 disabled:bg-gray-600'
-                        : 'text-white bg-pink-300 hover:bg-pink-400 disabled:bg-gray-200'
+                            theme === 'escuro'
+                            ? 'text-white bg-pink-600 hover:bg-pink-700 disabled:bg-gray-600'
+                            : 'text-white bg-pink-300 hover:bg-pink-400 disabled:bg-gray-200'
                 }`}
             >
                 +
@@ -176,13 +176,13 @@ const ProfileStep = ({ name, setName, email, setEmail, password, setPassword, on
 
 export default function Cadastro() { 
     const { theme } = useSettings(); 
-    const navigate = useNavigate(); // Mantemos o navigate para os <Link>
+    const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [exitAnimationClass, setExitAnimationClass] = useState('');
     const [enterAnimationClass, setEnterAnimationClass] = useState('anim-enter');
 
     const [age, setAge] = useState(18);
-    const [name, setName] = useState('');
+    const [name, setName] = useState(''); // Este 'name' vem do input "Nome (opcional)"
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -245,9 +245,47 @@ export default function Cadastro() {
             return;
         }
 
+        // --- INÍCIO DA NOVA LÓGICA DE GERAÇÃO DE USERNAME ---
+        
+        // Helper para formatar o número (ex: 1 -> "0001")
+        const formatNumber = (num) => num.toString().padStart(4, '0');
+
+        // Helper para verificar se o username já existe
+        const isUsernameTaken = (username, users) => {
+            return users.some(user => user.username === username);
+        };
+
+        // 1. Define o nome base. Usa o 'name' (do input) se preenchido, senão, 'aluno'.
+        let baseUsername = name.trim() ? name.trim() : 'aluno';
+
+        // 2. Sanitiza o nome base: remove espaços, caracteres especiais e converte para minúsculas
+        baseUsername = baseUsername
+            .replace(/\s+/g, '') // Remove todos os espaços (ex: "Ana Silva" -> "anasilva")
+            .replace(/[^a-zA-Z0-9]/g, '') // Remove tudo que não for letra ou número
+            .toLowerCase();
+
+        // 3. Fallback final caso o nome seja inválido (ex: "!!@#")
+        if (!baseUsername) {
+            baseUsername = 'aluno';
+        }
+
+        // 4. Encontra o próximo sufixo numérico disponível
+        let suffix = 1;
+        let finalUsername = `${baseUsername}${formatNumber(suffix)}`; // Tenta (ex: "ana0001")
+
+        // 5. Continua verificando (ana0001, ana0002, ana0003...)
+        while (isUsernameTaken(finalUsername, existingUsers)) {
+            suffix++;
+            finalUsername = `${baseUsername}${formatNumber(suffix)}`;
+        }
+        // 'finalUsername' agora é único (ex: "ana0002")
+        // --- FIM DA NOVA LÓGICA DE GERAÇÃO DE USERNAME ---
+
         const newUser = {
             id: Date.now(), 
-            name: name || `Usuário${Date.now()}`,
+            // O 'name' (Nome de Exibição) será o nome digitado ou, se vazio, o username gerado
+            name: name.trim() || finalUsername,
+            username: finalUsername, // <-- O username único (ex: "ana0001")
             email: email,
             password: password, 
             age: age,
@@ -255,7 +293,7 @@ export default function Cadastro() {
             lives: 5,
             lcoins: 0, 
             dailyStreak: 0, 
-            completedLessons: {}, 
+            lessonProgress: {},
             preferences: {
                 theme: 'claro', 
                 fontSize: 'medio',
@@ -274,11 +312,7 @@ export default function Cadastro() {
 
         setExitAnimationClass('anim-exit');
         setTimeout(() => {
-            // --- CORREÇÃO APLICADA ---
-            // Força um recarregamento da página para o /inicial
-            // Isso garante que o SettingsContext reinicie e leia o novo currentUser.
             window.location.href = '/inicial'; 
-            // --- FIM DA CORREÇÃO ---
         }, 800); 
     };
 
