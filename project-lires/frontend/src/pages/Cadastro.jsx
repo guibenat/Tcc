@@ -182,7 +182,7 @@ export default function Cadastro() {
     const [enterAnimationClass, setEnterAnimationClass] = useState('anim-enter');
 
     const [age, setAge] = useState(18);
-    const [name, setName] = useState(''); // Este 'name' vem do input "Nome (opcional)"
+    const [name, setName] = useState(''); 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -245,47 +245,29 @@ export default function Cadastro() {
             return;
         }
 
-        // --- INÍCIO DA NOVA LÓGICA DE GERAÇÃO DE USERNAME ---
-        
-        // Helper para formatar o número (ex: 1 -> "0001")
         const formatNumber = (num) => num.toString().padStart(4, '0');
-
-        // Helper para verificar se o username já existe
         const isUsernameTaken = (username, users) => {
             return users.some(user => user.username === username);
         };
-
-        // 1. Define o nome base. Usa o 'name' (do input) se preenchido, senão, 'aluno'.
         let baseUsername = name.trim() ? name.trim() : 'aluno';
-
-        // 2. Sanitiza o nome base: remove espaços, caracteres especiais e converte para minúsculas
         baseUsername = baseUsername
-            .replace(/\s+/g, '') // Remove todos os espaços (ex: "Ana Silva" -> "anasilva")
-            .replace(/[^a-zA-Z0-9]/g, '') // Remove tudo que não for letra ou número
+            .replace(/\s+/g, '') 
+            .replace(/[^a-zA-Z0-9]/g, '') 
             .toLowerCase();
-
-        // 3. Fallback final caso o nome seja inválido (ex: "!!@#")
         if (!baseUsername) {
             baseUsername = 'aluno';
         }
-
-        // 4. Encontra o próximo sufixo numérico disponível
         let suffix = 1;
-        let finalUsername = `${baseUsername}${formatNumber(suffix)}`; // Tenta (ex: "ana0001")
-
-        // 5. Continua verificando (ana0001, ana0002, ana0003...)
+        let finalUsername = `${baseUsername}${formatNumber(suffix)}`; 
         while (isUsernameTaken(finalUsername, existingUsers)) {
             suffix++;
             finalUsername = `${baseUsername}${formatNumber(suffix)}`;
         }
-        // 'finalUsername' agora é único (ex: "ana0002")
-        // --- FIM DA NOVA LÓGICA DE GERAÇÃO DE USERNAME ---
 
         const newUser = {
             id: Date.now(), 
-            // O 'name' (Nome de Exibição) será o nome digitado ou, se vazio, o username gerado
             name: name.trim() || finalUsername,
-            username: finalUsername, // <-- O username único (ex: "ana0001")
+            username: finalUsername, 
             email: email,
             password: password, 
             age: age,
@@ -293,7 +275,13 @@ export default function Cadastro() {
             lives: 5,
             lcoins: 0, 
             dailyStreak: 0, 
+            lastCompletedTimestamp: null, 
             lessonProgress: {},
+            followers: [], 
+            following: [], 
+            // --- INÍCIO DA MODIFICAÇÃO ---
+            timeSpentToday: 0, // Novo campo para a meta diária
+            // --- FIM DA MODIFICAÇÃO ---
             preferences: {
                 theme: 'claro', 
                 fontSize: 'medio',
