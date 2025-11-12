@@ -1,9 +1,9 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, useRef } from 'react';
 import { useSettings } from '../components/SettingsContext';
 
-// Importa a imagem do robô (com o nome correto dos seus assets)
+// Importa a imagem do robô
 import robotMasterImage from '../assets/robo-premium2.png'; 
-import liresMasterLogoImg from '../assets/lires-master-logo.png'; // Logo do card
+import liresMasterLogoImg from '../assets/lires-master-logo.png'; 
 
 // --- Animações (Sem alteração) ---
 const floatAnimation = `
@@ -36,6 +36,34 @@ const shineAnimation = `
     animation: shine 4s infinite 2s;
   }
 `;
+const spaceAnimations = `
+  @keyframes fadeInBackdrop {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes zoomInModal {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes moveStars {
+    from { background-position: 0 0; }
+    to { background-position: -10000px 5000px; }
+  }
+  @keyframes shootingStar {
+    0% { transform: translateX(300px) translateY(-300px) rotate(315deg); opacity: 1; height: 1px; width: 80px; }
+    70% { opacity: 1; }
+    100% { transform: translateX(-300px) translateY(300px) rotate(315deg); opacity: 0; height: 1px; width: 80px; }
+  }
+  @keyframes shootingStar2 {
+    0% { transform: translateX(0px) translateY(0px) rotate(315deg); opacity: 1; height: 1px; width: 120px; }
+    70% { opacity: 1; }
+    100% { transform: translateX(-500px) translateY(500px) rotate(315deg); opacity: 0; height: 1px; width: 120px; }
+  }
+`;
 
 // --- Ícones SVG (Sem alteração) ---
 const CheckIcon = () => (
@@ -63,7 +91,7 @@ const PlusIcon = () => (
   </svg>
 );
 
-// --- INÍCIO DA MODIFICAÇÃO (Função de Copiar) ---
+// --- Função de Copiar (Sem alteração) ---
 const copyToClipboard = (text, onSuccess) => {
     const textArea = document.createElement('textarea');
     textArea.value = text;
@@ -82,16 +110,91 @@ const copyToClipboard = (text, onSuccess) => {
     }
     document.body.removeChild(textArea);
 };
-// --- FIM DA MODIFICAÇÃO ---
 
-// --- INÍCIO DA MODIFICAÇÃO (Modal de Pagamento PIX) ---
+// --- Componente de Fundo Animado (Sem alteração) ---
+const AnimatedSpaceBackground = () => (
+    <div 
+        className="absolute inset-0 overflow-hidden"
+        style={{
+            background: 'radial-gradient(circle at 10% 20%, rgb(39, 53, 131) 0%, rgb(18, 24, 73) 90%)'
+        }}
+    >
+        {/* ... (Estrelas e planetas) ... */}
+        <div 
+            className="absolute inset-0"
+            style={{
+                backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'25\' cy=\'25\' r=\'0.5\' fill=\'%23FFFFFF\'/%3E%3Ccircle cx=\'75\' cy=\'75\' r=\'0.5\' fill=\'%23FFFFFF\'/%3E%3Ccircle cx=\'50\' cy=\'10\' r=\'0.5\' fill=\'%23FFFFFF\'/%3E%3Ccircle cx=\'10\' cy=\'80\' r=\'0.5\' fill=\'%23FFFFFF\'/%3E%3Ccircle cx=\'85\' cy=\'50\' r=\'0.5\' fill=\'%23FFFFFF\'/%3E%3Ccircle cx=\'40\' cy=\'60\' r=\'0.5\' fill=\'%23FFFFFF\'/%3E%3C/svg%3E")',
+                backgroundSize: '400px 400px',
+                animation: 'moveStars 150s linear infinite',
+                opacity: 0.5
+            }}
+        />
+        <div 
+            className="absolute top-1/2 left-1/2 w-1 h-80 opacity-0"
+            style={{
+                background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0))',
+                filter: 'blur(1px)',
+                animation: 'shootingStar 10s ease-in-out 3s infinite',
+            }}
+        />
+        <div 
+            className="absolute top-1/4 left-1/4 w-1 h-80 opacity-0"
+            style={{
+                background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0))',
+                filter: 'blur(1px)',
+                animation: 'shootingStar2 12s ease-in-out 7s infinite', 
+            }}
+        />
+        <div 
+            className="absolute -top-[10%] -left-[10%] w-[500px] h-[500px] rounded-full" 
+            style={{ 
+                background: 'radial-gradient(circle at 30% 30%, #a5b4fc, #312e81)',
+                animation: 'spin 120s linear infinite reverse' 
+            }}
+        />
+        <div 
+            className="absolute -bottom-[5%] -right-[5%] w-[400px] h-[400px]"
+            style={{ animation: 'spin 80s linear infinite' }}
+        >
+            <div 
+                className="w-full h-full rounded-full"
+                style={{ 
+                    background: 'radial-gradient(circle at 70% 70%, #f0abfc, #a855f7)',
+                }}
+            />
+            <div 
+                className="absolute inset-0 border-8 border-purple-300/30 rounded-full"
+                style={{
+                    transform: 'rotateX(70deg) scaleY(0.4)',
+                    borderLeftColor: 'transparent',
+                    borderRightColor: 'transparent',
+                }}
+            />
+        </div>
+        <div
+            className="absolute top-[15%] right-[10%] w-[150px] h-[150px] rounded-full"
+            style={{
+                background: 'radial-gradient(circle at 40% 40%, #fb7185, #be185d)',
+                animation: 'spin 90s linear infinite'
+            }}
+        />
+    </div>
+);
+
+
+// --- Modal de Assinatura (Atualizado com QR Code e Timer) ---
 const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
-    // --- ALTERADO: 'splash' é o padrão ---
-    const [modalScreen, setModalScreen] = useState('splash'); // 'splash', 'plans', 'pix', 'success'
+    const [modalScreen, setModalScreen] = useState('splash'); 
     const [selectedPlan, setSelectedPlan] = useState(null);
     const [copySuccess, setCopySuccess] = useState(false);
     
-    // Lista de benefícios (usada em 2 telas)
+    // --- INÍCIO DA MODIFICAÇÃO (QR Code e Timer) ---
+    const [qrCodeUrl, setQrCodeUrl] = useState('');
+    const [pixCopiaECola, setPixCopiaECola] = useState('');
+    const [countdown, setCountdown] = useState(300); // 5 minutos = 300 segundos
+    const timerRef = useRef(null);
+    // --- FIM DA MODIFICAÇÃO ---
+    
     const beneficiosMaster = [
         "Sem anúncios",
         "Avatares e recompensas exclusivas",
@@ -103,17 +206,50 @@ const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
 
     const handleClose = () => {
         onClose();
-        setTimeout(() => setModalScreen('splash'), 300); // Reseta para a tela 'splash'
+        clearInterval(timerRef.current); // Limpa o timer ao fechar
+        setTimeout(() => setModalScreen('splash'), 300); 
     };
 
+    // --- INÍCIO DA MODIFICAÇÃO (Função para Gerar PIX e QR Code) ---
+    // Esta é a sua chave PIX aleatória
+    const pixKey = "9f72d0ff-7040-451c-9f74-332aad73e277";
+
+    const generatePix = (plan) => {
+        // 1. Gera o código "Copia e Cola" (Simulado, mas com sua chave)
+        const pixString = `00020126580014br.gov.bcb.pix0136${pixKey}5204000053039865405${plan.price.toFixed(2)}5802BR5910Caua Ramos6009SAO PAULO62070503***6304E5B9`;
+        setPixCopiaECola(pixString);
+
+        // 2. Gera a URL do QR Code (usando a API)
+        const qrData = encodeURIComponent(pixString);
+        setQrCodeUrl(`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qrData}`);
+
+        // 3. (Re)inicia o timer
+        setCountdown(300);
+    };
+
+    // Atualiza o timer a cada segundo
+    useEffect(() => {
+        if (countdown > 0 && modalScreen === 'pix') {
+            timerRef.current = setInterval(() => {
+                setCountdown(c => c - 1);
+            }, 1000);
+        } else if (countdown === 0) {
+            clearInterval(timerRef.current);
+            setQrCodeUrl(''); // Limpa o QR Code
+        }
+        return () => clearInterval(timerRef.current);
+    }, [countdown, modalScreen]);
+
+    // Reseta o PIX quando a tela 'pix' é mostrada
     const handlePlanSelect = (plan) => {
         setSelectedPlan(plan);
+        generatePix(plan); // Gera o PIX e QR Code
         setModalScreen('pix');
     };
+    // --- FIM DA MODIFICAÇÃO ---
 
     const handleCopy = () => {
-        const pixCopiaECola = `00020126580014br.gov.bcb.pix0136caua.arthur2006@gmail.com5204000053039865405${selectedPlan.price.toFixed(2)}5802BR5910Caua Ramos6009SAO PAULO62070503***6304E5B9`;
-        copyToClipboard(pixCopiaECola, () => {
+        copyToClipboard(pixCopiaECola, () => { // Usa a string do estado
             setCopySuccess(true);
             setTimeout(() => setCopySuccess(false), 2000); 
         });
@@ -121,29 +257,24 @@ const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
 
     const handleConfirmPayment = () => {
         console.log("Simulando verificação de pagamento...");
+        clearInterval(timerRef.current); // Para o timer
         onPaymentSuccess();
         setModalScreen('success');
     };
 
     if (!isOpen) return null;
 
+    // Formata o tempo para "MM:SS"
+    const minutes = Math.floor(countdown / 60);
+    const seconds = ('0' + (countdown % 60)).slice(-2);
+
     return (
         <div 
-            className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 font-poppins"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 font-poppins"
+            style={{ animation: 'fadeInBackdrop 0.5s ease-out forwards' }}
             onClick={handleClose}
         >
-            {/* Fundo de Espaço */}
-            <div 
-                className="absolute inset-0 bg-blue-900 overflow-hidden"
-                style={{
-                    background: 'radial-gradient(circle at 10% 20%, rgb(39, 53, 131) 0%, rgb(18, 24, 73) 90%)'
-                }}
-            >
-                {/* Planetas (como no protótipo) */}
-                <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-blue-800 rounded-full opacity-50"></div>
-                <div className="absolute -bottom-1/4 -right-1/4 w-2/3 h-2/3 bg-blue-800 rounded-full opacity-40"></div>
-                <div className="absolute top-1/4 right-1/4 w-24 h-24 bg-pink-500 rounded-full opacity-30"></div>
-            </div>
+            <AnimatedSpaceBackground />
 
             <button 
                 onClick={handleClose}
@@ -152,16 +283,15 @@ const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
                 &times;
             </button>
 
-            {/* Conteúdo do Modal */}
             <div 
                 className="relative z-10 w-full max-w-4xl text-white"
+                style={{ animation: 'zoomInModal 0.4s 0.1s ease-out forwards', opacity: 0 }} 
                 onClick={e => e.stopPropagation()} 
             >
                 
-                {/* --- TELA 1: SPLASH (image_8d5a20.jpg) --- */}
+                {/* --- TELA 1: SPLASH (Sem alteração) --- */}
                 {modalScreen === 'splash' && (
                     <div className="flex flex-col md:flex-row items-center justify-center gap-12 px-6">
-                        {/* Robô */}
                         <div className="md:w-1/2">
                             <img 
                                 src={robotMasterImage} 
@@ -170,15 +300,12 @@ const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
                                 style={{ animation: 'float 3s ease-in-out infinite' }}
                             />
                         </div>
-                        {/* Benefícios */}
-                        <div className="md:w-1/2 flex flex-col items-center md:items-start">
+                        <div className="md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
                             <img src={liresMasterLogoImg} alt="Líres Master" className="w-48 mb-2" />
                             <h2 className="text-3xl font-bold mb-6">Aprenda Libras <span className="text-yellow-300">SEM LIMITES!</span></h2>
-                            
                             <div className={`rounded-2xl p-6 mb-6 w-full max-w-sm ${theme === 'escuro' ? 'bg-blue-900/50' : 'bg-blue-800/80 backdrop-blur-sm'}`}>
                                 <h3 className="font-bold text-xl mb-4 text-center">Benefícios</h3>
                                 <ul className="space-y-2">
-                                    {/* Mapeia os 5 benefícios + "e muito mais" */}
                                     {beneficiosMaster.map(b => (
                                         <li key={b} className="flex items-center gap-3">
                                             {b.startsWith('+') ? <PlusIcon /> : <CheckIcon />}
@@ -187,7 +314,6 @@ const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
                                     ))}
                                 </ul>
                             </div>
-                            
                             <button 
                                 onClick={() => setModalScreen('plans')}
                                 className="font-bold py-3 px-10 rounded-full text-lg shadow-lg transition-transform transform hover:scale-105 bg-white text-purple-700"
@@ -198,7 +324,7 @@ const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
                     </div>
                 )}
                 
-                {/* --- TELA 2: PLANOS (image_8d59a9.jpg) --- */}
+                {/* --- TELA 2: PLANOS (Sem alteração) --- */}
                 {modalScreen === 'plans' && (
                     <div className="flex flex-col items-center">
                         <img src={liresMasterLogoImg} alt="Líres Master" className="w-48 mb-4" />
@@ -232,26 +358,60 @@ const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
                     </div>
                 )}
                 
-                {/* --- TELA 3: PAGAMENTO PIX --- */}
+                {/* --- TELA 3: PAGAMENTO PIX (Atualizado) --- */}
                 {modalScreen === 'pix' && (
                     <div className="w-full max-w-md mx-auto p-6 rounded-2xl bg-white text-gray-900">
                         <h2 className="text-2xl font-bold text-center text-purple-600 mb-4">
                             Pagamento PIX ({selectedPlan.name})
                         </h2>
                         <div className="flex flex-col items-center">
-                            <img 
-                                src={`https://placehold.co/250x250/ffffff/333333?text=QR+Code+PIX\n(Simula%C3%A7%C3%A3o)&font=roboto`}
-                                alt="QR Code PIX Simulado"
-                                className="w-48 h-48 rounded-lg"
-                            />
-                            <p className="mt-4 font-semibold text-gray-600">
-                                Chave E-mail: <span className='font-bold text-purple-700'>caua.arthur2006@gmail.com</span>
+                            
+                            {/* --- INÍCIO DA MODIFICAÇÃO (QR Code Dinâmico e Timer) --- */}
+                            <div className="w-48 h-48 rounded-lg bg-gray-100 flex items-center justify-center">
+                                {countdown > 0 && qrCodeUrl ? (
+                                    <img 
+                                        src={qrCodeUrl} 
+                                        alt="QR Code PIX"
+                                        className="w-48 h-48 rounded-lg"
+                                    />
+                                ) : (
+                                    <div className="text-center p-4">
+                                        <p className="font-bold text-red-500">QR Code Expirado!</p>
+                                        <p className="text-sm text-gray-600">Clique abaixo para gerar um novo.</p>
+                                    </div>
+                                )}
+                            </div>
+                            
+                            {countdown > 0 ? (
+                                <p className="mt-2 font-semibold text-lg text-blue-600">
+                                    Expira em: {minutes}:{seconds}
+                                </p>
+                            ) : (
+                                <p className="mt-2 font-semibold text-lg text-red-500">
+                                    Expirado
+                                </p>
+                            )}
+                            
+                            {countdown === 0 && (
+                                <button
+                                    onClick={() => generatePix(selectedPlan)} // <-- Botão para gerar de novo
+                                    className="w-full mt-4 bg-blue-500 text-white font-semibold py-3 px-6 rounded-full hover:bg-blue-600 transition-colors"
+                                >
+                                    Gerar Novo Código
+                                </button>
+                            )}
+                            {/* --- FIM DA MODIFICAÇÃO --- */}
+
+                            <p className="mt-4 font-semibold text-gray-600 text-center">
+                                {/** --- CORRIGIDO para mostrar sua chave aleatória --- **/}
+                                Chave PIX: <br/>
+                                <span className='font-bold text-purple-700 text-xs break-all'>{pixKey}</span>
                             </p>
 
                             <div className="w-full mt-4">
                                 <textarea
                                     readOnly
-                                    value={`00020126580014br.gov.bcb.pix0136caua.arthur2006@gmail.com5204000053039865405${selectedPlan.price.toFixed(2)}5802BR5910Caua Ramos6009SAO PAULO62070503***6304E5B9`}
+                                    value={pixCopiaECola} // Usa o valor do estado
                                     className="w-full p-2 rounded-lg border text-sm resize-none bg-gray-100 border-gray-300 text-gray-700"
                                     rows={3}
                                 />
@@ -265,18 +425,21 @@ const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
                                 >
                                     {copySuccess ? 'Copiado! ✓' : 'Copiar Chave'}
                                 </button>
-                                <button
-                                    onClick={handleConfirmPayment}
-                                    className="w-full mt-4 bg-green-500 text-white font-semibold py-3 px-6 rounded-full hover:bg-green-600 transition-colors"
-                                >
-                                    Já paguei
-                                </button>
+                                
+                                {countdown > 0 && (
+                                    <button
+                                        onClick={handleConfirmPayment}
+                                        className="w-full mt-4 bg-green-500 text-white font-semibold py-3 px-6 rounded-full hover:bg-green-600 transition-colors"
+                                    >
+                                        Já paguei
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
                 )}
                 
-                {/* --- TELA 4: SUCESSO --- */}
+                {/* --- TELA 4: SUCESSO (Sem alteração) --- */}
                 {modalScreen === 'success' && (
                     <div className="w-full max-w-md mx-auto p-6 rounded-2xl bg-white text-gray-900 text-center">
                         <svg className="w-16 h-16 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -297,16 +460,15 @@ const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
         </div>
     );
 };
-// --- FIM DA MODIFICAÇÃO ---
 
 
-// Componente de Card de Plano
+// Componente de Card de Plano (Sem alteração)
 const PlanCard = ({ title, price, priceSubtitle, benefits, onSelect, theme, isFeatured = false }) => (
     <div className={`
         rounded-2xl p-6 flex flex-col border-2
         ${isFeatured 
             ? 'bg-yellow-400 text-gray-900 border-yellow-500 scale-105' 
-            : (theme === 'escuro' ? 'bg-blue-900/50 border-blue-700' : 'bg-blue-800/80 border-blue-500 backdrop-blur-sm')}
+            : (theme === 'escuro' ? 'bg-blue-900/50 border-blue-700' : 'bg-blue-800/80 backdrop-blur-sm')}
     `}>
         <h3 className="text-xl font-bold mb-1">{title}</h3>
         <p className={`text-5xl font-extrabold mb-1 ${isFeatured ? 'text-gray-800' : 'text-white'}`}>R$ {price}</p>
@@ -315,9 +477,7 @@ const PlanCard = ({ title, price, priceSubtitle, benefits, onSelect, theme, isFe
         <ul className="space-y-2 mb-6 min-h-[100px]">
             {benefits.map(b => (
                 <li key={b} className="flex items-center gap-2">
-                    {/* --- INÍCIO DA MODIFICAÇÃO (Ícone de Check Verde) --- */}
                     <svg className="w-5 h-5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-                    {/* --- FIM DA MODIFICAÇÃO --- */}
                     <span className="text-sm">{b}</span>
                 </li>
             ))}
@@ -431,8 +591,10 @@ export default function Assinatura() {
   
   return (
     <Fragment>
+      {/* O <script> para carregar a biblioteca QRCode foi REMOVIDO */}
+
       <div className={`content-box w-full ${animationClass}`}>
-        <style>{floatAnimation}{shineAnimation}</style>
+        <style>{floatAnimation}{shineAnimation}{spaceAnimations}</style>
         
         <div className="flex justify-between items-center mb-8">
             <h1 className={mainTitleClasses}>
