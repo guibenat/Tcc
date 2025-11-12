@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Perfil from '../assets/Perfil.png'; // Importado como fallback
+import Bandeira from '../assets/Brasil.jpg'; // <-- Importando a bandeira
 import { useSettings } from '../components/SettingsContext'; 
 import { useNavigate } from 'react-router-dom'; 
+import LcoinIcon from '../assets/lcoin.png'; 
 
 // --- Função de Avatar e Lista de "Sementes" (Sem alteração) ---
 const AVATAR_STYLE = 'bottts-neutral'; 
@@ -84,30 +86,123 @@ const AvatarPickerModal = ({ isOpen, onClose, onSelect, currentSeed, theme }) =>
 };
 // --- FIM ---
 
+// --- INÍCIO DA MODIFICAÇÃO (Novo Componente: Modal de Verificação) ---
+const VerificationModal = ({ isOpen, onClose, onConfirm, target, theme, code, setCode, error, value }) => {
+    if (!isOpen) return null;
+
+    const targetDisplay = target === 'email' ? "seu e-mail" : "seu número de telefone";
+    const displayValue = target === 'email' ? value : `...${value.slice(-4)}`; // Ofusca o número
+    
+    return (
+         <div 
+            className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+            onClick={onClose}
+        >
+            <div 
+                className={`w-full max-w-md rounded-2xl shadow-xl flex flex-col ${
+                    theme === 'escuro' ? 'bg-gray-800 text-slate-100' : 'bg-white text-gray-900'
+                }`}
+                onClick={e => e.stopPropagation()}
+            >
+                {/* Cabeçalho */}
+                <div className="flex justify-between items-center p-4 border-b">
+                    <h3 className="text-xl font-bold text-purple-500">Verificar {target === 'email' ? 'E-mail' : 'Número'}</h3>
+                    <button 
+                        onClick={onClose}
+                        className={`text-2xl font-bold transition-colors ${
+                            theme === 'escuro' ? 'text-gray-500 hover:text-gray-200' : 'text-gray-400 hover:text-gray-800'
+                        }`}
+                    >
+                        &times;
+                    </button>
+                </div>
+                
+                {/* Conteúdo */}
+                <div className="p-6 flex flex-col items-center">
+                    <p className={`text-center ${theme === 'escuro' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Enviamos um código de 6 dígitos para <span className='font-bold'>{displayValue}</span>.
+                    </p>
+                    <input
+                        type="text"
+                        value={code}
+                        onChange={(e) => setCode(e.target.value)}
+                        placeholder="123456"
+                        maxLength={6}
+                        className={`w-full max-w-xs text-center text-2xl tracking-[.2em] font-bold p-3 mt-4 rounded-lg border-2 ${
+                            error ? 'border-red-500' : (theme === 'escuro' ? 'bg-gray-700 border-gray-600' : 'border-gray-300')
+                        }`}
+                    />
+                    {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                </div>
+                
+                {/* Botões */}
+                <div className="flex justify-end gap-3 p-4 border-t">
+                    <button
+                        onClick={onClose}
+                        className={`px-6 py-2 rounded-full font-semibold ${
+                            theme === 'escuro' 
+                            ? 'bg-gray-700 text-white hover:bg-gray-600'
+                            : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                        }`}
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        onClick={onConfirm}
+                        className="bg-purple-500 text-white font-semibold py-2 px-6 rounded-full hover:bg-purple-600 transition-colors"
+                    >
+                        Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+// --- FIM DA MODIFICAÇÃO ---
+
 
 export default function GerenciamentoConta() { 
-    const { theme } = useSettings();
+    const { theme, lcoins, setLcoins } = useSettings(); 
     const navigate = useNavigate(); 
 
-    const [silenciarnotificacoes, setSilenciarNotificacoes] = useState("Nunca");
-    
+    // --- INÍCIO DA MODIFICAÇÃO (Novos Estados) ---
     const [nome, setNome] = useState('');
     const [username, setUsername] = useState(''); 
     const [email, setEmail] = useState('');
-    const [saveMessage, setSaveMessage] = useState(''); 
+    const [numero, setNumero] = useState(''); 
+    const [dataNascimento, setDataNascimento] = useState(''); 
+    const [idioma, setIdioma] = useState('pt-br'); 
+    const [avatarSeed, setAvatarSeed] = useState('');
     
-    const [avatarSeed, setAvatarSeed] = useState('caua0001'); 
-    const [showAvatarModal, setShowAvatarModal] = useState(false);
+    // Valores originais
+    const [originalNome, setOriginalNome] = useState('');
+    const [originalUsername, setOriginalUsername] = useState('');
+    const [originalEmail, setOriginalEmail] = useState(''); // <-- NOVO
+    const [originalNumero, setOriginalNumero] = useState('');
+    const [originalDataNascimento, setOriginalDataNascimento] = useState('');
     
-    const [lembretediario, setLembreteDiario] = useState(true);
-    const [progressoeconquista, setProgressoeConquista] = useState(true);
-    const [rankingcompeticao, setRankingCompeticao] = useState(true);
-    const [interacoessociais, setInteracoesSociais] = useState(true);
-    const [eventosespeciais, setEventosEspeciais] = useState(false);
+    // Regras de Negócio
+    const [lastNomeChangeTimestamp, setLastNomeChangeTimestamp] = useState(null);
+    const [usernameChangeCount, setUsernameChangeCount] = useState(0);
+    const [isEmailVerified, setIsEmailVerified] = useState(false); // <-- NOVO
+    const [isNumeroVerified, setIsNumeroVerified] = useState(false); // <-- NOVO
 
+    // UI
+    const [saveMessage, setSaveMessage] = useState(''); 
+    const [nomeError, setNomeError] = useState('');
+    const [usernameError, setUsernameError] = useState('');
+    const [showAvatarModal, setShowAvatarModal] = useState(false);
     const [animationClass, setAnimationClass] = useState('');
 
-    // useEffect (Sem alteração)
+    // Estados do Modal de Verificação
+    const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+    const [verificationTarget, setVerificationTarget] = useState(''); // 'email' ou 'numero'
+    const [verificationCode, setVerificationCode] = useState('');
+    const [verificationError, setVerificationError] = useState('');
+    // --- FIM DA MODIFICAÇÃO ---
+    
+
+    // --- INÍCIO DA MODIFICAÇÃO (useEffect carrega tudo) ---
     useEffect(() => {
         setAnimationClass('anim-enter');
         
@@ -117,15 +212,116 @@ export default function GerenciamentoConta() {
             setNome(user.name || '');
             setUsername(user.username || '');
             setEmail(user.email || '');
+            setNumero(user.numero || ''); 
+            setDataNascimento(user.dataNascimento || ''); 
+            setIdioma(user.idioma || 'pt-br'); 
             setAvatarSeed(user.avatarSeed || user.username); 
+
+            // Define os valores originais
+            setOriginalNome(user.name || '');
+            setOriginalUsername(user.username || '');
+            setOriginalEmail(user.email || '');
+            setOriginalNumero(user.numero || '');
+            setOriginalDataNascimento(user.dataNascimento || '');
+            
+            // Carrega status de verificação
+            setIsEmailVerified(user.isEmailVerified || false);
+            setIsNumeroVerified(user.isNumeroVerified || false);
+            
+            setLastNomeChangeTimestamp(user.lastNomeChange || null);
+            setUsernameChangeCount(user.usernameChangeCount || 0);
         }
     }, []);
+    // --- FIM DA MODIFICAÇÃO ---
     
-    // --- INÍCIO DA CORREÇÃO (Função Salvar) ---
-    const handleSave = () => {
+    // --- Funções de Lógica (checkNomeCooldown, getUsernameChangeCost) ---
+    const checkNomeCooldown = () => {
+        if (!lastNomeChangeTimestamp) return { canChange: true };
+        const daysToWait = 7;
+        const now = Date.now();
+        const timePassed = now - lastNomeChangeTimestamp;
+        const daysPassed = timePassed / (1000 * 60 * 60 * 24);
+
+        if (daysPassed < daysToWait) {
+            const daysRemaining = Math.ceil(daysToWait - daysPassed);
+            return { 
+                canChange: false, 
+                message: `Você só pode mudar seu nome a cada 7 dias. Faltam ${daysRemaining} dia(s).`
+            };
+        }
+        return { canChange: true };
+    };
+    const getUsernameChangeCost = () => {
+        return usernameChangeCount === 0 ? 0 : 1000;
+    };
+    // --- FIM ---
+
+    // --- INÍCIO DA MODIFICAÇÃO (Novas Funções de Verificação) ---
+    const handleSendVerification = (target) => {
+        setVerificationTarget(target);
+        setVerificationError('');
+        setVerificationCode('');
+        
+        if(target === 'email' && !email) {
+            setSaveMessage("Por favor, digite um e-mail.");
+            setTimeout(() => setSaveMessage(''), 3000);
+            return;
+        }
+        if(target === 'numero' && !numero) {
+            setSaveMessage("Por favor, digite um número.");
+            setTimeout(() => setSaveMessage(''), 3000);
+            return;
+        }
+
+        console.log(`Enviando código de verificação para ${target}...`);
+        setIsVerificationModalOpen(true);
+    };
+
+    const handleConfirmVerification = () => {
+        // --- CÓDIGO DE TESTE ---
+        if (verificationCode !== '123456') {
+            setVerificationError('Código inválido. Tente novamente.');
+            return;
+        }
+
+        let bonus = 0;
+        let successMessage = '';
+
+        if (verificationTarget === 'email') {
+            setIsEmailVerified(true);
+            setOriginalEmail(email); // Trava o e-mail como "verificado"
+            bonus = 50;
+            successMessage = `E-mail verificado! +${bonus} Lcoins!`;
+        } else if (verificationTarget === 'numero') {
+            setIsNumeroVerified(true);
+            setOriginalNumero(numero); // Trava o número
+            bonus = 25;
+            successMessage = `Número verificado! +${bonus} Lcoins!`;
+        }
+
+        setLcoins(l => l + bonus);
+        setSaveMessage(successMessage);
+        setIsVerificationModalOpen(false);
+        setVerificationCode('');
+        
+        // Salva imediatamente
+        handleSave(true); // Chama o 'handleSave' para persistir os dados
+        setTimeout(() => setSaveMessage(''), 4000); 
+    };
+    // --- FIM DA MODIFICAÇÃO ---
+    
+
+    // --- INÍCIO DA MODIFICAÇÃO (handleSave atualizado) ---
+    // 'triggeredByVerification' evita mostrar msg de "Salvo!" duas vezes
+    const handleSave = (triggeredByVerification = false) => {
+        if (!triggeredByVerification) {
+            setSaveMessage('');
+            setNomeError('');
+            setUsernameError('');
+        }
+
         const userString = localStorage.getItem('currentUser');
-        // --- ERRO CORRIGIDO AQUI ---
-        const dbString = localStorage.getItem('liresUsersDB'); // <-- 'liresUsersDB' (L minúsculo)
+        const dbString = localStorage.getItem('liresUsersDB'); 
         
         if (!userString || !dbString) {
             setSaveMessage("Erro: Não foi possível encontrar os dados do usuário.");
@@ -133,38 +329,93 @@ export default function GerenciamentoConta() {
         }
 
         const currentUser = JSON.parse(userString);
-        // --- ERRO CORRIGIDO AQUI ---
-        const liresUsersDB = JSON.parse(dbString); // <-- O parse já estava certo
+        const liresUsersDB = JSON.parse(dbString); 
 
-        // Atualiza os dados do usuário
-        const updatedUser = { 
-            ...currentUser, 
-            name: nome, 
-            username: username,
-            avatarSeed: avatarSeed, 
-            avatarStyle: AVATAR_STYLE 
-        };
+        let lcoinsToDeduct = 0;
+        let bonusLcoins = 0;
+        const updatedUser = { ...currentUser };
 
-        // Atualiza o banco de dados
+        // Lógica de Mudança de NOME
+        const nomeChanged = nome !== originalNome;
+        if (nomeChanged) {
+            const nomeCheck = checkNomeCooldown();
+            if (!nomeCheck.canChange) {
+                if (!triggeredByVerification) setNomeError(nomeCheck.message);
+                return; 
+            }
+            updatedUser.name = nome;
+            updatedUser.lastNomeChange = Date.now();
+        }
+
+        // Lógica de Mudança de USERNAME
+        const usernameChanged = username !== originalUsername;
+        if (usernameChanged) {
+            const cost = getUsernameChangeCost();
+            if (lcoins < cost) {
+                if (!triggeredByVerification) setUsernameError(`Você precisa de ${cost} Lcoins. Você tem ${lcoins}.`);
+                return; 
+            }
+            lcoinsToDeduct = cost;
+            updatedUser.username = username;
+            updatedUser.usernameChangeCount = (usernameChangeCount || 0) + 1;
+        }
+
+        // Bônus por Data de Nascimento
+        const justAddedDataNascimento = !originalDataNascimento && dataNascimento;
+        if (justAddedDataNascimento) bonusLcoins += 25;
+        
+        // Bônus por Número (se foi salvo aqui, e não verificado)
+        const justAddedNumero = !originalNumero && numero && !isNumeroVerified;
+        if (justAddedNumero) bonusLcoins += 25;
+
+
+        // Salva TODOS os campos
+        updatedUser.avatarSeed = avatarSeed; 
+        updatedUser.avatarStyle = AVATAR_STYLE;
+        updatedUser.email = email; 
+        updatedUser.numero = numero; 
+        updatedUser.dataNascimento = dataNascimento; 
+        updatedUser.idioma = idioma; 
+        // Salva o status de verificação (que pode ter sido atualizado pela outra função)
+        updatedUser.isEmailVerified = isEmailVerified;
+        updatedUser.isNumeroVerified = isNumeroVerified;
+        
         const updatedDB = liresUsersDB.map(user => 
             user.id === currentUser.id ? updatedUser : user
         );
 
-        // Salva de volta no localStorage
         localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-        // --- ERRO CORRIGIDO AQUI ---
-        localStorage.setItem('liresUsersDB', JSON.stringify(updatedDB)); // <-- 'liresUsersDB' (L minúsculo)
+        localStorage.setItem('liresUsersDB', JSON.stringify(updatedDB)); 
 
-        setSaveMessage('Alterações salvas com sucesso!');
-        setTimeout(() => setSaveMessage(''), 3000); 
+        const newLcoins = lcoins - lcoinsToDeduct + bonusLcoins;
+        if (newLcoins !== lcoins) {
+            setLcoins(newLcoins);
+        }
+        
+        // Atualiza os estados "originais"
+        setOriginalNome(nome);
+        setOriginalUsername(username);
+        // Só atualiza os originais de data e numero se eles foram *salvos*
+        if (justAddedDataNascimento) setOriginalDataNascimento(dataNascimento);
+        if (justAddedNumero) setOriginalNumero(numero);
 
+        if (nomeChanged) setLastNomeChangeTimestamp(updatedUser.lastNomeChange);
+        if (usernameChanged) setUsernameChangeCount(updatedUser.usernameChangeCount);
+
+        // Só mostra a mensagem de "Salvo" se não for uma verificação
+        if (!triggeredByVerification) {
+            setSaveMessage(`Alterações salvas! ${bonusLcoins > 0 ? `+${bonusLcoins} Lcoins!` : ''}`);
+            setTimeout(() => setSaveMessage(''), 3000); 
+        }
     };
-    // --- FIM DA CORREÇÃO ---
+    // --- FIM DA MODIFICAÇÃO ---
 
     // --- Classes de Estilo Dinâmicas (Sem alteração) ---
     const inputClasses = theme === 'escuro'
-        ? 'bg-gray-700 border-2 border-gray-600 rounded-full px-4 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500' 
-        : 'border-2 border-purple-400 rounded-full px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400'; 
+        ? 'bg-gray-700 border-2 border-gray-600 rounded-lg px-4 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500' 
+        : 'border-2 border-cyan-400 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-cyan-400'; 
+    
+    const selectClasses = `w-full max-w-md ${inputClasses} appearance-none`;
     
     const cardClasses = theme === 'escuro'
         ? 'bg-gray-800 rounded-lg shadow-md p-6 border border-gray-700'
@@ -188,7 +439,17 @@ export default function GerenciamentoConta() {
             
     const dividerClasses = theme === 'escuro'
         ? 'w-full h-px bg-gray-700 mb-6' 
-        : 'w-full h-px bg-purple-200 mb-6'; 
+        : 'w-full h-px bg-blue-400 mb-6'; 
+
+    const nomeCooldown = checkNomeCooldown();
+    const usernameCost = getUsernameChangeCost();
+    
+    // --- INÍCIO DA MODIFICAÇÃO (Novas Variáveis de UI) ---
+    // Verifica se o texto do e-mail/número mudou do original *verificado*
+    const emailChanged = email !== originalEmail;
+    const numeroChanged = numero !== originalNumero;
+    // --- FIM DA MODIFICAÇÃO ---
+
 
     return (
         <>
@@ -202,6 +463,18 @@ export default function GerenciamentoConta() {
                     setShowAvatarModal(false); 
                 }}
             />
+            
+            <VerificationModal
+                isOpen={isVerificationModalOpen}
+                onClose={() => setIsVerificationModalOpen(false)}
+                onConfirm={handleConfirmVerification}
+                target={verificationTarget}
+                theme={theme}
+                code={verificationCode}
+                setCode={setVerificationCode}
+                error={verificationError}
+                value={verificationTarget === 'email' ? email : numero} // Passa o valor
+            />
 
             <div className={`content-box w-full ${animationClass}`}>
                 <h1 className={`font-bold text-2xl md:text-3xl lg:text-5xl mb-8 ${
@@ -210,28 +483,29 @@ export default function GerenciamentoConta() {
                     Gerenciamento de Conta
                 </h1>
 
-                <div className="space-y-8">
-                    {/* --- Card de Informações Pessoais (Sem alteração) --- */}
+                <div>
+                    {/* --- Card de Informações Pessoais --- */}
                     <div className={cardClasses}>
                         <h2 className={titleClasses}>
                             Informações Pessoais
                         </h2>
                         <div className={dividerClasses}></div>
                         
-                        <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center">
+                        <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
                             
-                            <div className="flex-shrink-0 flex flex-col items-center">
+                            {/* Lado Esquerdo: Avatar Clicável */}
+                            <div className="flex-shrink-0 flex flex-col items-center w-full md:w-auto">
                                 <h3 className={subtitleClasses}>
                                     Avatar
                                 </h3>
                                 <button
                                     onClick={() => setShowAvatarModal(true)} 
-                                    className="rounded-full relative group"
+                                    className="relative group w-32 h-32 rounded-full overflow-hidden"
                                 >
                                     <img 
                                         src={getAvatarUrl(avatarSeed, AVATAR_STYLE)} 
                                         alt="Avatar do Usuário" 
-                                        className="w-32 h-32 rounded-full mb-4 bg-white" 
+                                        className="w-full h-full object-cover rounded-full bg-white"
                                     />
                                     <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                         <span role="img" aria-label="Editar" className="text-4xl">✏️</span>
@@ -242,22 +516,34 @@ export default function GerenciamentoConta() {
                                 </p>
                             </div>
 
-                            <div className="flex-grow w-full">
+                            {/* Lado Direito: Inputs E Botão */}
+                            <div className="flex-grow w-full space-y-6">
+                                {/* Nome */}
                                 <div>
                                     <h3 className={subtitleClasses}>
-                                        Nome (como aparece no perfil)
+                                        Nome
                                     </h3>
                                     <input
                                         type="text"
                                         value={nome}
                                         onChange={(e) => setNome(e.target.value)}
                                         placeholder="Digite seu nome"
-                                        className={`w-full max-w-md ${inputClasses}`}
+                                        disabled={!nomeCooldown.canChange} 
+                                        className={`w-full max-w-md ${inputClasses} ${!nomeCooldown.canChange ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     />
+                                    {nomeError ? (
+                                        <p className="text-sm text-red-500 mt-2">{nomeError}</p>
+                                    ) : (
+                                        <p className={helperTextClasses}>
+                                            {nomeCooldown.canChange ? "" : nomeCooldown.message}
+                                        </p>
+                                    )}
                                 </div>
-                                <div className="mt-6">
+                                
+                                {/* Usuário */}
+                                <div>
                                     <h3 className={subtitleClasses}>
-                                        @Username (para login)
+                                        Usuário
                                     </h3>
                                     <input
                                         type="text"
@@ -266,143 +552,144 @@ export default function GerenciamentoConta() {
                                         placeholder="Digite seu @username"
                                         className={`w-full max-w-md ${inputClasses}`}
                                     />
+                                    {usernameError ? (
+                                        <p className="text-sm text-red-500 mt-2">{usernameError}</p>
+                                    ) : (
+                                        <div className={`${helperTextClasses} flex items-center gap-1`}>
+                                            {usernameCost === 0 
+                                                ? "Sua primeira mudança de @username é grátis."
+                                                : ( <>
+                                                        Custo para mudar: 
+                                                        <img src={LcoinIcon} alt="L" className="w-4 h-4" />
+                                                        <span className="font-semibold">{usernameCost}</span>
+                                                    </> )
+                                            }
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* --- INÍCIO DA MODIFICAÇÃO (Campo de E-mail) --- */}
+                                <div>
+                                    <h3 className={subtitleClasses}>
+                                        E-mail
+                                    </h3>
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="text"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            placeholder="Digite seu email"
+                                            className={`w-full max-w-md ${inputClasses} ${(isEmailVerified && !emailChanged) ? 'opacity-50' : ''}`}
+                                            disabled={isEmailVerified && !emailChanged}
+                                        />
+                                        {(isEmailVerified && !emailChanged) ? (
+                                            <span className="text-green-500 font-semibold whitespace-nowrap">✓ Verificado</span>
+                                        ) : (
+                                            <button 
+                                                onClick={() => handleSendVerification('email')}
+                                                className="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap"
+                                            >
+                                                Verificar
+                                            </button>
+                                        )}
+                                    </div>
+                                    {(!isEmailVerified || emailChanged) && (
+                                        <p className={helperTextClasses}>
+                                            {isEmailVerified ? "Você precisa verificar o novo e-mail." : "Verifique seu e-mail para ganhar +50 Lcoins!"}
+                                        </p>
+                                    )}
+                                </div>
+                                {/* --- FIM DA MODIFICAÇÃO --- */}
+
+                                {/* --- INÍCIO DA MODIFICAÇÃO (Campo de Número) --- */}
+                                <div>
+                                    <h3 className={subtitleClasses}>
+                                        Número
+                                    </h3>
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="text"
+                                            value={numero}
+                                            onChange={(e) => setNumero(e.target.value)}
+                                            placeholder="11 9XXXX-XXXX"
+                                            className={`w-full max-w-md ${inputClasses} ${isNumeroVerified && !numeroChanged ? 'opacity-50' : ''}`}
+                                            disabled={isNumeroVerified && !numeroChanged}
+                                        />
+                                        {(isNumeroVerified && !numeroChanged) ? (
+                                            <span className="text-green-500 font-semibold whitespace-nowrap">✓ Verificado</span>
+                                        ) : (
+                                            <button 
+                                                onClick={() => handleSendVerification('numero')}
+                                                className="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap"
+                                            >
+                                                Verificar
+                                            </button>
+                                        )}
+                                    </div>
+                                    {(!isNumeroVerified || numeroChanged) && (
+                                        <p className={helperTextClasses}>
+                                            {isNumeroVerified ? "Você precisa verificar o novo número." : "Verifique seu número para ganhar +25 Lcoins!"}
+                                        </p>
+                                    )}
+                                </div>
+                                {/* --- FIM DA MODIFICAÇÃO --- */}
+                                
+                                {/* Data de Nascimento */}
+                                <div>
+                                    <h3 className={subtitleClasses}>
+                                        Data de nascimento
+                                    </h3>
+                                    <input
+                                        type="text"
+                                        value={dataNascimento}
+                                        onChange={(e) => setDataNascimento(e.target.value)}
+                                        placeholder="DD/MM/AAAA"
+                                        className={`w-full max-w-md ${inputClasses}`}
+                                    />
+                                    {!originalDataNascimento && (
+                                        <p className={helperTextClasses}>Complete para ganhar +25 Lcoins!</p>
+                                    )}
+                                </div>
+                                
+                                {/* Idioma */}
+                                <div className='w-full max-w-md'>
+                                    <h3 className={subtitleClasses}>
+                                        Idioma
+                                    </h3>
+                                    <div className="relative">
+                                        <img src={Bandeira} alt="Idioma" className="w-6 h-6 rounded-full absolute left-4 top-1/2 -translate-y-1/2" />
+                                        <select
+                                            value={idioma}
+                                            onChange={(e) => setIdioma(e.target.value)}
+                                            className={`${selectClasses} pl-12`} 
+                                        >
+                                            <option value="pt-br">Português (Brasil)</option>
+                                            <option value="en-us">English (US)</option>
+                                        </select>
+                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4">
+                                            <svg className={`w-5 h-5 ${theme === 'escuro' ? 'text-gray-400' : 'text-gray-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Botão Salvar */}
+                                <div className="flex items-center gap-4 pt-4">
+                                    <button
+                                        onClick={() => handleSave(false)} // Clique normal
+                                        className="bg-purple-500 text-white font-semibold py-2 px-6 rounded-full hover:bg-purple-600 transition-colors"
+                                    >
+                                        Salvar Alterações
+                                    </button>
+                                    {saveMessage && (
+                                        <p className={`text-sm ${saveMessage.startsWith('Erro') ? 'text-red-500' : 'text-green-500'}`}>{saveMessage}</p>
+                                    )}
                                 </div>
                             </div>
                         </div>
-
-                        <div className="flex items-center gap-4 mt-8">
-                            <button
-                                onClick={handleSave}
-                                className="bg-purple-500 text-white font-semibold py-2 px-6 rounded-full hover:bg-purple-600 transition-colors"
-                            >
-                                Salvar Alterações
-                            </button>
-                            {saveMessage && (
-                                <p className={`text-sm ${saveMessage.startsWith('Erro') ? 'text-red-500' : 'text-green-500'}`}>{saveMessage}</p>
-                            )}
-                        </div>
                     </div>
-
-                    {/* Seção Notificações (Sem alterações) */}
-                    <div className={cardClasses}>
-                        <h2 className={titleClasses}>
-                            Notificações
-                        </h2>
-                        <div className={dividerClasses}></div>
-
-                        <h3 className={`${subtitleClasses} mt-6 mb-4`}>
-                            Email
-                        </h3>
-                        <input
-                            type="text"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Digite seu email"
-                            className={`w-full max-w-md ${inputClasses}`}
-                        />
-                        <p className={helperTextClasses}>
-                            Email Digitado: <span className="font-semibold">{email}</span>
-                        </p>
-
-                        <h3 className={`${subtitleClasses} mt-6 mb-4`}>
-                            Silenciar Notificações Por:
-                        </h3>
-                        <select
-                            value={silenciarnotificacoes}
-                            onChange={(e) => setSilenciarNotificacoes(e.target.value)}
-                            className={`w-full max-w-md ${inputClasses}`}>
-                            <option value="1 hora">1 hora</option>
-                            <option value="8 horas">8 horas</option>
-                            <option value="24 horas">24 horas</option>
-                            <option value="Nunca">Nunca</option>
-                        </select>
-                    </div>
-
-
-                    {/* Seção Ranking e Interações (Sem alterações) */}
-                    <div className={cardClasses}>
-                        <h2 className={titleClasses}>
-                            Ranking e interações
-                        </h2>
-                        <div className={dividerClasses}></div>
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-3 flex-wrap">
-                                <button
-                                    onClick={() => setLembreteDiario(!lembretediario)}
-                                    className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 flex-shrink-0 ${
-                                        lembretediario 
-                                        ? "bg-purple-500" 
-                                        : (theme === 'escuro' ? "bg-gray-600" : "bg-gray-300")
-                                    } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-purple-300'}`}
-                                >
-                                    <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${lembretediario ? "translate-x-6" : "translate-x-0"}`}></div>
-                                </button>
-                                <span className={labelTextClasses}>
-                                    Lembrete diário de estudos
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-3 flex-wrap">
-                                <button
-                                    onClick={() => setProgressoeConquista(!progressoeconquista)}
-                                    className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 flex-shrink-0 ${
-                                        progressoeconquista 
-                                        ? "bg-purple-500" 
-                                        : (theme === 'escuro' ? "bg-gray-600" : "bg-gray-300")
-                                    } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-purple-400'}`}
-                                >
-                                    <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${progressoeconquista ? "translate-x-6" : "translate-x-0"}`}></div>
-                                </button>
-                                <span className={labelTextClasses}>
-                                    Progresso e conquistas
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-3 flex-wrap">
-                                <button
-                                    onClick={() => setRankingCompeticao(!rankingcompeticao)}
-                                    className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 flex-shrink-0 ${
-                                        rankingcompeticao 
-                                        ? "bg-purple-500" 
-                                        : (theme === 'escuro' ? "bg-gray-600" : "bg-gray-300")
-                                    } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-purple-400'}`}
-                                >
-                                    <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${rankingcompeticao ? "translate-x-6" : "translate-x-0"}`}></div>
-                                </button>
-                                <span className={labelTextClasses}>
-                                    Mostrar meu progresso
-                                </span>
-                            </div>
-                            <div className='flex items-center gap-3 flex-wrap mt-6'>
-                                <button
-                                    onClick={() => setInteracoesSociais(!interacoessociais)}
-                                    className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 flex-shrink-0 ${
-                                        interacoessociais 
-                                        ? "bg-purple-500" 
-                                        : (theme === 'escuro' ? "bg-gray-600" : "bg-gray-300")
-                                    } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-purple-400'}`}
-                                >
-                                    <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${interacoessociais ? "translate-x-6" : "translate-x-0"}`}></div>
-                                </button>
-                                <span className={labelTextClasses}>
-                                    interações sociais
-                                </span>
-                            </div>
-                            <div className='flex items-center gap-3 flex-wrap mt-6'>
-                                <button
-                                    onClick={() => setEventosEspeciais(!eventosespeciais)}
-                                    className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 flex-shrink-0 ${
-                                        eventosespeciais 
-                                        ? "bg-purple-500" 
-                                        : (theme === 'escuro' ? "bg-gray-600" : "bg-gray-300")
-                                    } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-purple-400'}`}
-                                >
-                                    <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${eventosespeciais ? "translate-x-6" : "translate-x-0"}`}></div>
-                                </button>
-                                <span className={labelTextClasses}>
-                                    Eventos especiais
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                
+                    {/* --- CARDS REMOVIDOS --- */}
+                
                 </div>
             </div>
         </>

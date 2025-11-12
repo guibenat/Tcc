@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+// --- INÍCIO DA MODIFICAÇÃO (useLocation) ---
 import { useSettings } from "../components/SettingsContext"; 
-import { Link, useParams, useNavigate } from "react-router-dom"; 
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom"; 
+// --- FIM DA MODIFICAÇÃO ---
 
 // --- Ícones e Imagens ---
 import Perfil from "../assets/Perfil.png"; 
@@ -18,7 +20,7 @@ import Exploracao from "../assets/Exploração.png";
 import { AchievementStatusModal, animations } from './AchievementStatusModal';
 import { ObjectivesModal } from './ObjectivesModal'; 
 
-// --- Ícones SVG embutidos ---
+// --- Ícones SVG embutidos (Sem alteração) ---
 const UserCheckIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/>
@@ -68,14 +70,14 @@ const BackButton = ({ theme }) => {
 };
 
 
-// --- Função Avatar ---
+// --- Função Avatar (Sem alteração) ---
 const colorPalette = [
     'f0d3f7', 'c0aede', 'd1d4f9', 'fde047', 'a78bfa',
     '7c3aed', '4ade80', '2dd4bf', 'fb7185', 'f97316'
 ].join(',');
 
 const getAvatarUrl = (seed, style) => {
-    const finalStyle = style || 'bottts-neutral'; // Padrão é robô
+    const finalStyle = style || 'bottts-neutral'; 
     if (!seed) {
         return Perfil; 
     }
@@ -83,7 +85,7 @@ const getAvatarUrl = (seed, style) => {
 };
 
 
-// --- Componente ProfileHeader ---
+// --- Componente ProfileHeader (Sem alteração) ---
 const ProfileHeader = ({ theme, user, onEdit }) => ( 
     <div className={`w-full max-w-4xl rounded-3xl p-6 flex justify-center relative shadow-lg ${
         theme === 'escuro' ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-purple-100'
@@ -106,7 +108,7 @@ const ProfileHeader = ({ theme, user, onEdit }) => (
     </div>
 );
 
-// --- Componente UserInfo ---
+// --- Componente UserInfo (Sem alteração) ---
 const UserInfo = ({ theme, user, followersCount, followingCount, onShowFollowers, onShowFollowing, isMyProfile }) => {
     
     const memberSince = user ? 
@@ -160,7 +162,7 @@ const UserInfo = ({ theme, user, followersCount, followingCount, onShowFollowers
     );
 };
 
-// --- Componente ProfileActions ---
+// --- Componente ProfileActions (Sem alteração) ---
 const ProfileActions = ({ theme, isFollowing, onToggleFollow, user }) => (
     <div className="w-full max-w-4xl px-4 mt-6">
         <div className="flex items-center justify-center gap-3">
@@ -201,7 +203,7 @@ const ProfileActions = ({ theme, isFollowing, onToggleFollow, user }) => (
     </div>
 );
 
-// --- Componente MutualFriends ---
+// --- Componente MutualFriends (Sem alteração) ---
 const MutualFriends = ({ theme, allUsers, loggedInFollowing, targetUserFollowers }) => {
     const mutuals = loggedInFollowing
         .filter(id => targetUserFollowers.includes(id)) 
@@ -233,7 +235,7 @@ const MutualFriends = ({ theme, allUsers, loggedInFollowing, targetUserFollowers
     );
 };
 
-// --- Componente CurrentModule ---
+// --- Componente CurrentModule (Sem alteração) ---
 const CurrentModule = ({ theme, moduleName }) => (
     <div className="w-full max-w-4xl mt-6 px-4">
         <h2 className={`text-2xl font-bold mb-3 ${theme === 'escuro' ? 'text-purple-400' : 'text-violet-500'}`}>
@@ -250,7 +252,7 @@ const CurrentModule = ({ theme, moduleName }) => (
 );
 
 
-// --- Componente Achievements ---
+// --- Componente Achievements (Sem alteração) ---
 const Achievements = ({ theme, onShowAchievements }) => (
     <div className="w-full max-w-4xl mt-4 px-4">
         <h2 className={`text-2xl font-bold mb-3 ${theme === 'escuro' ? 'text-purple-400' : 'text-violet-500'}`}>Conquistas</h2>
@@ -267,7 +269,7 @@ const Achievements = ({ theme, onShowAchievements }) => (
     </div>
 );
 
-// --- Componente Stats ---
+// --- Componente Stats (Sem alteração) ---
 const Stats = ({ theme, streak, signs, lcoins, isMyProfile }) => (
     <div className="w-full max-w-4xl mt-6 px-4">
         <div className="flex justify-between items-center mb-4">
@@ -314,7 +316,7 @@ const Stats = ({ theme, streak, signs, lcoins, isMyProfile }) => (
     </div>
 );
 
-// Componente do Botão de Reset
+// Componente do Botão de Reset (Sem alteração)
 function ResetButton() {
     const {
         setLcoins,
@@ -347,7 +349,7 @@ function ResetButton() {
     );
 }
 
-// --- Componente DailyGoal ---
+// --- Componente DailyGoal (Sem alteração) ---
 const DailyGoal = ({ theme, goalTimeStr, timeSpentDisplay, progressPercent, user }) => (
      <div className="w-full max-w-4xl mt-6 px-4">
         <h2 className={`text-2xl font-bold mb-3 ${theme === 'escuro' ? 'text-purple-400' : 'text-violet-500'}`}>Metas</h2>
@@ -373,7 +375,7 @@ const DailyGoal = ({ theme, goalTimeStr, timeSpentDisplay, progressPercent, user
 );
 
 
-// --- Componente Objectives ---
+// --- Componente Objectives (Sem alteração) ---
 const Objectives = ({ theme, onObjectiveClick, objectivesData }) => {
     return (
         <div className="w-full max-w-4xl mt-6 px-4">
@@ -402,7 +404,7 @@ const Objectives = ({ theme, onObjectiveClick, objectivesData }) => {
 };
 
 
-// --- INÍCIO DA MODIFICAÇÃO (UserListModal) ---
+// --- Componente UserListModal (Sem alteração) ---
 const UserListModal = ({ 
     isOpen, onClose, title, users, theme, onToggleFollow, currentUserId,
     allUsers = [], 
@@ -537,7 +539,6 @@ const UserListModal = ({
                                     <h4 className={`p-3 text-sm font-semibold sticky top-0 ${theme === 'escuro' ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-500'}`}>Sugestões</h4>
                                     {suggestions.length > 0
                                         ? suggestions.map(user => <RenderUserRow key={user.id} user={user} />)
-                                        // --- MENSAGEM ATUALIZADA ---
                                         : <p className={`p-4 text-center ${theme === 'escuro' ? 'text-gray-400' : 'text-gray-500'}`}>Nenhuma sugestão. (Crie outra conta para testar!)</p>}
                                 </>
                             )}
@@ -548,7 +549,6 @@ const UserListModal = ({
         </div>
     );
 };
-// --- FIM DA MODIFICAÇÃO (UserListModal) ---
 
 
 // --- Componente Principal (UserProfile) ---
@@ -569,6 +569,7 @@ export default function UserProfile() {
   
   const { username } = useParams(); 
   const navigate = useNavigate();
+  const location = useLocation(); // <-- Pega a localização
   const [isMyProfile, setIsMyProfile] = useState(true); 
 
   const [animationClass, setAnimationClass] = useState('');
@@ -600,7 +601,7 @@ export default function UserProfile() {
   // useEffect dinâmico (Carrega o perfil correto)
   useEffect(() => {
     setAnimationClass('anim-enter');
-    const dbUsers = JSON.parse(localStorage.getItem('liresUsersDB')) || []; 
+    const dbUsers = JSON.parse(localStorage.getItem('LiresUsersDB')) || []; 
     setAllUsers(dbUsers); 
     
     const userString = localStorage.getItem('currentUser');
@@ -637,10 +638,10 @@ export default function UserProfile() {
             currentModule: "Módulo 1: Começar do Zero"
         });
     }
-  }, [username, navigate, dailyStreak, lcoins, lessonProgress]); 
+  }, [username, navigate, dailyStreak, lcoins, lessonProgress, location]); 
   
 
-  // Funções de Follow/Unfollow (Sem alterações)
+  // Funções de Follow/Unfollow (Sem alteração)
   const handleShowFollowers = () => {
     const userFollowers = currentUser?.followers || [];
     const followersData = userFollowers
@@ -693,7 +694,7 @@ export default function UserProfile() {
         return user;
     });
 
-    localStorage.setItem('liresUsersDB', JSON.stringify(updatedAllUsers)); 
+    localStorage.setItem('LiresUsersDB', JSON.stringify(updatedAllUsers)); 
     setAllUsers(updatedAllUsers);
     setFollowing(newFollowingList); 
 
@@ -732,7 +733,7 @@ export default function UserProfile() {
     }
   };
 
-  // --- Lógica dos Objetivos (Sem alterações) ---
+  // --- Lógica dos Objetivos (Sem alteração) ---
   const allObjectives = {
     'Aprendizado': [
         { id: 'aprend_1', description: 'Aprenda 3 sinais', reward: 25, isCompleted: () => signsLearned >= 3 },

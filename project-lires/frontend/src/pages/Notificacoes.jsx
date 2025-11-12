@@ -4,9 +4,9 @@ import { useSettings } from '../components/SettingsContext';
 
 // O nome do componente deve ser Notificacoes (sem acento)
 export default function Notificacoes() { 
-    // 2. LER O TEMA DO CONTEXTO
     const { theme } = useSettings();
 
+    // --- INÍCIO DA MODIFICAÇÃO (Estados) ---
     const [silenciarnotificacoes, setSilenciarNotificacoes] = useState("Nunca");
     const [frequencia, setFrequencia] = useState("Diária");
     const [horario, setHorario] = useState("Manhã");
@@ -17,16 +17,92 @@ export default function Notificacoes() {
     const [interacoessociais, setInteracoesSociais] = useState(true);
     const [eventosespeciais, setEventosEspeciais] = useState(false);
 
-    // Animação de entrada
     const [animationClass, setAnimationClass] = useState('');
+    const [saveMessage, setSaveMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(true); // Para evitar salvar no carregamento inicial
+    // --- FIM DA MODIFICAÇÃO ---
+
+    // --- INÍCIO DA MODIFICAÇÃO (useEffect para Carregar) ---
     useEffect(() => {
         setAnimationClass('anim-enter');
+        
+        const userString = localStorage.getItem('currentUser');
+        if (userString) {
+            const user = JSON.parse(userString);
+            const settings = user.notificationSettings; // Pega o objeto de configurações
+            
+            if (settings) {
+                setSilenciarNotificacoes(settings.silenciar || "Nunca");
+                setFrequencia(settings.frequencia || "Diária");
+                setHorario(settings.horario || "Manhã");
+                // '??' é usado para manter o booleano (se for false, não buga)
+                setLembreteDiario(settings.lembreteDiario ?? true);
+                setProgressoeConquista(settings.progressoeconquista ?? true);
+                setRankingCompeticao(settings.rankingcompeticao ?? true);
+                setInteracoesSociais(settings.interacoessociais ?? true);
+                setEventosEspeciais(settings.eventosespeciais ?? false);
+            }
+        }
+        setIsLoading(false); // Terminou de carregar
     }, []);
+    // --- FIM DA MODIFICAÇÃO ---
 
-    // --- Classes de Estilo Dinâmicas ---
+    // --- INÍCIO DA MODIFICAÇÃO (useEffect para Salvar) ---
+    useEffect(() => {
+        // Não salva na primeira vez que a página carrega
+        if (isLoading) return; 
+
+        console.log("Salvando configurações de notificação...");
+
+        const userString = localStorage.getItem('currentUser');
+        const dbString = localStorage.getItem('liresUsersDB');
+        if (!userString || !dbString) return; // Não pode salvar
+
+        const currentUser = JSON.parse(userString);
+        const liresUsersDB = JSON.parse(dbString);
+
+        // 1. Cria o objeto de configurações
+        const notificationSettings = {
+            silenciar: silenciarnotificacoes,
+            frequencia: frequencia,
+            horario: horario,
+            lembreteDiario: lembretediario,
+            progressoeconquista: progressoeconquista,
+            rankingcompeticao: rankingcompeticao,
+            interacoessociais: interacoessociais,
+            eventosespeciais: eventosespeciais,
+        };
+
+        // 2. Atualiza o usuário e o banco de dados
+        const updatedUser = { 
+            ...currentUser, 
+            notificationSettings: notificationSettings // Adiciona o objeto
+        };
+        
+        const updatedDB = liresUsersDB.map(user => 
+            user.id === currentUser.id ? updatedUser : user
+        );
+
+        // 3. Salva de volta no localStorage
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+        localStorage.setItem('liresUsersDB', JSON.stringify(updatedDB));
+
+        // 4. Mostra feedback
+        setSaveMessage("Salvo!");
+        const timer = setTimeout(() => setSaveMessage(''), 2000); // Limpa a mensagem
+        return () => clearTimeout(timer); // Limpa o timer se o componente for desmontado
+
+    }, [ // Este hook roda sempre que qualquer uma destas opções mudar:
+        silenciarnotificacoes, frequencia, horario, 
+        lembretediario, progressoeconquista, rankingcompeticao, 
+        interacoessociais, eventosespeciais, isLoading
+    ]);
+    // --- FIM DA MODIFICAÇÃO ---
+
+    // --- Classes de Estilo Dinâmicas (Mudei de 'green' para 'cyan') ---
     const selectClasses = theme === 'escuro'
-        ? 'w-full max-w-md bg-gray-700 border-2 border-gray-600 rounded-full px-4 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-green-500'
-        : 'w-full max-w-md border-2 border-green-400 rounded-full px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-400';
+        ? 'w-full max-w-md bg-gray-700 border-2 border-gray-600 rounded-full px-4 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500'
+        : 'w-full max-w-md border-2 border-cyan-400 rounded-full px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-cyan-400';
     
     const cardClasses = theme === 'escuro'
         ? 'bg-gray-800 rounded-lg shadow-md p-6 border border-gray-700'
@@ -49,22 +125,30 @@ export default function Notificacoes() {
         : 'text-sm text-gray-500';
         
     const dividerClasses = theme === 'escuro'
-        ? 'w-full h-1 bg-gray-700 mb-6'
-        : 'w-full h-1 bg-green-200 mb-6';
+        ? 'w-full h-px bg-gray-700 mb-6' // Mudei para h-px (linha fina)
+        : 'w-full h-px bg-blue-400 mb-6'; // Mudei para azul
     
-    // Classe específica para o subtítulo 'Frequência'
     const freqSubtitleClasses = theme === 'escuro'
         ? 'text-purple-400 font-semibold text-lg md:text-xl mt-6 mb-4'
         : 'text-purple-600 font-semibold text-lg md:text-xl mt-6 mb-4';
 
     return (
         <div className={`content-box w-full ${animationClass}`}>
-            {/* TÍTULO PRINCIPAL ATUALIZADO */}
-            <h1 className={`font-bold text-2xl md:text-3xl lg:text-5xl mb-8 ${
-                theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'
-            }`}>
-                Informação de Notificação
-            </h1>
+            {/* TÍTULO PRINCIPAL E FEEDBACK DE SALVAR */}
+            <div className="flex justify-between items-center mb-8">
+                <h1 className={`font-bold text-2xl md:text-3xl lg:text-5xl ${
+                    theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'
+                }`}>
+                    Informação de Notificação
+                </h1>
+                {/* --- INÍCIO DA MODIFICAÇÃO (Mensagem de Salvo) --- */}
+                {saveMessage && (
+                    <span className="text-green-500 font-semibold px-3 py-1 bg-green-100/30 rounded-full">
+                        {saveMessage}
+                    </span>
+                )}
+                {/* --- FIM DA MODIFICAÇÃO --- */}
+            </div>
 
             <div className="space-y-8">
                 {/* Seção Configurações de Envio */}
@@ -144,7 +228,7 @@ export default function Notificacoes() {
                                     lembretediario 
                                     ? "bg-purple-500" 
                                     : (theme === 'escuro' ? "bg-gray-600" : "bg-gray-300")
-                                } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-green-300'}`}
+                                } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-cyan-300'}`} // Corrigido
                             >
                                 <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${lembretediario ? "translate-x-6" : "translate-x-0"}`}></div>
                             </button>
@@ -160,7 +244,7 @@ export default function Notificacoes() {
                                     progressoeconquista 
                                     ? "bg-purple-500" 
                                     : (theme === 'escuro' ? "bg-gray-600" : "bg-gray-300")
-                                } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-green-400'}`}
+                                } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-cyan-400'}`} // Corrigido
                             >
                                 <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${progressoeconquista ? "translate-x-6" : "translate-x-0"}`}></div>
                             </button>
@@ -176,7 +260,7 @@ export default function Notificacoes() {
                                     rankingcompeticao 
                                     ? "bg-purple-500" 
                                     : (theme === 'escuro' ? "bg-gray-600" : "bg-gray-300")
-                                } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-green-400'}`}
+                                } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-cyan-400'}`} // Corrigido
                             >
                                 <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${rankingcompeticao ? "translate-x-6" : "translate-x-0"}`}></div>
                             </button>
@@ -192,7 +276,7 @@ export default function Notificacoes() {
                                     interacoessociais 
                                     ? "bg-purple-500" 
                                     : (theme === 'escuro' ? "bg-gray-600" : "bg-gray-300")
-                                } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-green-400'}`}
+                                } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-cyan-400'}`} // Corrigido
                             >
                                 <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${interacoessociais ? "translate-x-6" : "translate-x-0"}`}></div>
                             </button>
@@ -208,7 +292,7 @@ export default function Notificacoes() {
                                     eventosespeciais 
                                     ? "bg-purple-500" 
                                     : (theme === 'escuro' ? "bg-gray-600" : "bg-gray-300")
-                                } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-green-400'}`}
+                                } ${theme === 'escuro' ? 'border-2 border-gray-500' : 'border-2 border-cyan-400'}`} // Corrigido
                             >
                                 <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${eventosespeciais ? "translate-x-6" : "translate-x-0"}`}></div>
                             </button>
