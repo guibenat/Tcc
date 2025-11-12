@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useSettings } from './SettingsContext'; // Caminho corrigido
+import { useSettings } from '../components/SettingsContext'; 
 
 // --- Imports dos Assets ---
 import liresLogoImage from '../assets/logo-lires.png';
 import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; 
 import robotCongratsImage from '../assets/robo-congrats.png'; 
 import flameImage from '../assets/flame.png'; 
+import lcoinImage from '../assets/lcoin.png';
 import lockedAchievementImage from '../assets/locked-Achievement.png';
 import unlockedAchievementImage from '../assets/unlocked-Achievement.png';
 import achievementBadgeImage from '../assets/achievement-Badge.png';
 import robotIconImage from '../assets/robot-Icon.png';
-import lcoinImage from '../assets/lcoin.png';
 
-// Animações
+// Animações (Sem alteração)
 const animations = `
   @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -25,7 +25,8 @@ const animations = `
   @keyframes coin-drop-glow { 0% { transform: translateY(-200px) scale(0.5); opacity: 0; } 50% { transform: translateY(0) scale(1.1); opacity: 1; } 70% { transform: translateY(-15px) scale(0.95); } 80% { transform: translateY(0) scale(1.05); } 100% { transform: translateY(0) scale(1); } }
 `;
 
-// --- Componente CountUp ---
+
+// --- Componente CountUp (Sem alteração) ---
 const CountUp = ({ end, duration, start }) => {
     const [count, setCount] = useState(0);
     useEffect(() => {
@@ -34,8 +35,8 @@ const CountUp = ({ end, duration, start }) => {
     return <span>{count}</span>;
 };
 
-// --- Sub-componentes (CongratulationsScreen, etc.) ---
-
+// --- Sub-componentes (CongratulationsScreen, SequenciaAtivaScreen) ---
+// (Sem alteração)
 function CongratulationsScreen({ onContinue, errorCount, totalExercises }) {
     const { theme } = useSettings();
     const [startCounting, setStartCounting] = useState(false);
@@ -44,7 +45,7 @@ function CongratulationsScreen({ onContinue, errorCount, totalExercises }) {
     
     return (
         <div className={`w-full h-full flex flex-col items-center font-poppins p-10 ${
-          theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
+            theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
         }`}>
             <div className="w-full flex justify-start">
               <img 
@@ -56,11 +57,11 @@ function CongratulationsScreen({ onContinue, errorCount, totalExercises }) {
             <div className="flex-grow flex flex-col items-center justify-center text-center">
                 <h1 className="text-4xl sm:text-5xl font-bold mb-4" style={{ ...animationStyle(0.2), backgroundImage: 'linear-gradient(90deg, #b081ff, #849dff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Parabéns!</h1>
                 <p className={`text-xl sm:text-2xl mb-8 ${
-                  theme === 'escuro' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'escuro' ? 'text-gray-300' : 'text-gray-700'
                 }`} style={animationStyle(0.4)}>Você concluiu todas as atividades<br />do módulo <strong>Começar do Zero!</strong></p>
                 <div className="flex flex-col gap-2 mb-8 text-lg text-center" style={animationStyle(0.6)}>
                     <p className={`font-bold tracking-wider ${
-                      theme === 'escuro' ? 'text-gray-200' : 'text-gray-800'
+                        theme === 'escuro' ? 'text-gray-200' : 'text-gray-800'
                     }`}><CountUp end={errorCount} duration={1000} start={startCounting} /> ERROS</p>
                     <p className="font-bold text-blue-600 tracking-wider"><CountUp end={totalExercises} duration={1000} start={startCounting} /> EXERCÍCIOS FEITOS</p>
                 </div>
@@ -72,17 +73,15 @@ function CongratulationsScreen({ onContinue, errorCount, totalExercises }) {
 }
 
 function SequenciaAtivaScreen({ onContinue }) {
-    // CORREÇÃO: Lendo o dailyStreak do contexto
     const { theme, dailyStreak } = useSettings();
     const [isAnimating, setIsAnimating] = useState(false);
-    // CORREÇÃO: Usando o dailyStreak real ao invés de '1'
     const sequenceCount = dailyStreak; 
 
     useEffect(() => { const timer = setTimeout(() => { setIsAnimating(true); }, 100); return () => clearTimeout(timer); }, []);
     
     return (
         <div className={`w-full h-full flex flex-col items-center font-poppins p-10 ${
-          theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
+            theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
         }`}>
             <div className="w-full flex justify-start">
               <img 
@@ -103,13 +102,15 @@ function SequenciaAtivaScreen({ onContinue }) {
     );
 }
 
-function AchievementsScreen({ onContinue }) {
+// Componente de Recompensa de Conquista (Sem alteração)
+function AchievementRewardScreen({ onContinue }) {
     const { theme } = useSettings();
     const [progress, setProgress] = useState(0);
     const [isShaking, setIsShaking] = useState(false);
     const [isUnlocked, setIsUnlocked] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [textKey, setTextKey] = useState(1);
+    
     useEffect(() => {
         const progressTimer = setTimeout(() => { setProgress(2); }, 1000);
         const shakeTimer = setTimeout(() => { setIsShaking(true); }, 3000);
@@ -118,7 +119,9 @@ function AchievementsScreen({ onContinue }) {
         const modalHideTimer = setTimeout(() => { setShowModal(false); setTextKey(2); }, 7300);
         return () => { clearTimeout(progressTimer); clearTimeout(shakeTimer); clearTimeout(unlockTimer); clearTimeout(modalShowTimer); clearTimeout(modalHideTimer); };
     }, []);
-    const achievements = Array(7).fill(0); const unlockedIndex = 0;
+
+    const achievements = Array(7).fill(0); 
+    const unlockedIndex = 0; 
     
     return (
         <div className={`w-full h-full flex flex-col items-center font-poppins p-10 relative overflow-hidden ${
@@ -150,24 +153,32 @@ function AchievementsScreen({ onContinue }) {
     );
 }
 
-function LcoinsScreen({ onContinue }) {
-    // CORREÇÃO: Removido 'setLcoins' daqui. O ActivityPlayer já salva.
-    const { theme } = useSettings(); 
+// --- INÍCIO DA MODIFICAÇÃO (LcoinsScreen) ---
+// Agora ele salva as Lcoins se 'isFirstTime' for verdadeiro
+function LcoinsScreen({ onContinue, isFirstTime }) {
+    const { theme, setLcoins } = useSettings(); 
     const [startAnimations, setStartAnimations] = useState(false);
-    const rewardAmount = 50; // A recompensa (apenas visual)
+    const rewardAmount = 50; 
 
     useEffect(() => {
         const timer = setTimeout(() => setStartAnimations(true), 100);
         
-        // CORREÇÃO: A lógica de salvar Lcoins foi removida daqui
-        // para evitar recompensas duplicadas.
+        // --- NOVO ---
+        // Se a tela for mostrada e for a primeira vez,
+        // adicione as Lcoins.
+        if (isFirstTime) {
+            console.log("finalizado1.jsx: Adicionando 50 Lcoins.");
+            setLcoins(prevLcoins => prevLcoins + rewardAmount);
+        } else {
+            console.log("finalizado1.jsx: Não é a primeira vez, Lcoins já foram dadas.");
+        }
         
         return () => clearTimeout(timer);
-    }, []); // Dependência removida
+    }, [isFirstTime, setLcoins]); // Dependências
     
     return (
         <div className={`w-full h-full flex flex-col items-center font-poppins p-10 ${
-          theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
+            theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
         }`}>
             <div className="w-full flex justify-start">
               <img 
@@ -179,32 +190,42 @@ function LcoinsScreen({ onContinue }) {
             <div className="flex-grow flex flex-col items-center justify-center text-center">
                 <img src={lcoinImage} alt="Lcoin" className="w-32 h-32 mb-4" style={{ animation: startAnimations ? 'coin-drop-glow 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards' : 'none' }} />
                 <p className="text-2xl font-bold" style={{ animation: startAnimations ? 'fadeInUp 0.5s ease-out 1s forwards' : 'none', opacity: 0 }}>
-                    {/* O 'CountUp' agora é apenas visual */}
-                    <span style={{ color: '#FBC02D' }}>+<CountUp end={rewardAmount} duration={3000} start={startAnimations} /></span>
-                    <span style={{ color: '#1E88E5' }}> LCOINS</span>
+                    {/* --- NOVO --- */}
+                    {/* Só mostra a animação de contagem se for a primeira vez */}
+                    {isFirstTime ? (
+                        <>
+                            <span style={{ color: '#FBC02D' }}>+<CountUp end={rewardAmount} duration={3000} start={startAnimations} /></span>
+                            <span style={{ color: '#1E88E5' }}> LCOINS</span>
+                        </>
+                    ) : (
+                        <span style={{ color: '#1E88E5' }}>Lcoins</span>
+                    )}
                 </p>
             </div>
             <div className="w-full flex justify-end"><button onClick={onContinue} className="text-lg font-semibold py-3 px-12 border-none rounded-full cursor-pointer text-white transition transform duration-200 hover:scale-105" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)' }}>Continuar</button></div>
         </div>
     );
 }
+// --- FIM DA MODIFICAÇÃO ---
 
 // --- Componente Principal ---
 export default function Finalizado1() {
     const [screen, setScreen] = useState('congrats');
-    const navigate = useNavigate(); // Mantido para uso futuro, se necessário
+    const navigate = useNavigate();
     const { state } = useLocation();
     
+    // Lê os dados do ActivityPlayer
     const errorCount = state?.errorCount ?? 0;
-    const totalExercises = state?.totalExercises ?? 7; 
+    const totalExercises = state?.totalExercises ?? 3; // Padrão de 3
+    // --- NOVO ---
+    // Verifica se é a primeira vez (para dar Lcoins)
+    const isFirstTime = state?.isFirstTime ?? false;
 
     const handleNavigation = () => {
         if (screen === 'congrats') setScreen('sequence');
         else if (screen === 'sequence') setScreen('achievements');
         else if (screen === 'achievements') setScreen('lcoins');
         else if (screen === 'lcoins') {
-            // CORREÇÃO: Usando window.location.href para forçar o
-            // recarregamento da home e atualização do SettingsContext.
             window.location.href = '/home'; 
         }
     }
@@ -222,8 +243,12 @@ export default function Finalizado1() {
             )}
             
             {screen === 'sequence' && <SequenciaAtivaScreen onContinue={handleNavigation} />}
-            {screen === 'achievements' && <AchievementsScreen onContinue={handleNavigation} />}
-            {screen === 'lcoins' && <LcoinsScreen onContinue={handleNavigation} />}
+            
+            {screen === 'achievements' && <AchievementRewardScreen onContinue={handleNavigation} />}
+            
+            {/* --- INÍCIO DA MODIFICAÇÃO (Passa 'isFirstTime' para LcoinsScreen) --- */}
+            {screen === 'lcoins' && <LcoinsScreen onContinue={handleNavigation} isFirstTime={isFirstTime} />}
+            {/* --- FIM DA MODIFICAÇÃO --- */}
         </div>
     );
 }

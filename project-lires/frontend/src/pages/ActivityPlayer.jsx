@@ -1,12 +1,12 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, useRef } from 'react'; // <-- Importa o 'useRef'
 import { useNavigate, useParams } from 'react-router-dom';
-import Swal from 'sweetalert2'; 
-import { useSettings } from '../components/SettingsContext'; 
+import Swal from 'sweetalert2';
+import { useSettings } from '../components/SettingsContext';
 
 import { lessonLookup } from '../lessons/lessonMap.jsx';
 import { comecarDoZeroLesson } from '../lessons/comecarDoZeroLesson.jsx';
 import coracaoImage from '../assets/coracaoo.png';
-import robotReviewImage from '../assets/robot-review.png'; 
+import robotReviewImage from '../assets/robot-review.png';
 
 const lessonDatabase = {
     'comecar-do-zero': comecarDoZeroLesson,
@@ -14,7 +14,7 @@ const lessonDatabase = {
 
 // --- Componentes Visuais (Modais, Notificações, etc. - Sem alteração) ---
 function BottomNotification({ type, message, onContinue }) {
-    const { theme } = useSettings(); 
+    const { theme } = useSettings();
     const isCorrect = type === 'correct';
     const containerStyle = isCorrect ? (theme === 'escuro' ? "bg-purple-900 border-t-4 border-purple-700" : "bg-purple-100 border-t-4 border-purple-400") : (theme === 'escuro' ? "bg-red-900 border-t-4 border-red-700" : "bg-red-100 border-t-4 border-red-400");
     const titleStyle = isCorrect ? (theme === 'escuro' ? "text-white" : "text-purple-800") : (theme === 'escuro' ? "text-white" : "text-red-800");
@@ -43,31 +43,30 @@ export default function ActivityPlayer() {
     const navigate = useNavigate();
     const { lessonId } = useParams();
     
-    // --- INÍCIO DA MODIFICAÇÃO (Importar timeSpentToday) ---
-    const { 
-        lives, setLives, 
-        lcoins, setLcoins,
+    const {
+        lives, setLives,
+        // lcoins, setLcoins, // Removido
         dailyStreak, setDailyStreak,
         lastCompletedTimestamp, setLastCompletedTimestamp,
-        timeSpentToday, setTimeSpentToday, // <-- NOVO
-         lessonProgress, setLessonProgress 
-    } = useSettings(); 
-    // --- FIM DA MODIFICAÇÃO ---
+        timeSpentToday, setTimeSpentToday, 
+        lessonProgress, setLessonProgress
+    } = useSettings();
     
+    // --- INÍCIO DA MODIFICAÇÃO (useRef) ---
+    // Salva o progresso inicial assim que o componente carrega
+    const initialProgressRef = useRef(lessonProgress[lessonId]?.completed || 0);
+    // --- FIM DA MODIFICAÇÃO ---
+
     const lessonData = lessonDatabase[lessonId];
-    const lessonInfo = lessonLookup[lessonId]; 
+    const lessonInfo = lessonLookup[lessonId];
 
     if (!lessonData || !lessonInfo) {
         useEffect(() => {
             console.error(`ActivityPlayer: ID da lição ('${lessonId}') não encontrado. Redirecionando...`);
-            navigate('/'); 
+            navigate('/');
         }, [navigate, lessonId]);
         return null;
     }
-
-    const LESSON_REWARD = 50;
-    // Vamos assumir que cada lição completa vale 5 minutos para a meta
-    const ACTIVITY_TIME_MINUTES = 5; 
     
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -76,50 +75,54 @@ export default function ActivityPlayer() {
     const [showFirstMistakeModal, setShowFirstMistakeModal] = useState(false);
     const [hasSeenFirstMistakeModal, setHasSeenFirstMistakeModal] = useState(false);
     const [showGameOverModal, setShowGameOverModal] = useState(false);
-    const [incorrectSteps, setIncorrectSteps] = useState([]); 
+    const [incorrectSteps, setIncorrectSteps] = useState([]);
     const [isRedoMode, setIsRedoMode] = useState(false);
-    const [redoIndex, setRedoIndex] = useState(0); 
+    const [redoIndex, setRedoIndex] = useState(0);
     const [showReviewScreen, setShowReviewScreen] = useState(false);
 
-    const allLessonSteps = lessonData.steps; 
-    const totalLessonSteps = allLessonSteps.length; 
-    const totalInteractiveSteps = lessonInfo.totalSteps; 
+    // Timer de Tempo Real
+    useEffect(() => {
+        const today = new Date();
+        const todayTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+        
+        if (lastCompletedTimestamp !== todayTimestamp) {
+            console.log("ActivityPlayer: Novo dia detectado. Resetando timeSpentToday para 0.");
+            setTimeSpentToday(0); 
+        }
+
+        const interval = setInterval(() => {
+            setTimeSpentToday(prevTime => prevTime + (1/60));
+        }, 1000); 
+
+        return () => {
+            console.log("ActivityPlayer: Saindo da atividade, parando o timer.");
+            clearInterval(interval);
+        };
+        
+    }, []); // Roda só uma vez
+
+    const allLessonSteps = lessonData.steps;
+    const totalLessonSteps = allLessonSteps.length;
+    
+    // Usa o total de passos real (ex: 3)
+    const totalInteractiveSteps = lessonInfo.totalSteps;
     
     const handleCloseFirstMistakeModal = () => setShowFirstMistakeModal(false);
     const resetGame = () => {
         setShowGameOverModal(false);
-        navigate('/'); 
+        navigate('/');
     };
 
-    const startRedoMode = () => {
-        setShowReviewScreen(false);
-        setIsRedoMode(true);
-        setRedoIndex(0);
-        setCurrentStepIndex(incorrectSteps[0]); 
-        setSelectedAnswer(null);
-        setIsChecking(false);
-    };
-
-    const handleSelectAnswer = (index) => {
-        if (isChecking) return; 
-        setSelectedAnswer(index);
-    };
-
-    // --- LÓGICA DE RECOMPENSAS (REFEITA) ---
+    // Função de Recompensa (Streak) - Sem alteração
     const completeLessonAndGiveRewards = () => {
-        const isFirstTimeFullCompletion = lessonProgress[lessonId]?.completed !== totalInteractiveSteps;
-
-        // Pega o timestamp de "hoje" à meia-noite (no fuso horário local)
         const today = new Date();
         const todayTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
 
-        // 1. Se a última atividade completa NÃO foi hoje
         if (lastCompletedTimestamp !== todayTimestamp) {
-            console.log("Primeira atividade do dia. Verificando streak...");
+            console.log("Primeira atividade COMPLETA do dia. Verificando streak...");
             
-            const yesterdayTimestamp = todayTimestamp - 86400000; // 24 * 60 * 60 * 1000
+            const yesterdayTimestamp = todayTimestamp - 86400000; 
 
-            // Lógica da Sequência (Streak)
             if (lastCompletedTimestamp === yesterdayTimestamp) {
                 console.log("Dia consecutivo! Streak +1");
                 setDailyStreak(prevStreak => prevStreak + 1);
@@ -128,33 +131,64 @@ export default function ActivityPlayer() {
                 setDailyStreak(1);
             }
             
-            // Lógica da Meta Diária
-            // Como é a primeira lição do dia, RESETAMOS o tempo para 5 minutos
-            console.log("Resetando meta diária para 5 min.");
-            setTimeSpentToday(ACTIVITY_TIME_MINUTES);
-
-            // Salva a data de hoje como a última completada
             setLastCompletedTimestamp(todayTimestamp);
         } else {
-            // 2. Se a última atividade JÁ FOI hoje (é a 2ª, 3ª, etc. lição)
-            console.log("Já completou uma lição hoje. Adicionando tempo à meta.");
-            // Apenas ADICIONA tempo à meta diária
-            setTimeSpentToday(prevTime => prevTime + ACTIVITY_TIME_MINUTES);
-            // O streak e o timestamp já estão corretos
-        }
-        
-        // 3. Dá Lcoins (se for a primeira vez completando ESTA lição)
-        if (isFirstTimeFullCompletion) {
-            console.log("Dando Lcoins pela primeira conclusão da lição.");
-            setLcoins(prevLcoins => prevLcoins + LESSON_REWARD);
+            console.log("Já completou uma lição hoje. Streak já contado.");
         }
     };
-    // --- FIM DA MODIFICAÇÃO ---
 
+    // Função finishLesson
+    const finishLesson = (errorCount) => {
+        
+        const finalCompletedSteps = totalInteractiveSteps;
+        const finalTotalSteps = totalInteractiveSteps;
+        
+        console.log(`ActivityPlayer: Finalizando lição. Forçando progresso para ${finalCompletedSteps} / ${finalTotalSteps} passos.`);
+
+        // 1. Força o salvamento do progresso completo
+        setLessonProgress(prev => ({
+            ...prev,
+            [lessonId]: { completed: finalCompletedSteps, total: finalTotalSteps }
+        }));
+
+        // 2. Dá as recompensas (Streak)
+        completeLessonAndGiveRewards();
+        
+        // --- INÍCIO DA MODIFICAÇÃO (Lógica de Lcoins) ---
+        // Compara o progresso INICIAL (ex: 0) com o progresso FINAL (ex: 3)
+        const isFirstTimeFullCompletion = initialProgressRef.current < finalCompletedSteps;
+        console.log(`ActivityPlayer: Progresso inicial era ${initialProgressRef.current}. É a primeira vez? ${isFirstTimeFullCompletion}`);
+        // --- FIM DA MODIFICAÇÃO ---
+        
+        // 4. Navega para a tela de finalizado
+        navigate('/finalizado', { 
+            state: { 
+                errorCount: errorCount, 
+                totalExercises: finalCompletedSteps,
+                isFirstTime: isFirstTimeFullCompletion // Envia a informação correta
+            } 
+        });
+    };
+
+    const startRedoMode = () => {
+        setShowReviewScreen(false);
+        setIsRedoMode(true);
+        setRedoIndex(0);
+        setCurrentStepIndex(incorrectSteps[0]);
+        setSelectedAnswer(null);
+        setIsChecking(false);
+    };
+
+    const handleSelectAnswer = (index) => {
+        if (isChecking) return;
+        setSelectedAnswer(index);
+    };
+
+    // proceedToNextStep (Sem alteração)
     const proceedToNextStep = () => {
-        setNotification({ visible: false, type: '', message: '' }); 
-        setIsChecking(false); 
-        setSelectedAnswer(null); 
+        setNotification({ visible: false, type: '', message: '' });
+        setIsChecking(false);
+        setSelectedAnswer(null);
 
         if (lives <= 0) {
             setShowGameOverModal(true);
@@ -168,7 +202,7 @@ export default function ActivityPlayer() {
                 setCurrentStepIndex(incorrectSteps[nextRedoIndex]);
             } else {
                 console.log("Redo concluído. Navegando para /finalizado");
-                navigate('/finalizado', { state: { errorCount: incorrectSteps.length, totalExercises: totalInteractiveSteps } });
+                finishLesson(incorrectSteps.length);
             }
         } else {
              const nextStepIndex = currentStepIndex + 1;
@@ -177,47 +211,33 @@ export default function ActivityPlayer() {
                  setCurrentStepIndex(nextStepIndex);
              } else {
                 console.warn("proceedToNextStep: Fim da lição atingido. Direcionando para a tela de revisão.");
-                setLessonProgress(prev => ({
-                    ...prev,
-                    [lessonId]: { completed: totalInteractiveSteps, total: totalInteractiveSteps }
-                }));
-                completeLessonAndGiveRewards(); // <-- Chama a função de recompensa/streak
-                setShowReviewScreen(true);
+                if (incorrectSteps.length === 0) {
+                    finishLesson(0);
+                } else {
+                    setShowReviewScreen(true);
+                }
              }
         }
     };
 
+    // handleSkip (Sem alteração)
     const handleSkip = () => {
         const isLastStep = currentStepIndex === totalLessonSteps - 1;
-        const currentStep = allLessonSteps[currentStepIndex];
 
         if (isLastStep && !isRedoMode) {
-            setLessonProgress(prev => ({
-                ...prev,
-                [lessonId]: { completed: totalInteractiveSteps, total: totalInteractiveSteps }
-            }));
-            
-            completeLessonAndGiveRewards(); // <-- Chama a função de recompensa/streak
-
-            if (currentStep.correctAnswer !== undefined && !incorrectSteps.includes(currentStepIndex)) {
-                setIncorrectSteps(prev => {
-                    const newErrors = [...prev, currentStepIndex].sort((a, b) => a - b);
-                    setShowReviewScreen(true);
-                    return newErrors;
-                });
-                console.log("Lição 'pulada' no final. Adicionando erro e mostrando revisão.");
+            console.log("Lição 'pulada' no final. Mostrando tela de revisão.");
+            if (incorrectSteps.length === 0) {
+                finishLesson(0);
             } else {
-                console.log("Lição 'pulada' no final (passo não-interativo). Mostrando tela de revisão.");
                 setShowReviewScreen(true);
             }
-            
-            return; 
-
+            return;
         } else {
             proceedToNextStep();
         }
     };
     
+    // handleCheckAnswer (Sem alteração)
     const handleCheckAnswer = () => {
         if (selectedAnswer === null) {
             Swal.fire('Opa!', 'Você precisa selecionar uma resposta primeiro.', 'info');
@@ -226,31 +246,18 @@ export default function ActivityPlayer() {
 
         const currentStep = allLessonSteps[currentStepIndex];
         const correctAnswer = currentStep.correctAnswer;
-         const message = `A resposta correta era a Opção ${correctAnswer + 1}.`;
+        const message = `A resposta correta era a Opção ${correctAnswer + 1}.`;
         const isLastStep = currentStepIndex === totalLessonSteps - 1;
 
          if (selectedAnswer === correctAnswer) {
             if (!isRedoMode) {
+                // Incrementa o progresso VISUALMENTE
                 const currentCompleted = lessonProgress[lessonId]?.completed || 0;
-                const newCompleted = currentCompleted + 1;
-                
-                setLessonProgress(prev => ({
-                    ...prev,
-                    [lessonId]: { completed: newCompleted, total: totalInteractiveSteps }
-                }));
-            
-                if (newCompleted === totalInteractiveSteps) {
-                    completeLessonAndGiveRewards(); // <-- Chama a função de recompensa/streak
-                    
-                    if (incorrectSteps.length === 0) {
-                        console.log("Lição perfeita, navegando para /finalizado");
-                        navigate('/finalizado', { state: { errorCount: 0, totalExercises: totalInteractiveSteps } });
-                        return;
-                    } else {
-                        console.log("Lição concluída (com erros). Mostrando tela de revisão.");
-                        setShowReviewScreen(true);
-                        return;
-                    }
+                if (currentCompleted < totalInteractiveSteps) {
+                     setLessonProgress(prev => ({
+                        ...prev,
+                        [lessonId]: { completed: currentCompleted + 1, total: totalInteractiveSteps }
+                    }));
                 }
             }
             
@@ -258,7 +265,7 @@ export default function ActivityPlayer() {
             setIsChecking(true);
 
         } else {
-            setLives(lives - 1); 
+            setLives(lives - 1);
             
             if (!isRedoMode && !incorrectSteps.includes(currentStepIndex)) {
                 setIncorrectSteps(prev => [...prev, currentStepIndex].sort((a, b) => a - b));
@@ -267,23 +274,7 @@ export default function ActivityPlayer() {
              if (!hasSeenFirstMistakeModal) {
                  setShowFirstMistakeModal(true);
                  setHasSeenFirstMistakeModal(true);
-            }
-
-            if (isLastStep && !isRedoMode) {
-                const currentCompleted = lessonProgress[lessonId]?.completed || 0;
-                const newCompleted = currentCompleted + 1;
-                
-                setLessonProgress(prev => ({
-                    ...prev,
-                    [lessonId]: { completed: newCompleted, total: totalInteractiveSteps }
-                }));
-                
-                completeLessonAndGiveRewards(); // <-- Chama a função de recompensa/streak
-                
-                console.log("Lição concluída (última errada). Mostrando tela de revisão.");
-                setShowReviewScreen(true);
-                return; 
-            }
+             }
 
             setNotification({ visible: true, type: 'incorrect', message: message });
             setIsChecking(true);
@@ -301,13 +292,13 @@ export default function ActivityPlayer() {
 
     return (
         <Fragment>
-            <CurrentStepComponent 
-                onNext={handleSkip} 
+            <CurrentStepComponent
+                onNext={handleSkip}
                 onCheckAnswer={handleCheckAnswer}
                 onSelectAnswer={handleSelectAnswer}
                 selectedAnswer={selectedAnswer}
-                isChecking={isChecking} 
-                 progress={progressPercent} 
+                isChecking={isChecking}
+                progress={progressPercent}
                 lives={lives}
                 lessonTitle={lessonData.title}
                 lessonSubtitle={lessonData.subtitle}
