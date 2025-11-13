@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react'; // <-- Adicionado useState e useEffect
-// IMPORTAR O HOOK DE CONFIGURAÇÕES (dailyStreak ADICIONADO)
-import { useSettings } from '../components/SettingsContext';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. IMPORTADO O 'useNavigate'
+// 2. IMPORTADO O 'useSettings' E O CAMINHO CORRIGIDO (para minúsculas)
+import { useSettings } from './settingscontext'; 
 
-// --- Imagens (Caminhos corrigidos) ---
-import userAvatarImg from '../assets/perfil.png'; // <-- Mantido como fallback
+// --- Imagens ---
+// Assumindo que 'sidebarright.jsx' está em 'src/components/'
+// e 'assets' está em 'src/assets/'
+import userAvatarImg from '../assets/perfil.png';
 import moneyBagImg from '../assets/bolsinha-dinheiro.png';
 import fireIconImg from '../assets/foguinho.png';
 import lcoinIconImg from '../assets/lcoin.png';
@@ -12,7 +15,7 @@ import liresMasterLogoImg from '../assets/lires-master-logo.png';
 import robotMascotImg from '../assets/robot-mascot.png';     
 import AdImage from '../assets/anuncio.png';
 
-// --- INÍCIO DA MODIFICAÇÃO (Função de Avatar) ---
+// --- Função de Avatar ---
 const colorPalette = [
     'f0d3f7', 'c0aede', 'd1d4f9', 'fde047', 'a78bfa',
     '7c3aed', '4ade80', '2dd4bf', 'fb7185', 'f97316'
@@ -25,8 +28,8 @@ const getAvatarUrl = (seed, style) => {
     }
     return `https://api.dicebear.com/7.x/${finalStyle}/svg?seed=${seed}&radius=50&backgroundColor=${colorPalette}`;
 };
-// --- FIM DA MODIFICAÇÃO ---
 
+// --- Componente UserStat ---
 const UserStat = ({ iconSrc, value, color }) => (
     <div className="flex items-center gap-3">
         <img src={iconSrc} alt="Ícone de Status" className="w-8 h-8" />
@@ -34,10 +37,13 @@ const UserStat = ({ iconSrc, value, color }) => (
     </div>
 );
 
+// --- Componente Principal ---
 export default function SidebarRight() {
-  const { theme, lives, lcoins, dailyStreak } = useSettings();
+  // 3. PUXADO O 'timeSpentToday' E INICIADO O 'navigate'
+  const { theme, lives, lcoins, dailyStreak, timeSpentToday } = useSettings();
+  const navigate = useNavigate();
 
-  // --- INÍCIO DA MODIFICAÇÃO (Carregar Avatar do Usuário) ---
+  // --- Carregar Avatar do Usuário ---
   const [avatarUrl, setAvatarUrl] = useState(userAvatarImg); // Começa com o placeholder
 
   useEffect(() => {
@@ -49,7 +55,13 @@ export default function SidebarRight() {
         setAvatarUrl(getAvatarUrl(user?.avatarSeed || user?.username, user?.avatarStyle));
     }
   }, []); // Roda só uma vez quando o componente é montado
-  // --- FIM DA MODIFICAÇÃO ---
+
+  // --- Lógica de XP ---
+  const DAILY_XP_GOAL = 250; // O seu objetivo diário
+  // timeSpentToday vem em minutos (ex: 10.5), arredondamos para baixo
+  const currentXp = Math.floor(timeSpentToday || 0); 
+  // Calcula a percentagem, mas limita a 100%
+  const xpPercentage = Math.min((currentXp / DAILY_XP_GOAL) * 100, 100);
 
   return (
     <aside className={`
@@ -59,7 +71,7 @@ export default function SidebarRight() {
         : 'bg-[#F9F8FF] border-l border-slate-200'}
     `}>
       
-      {/* User Stats (Sem alteração) */}
+      {/* User Stats */}
       <div className={`
         flex justify-around items-center p-2 rounded-xl
         ${theme === 'escuro' ? 'bg-gray-800' : 'bg-slate-50'}
@@ -69,28 +81,32 @@ export default function SidebarRight() {
         <UserStat iconSrc={heartIconImg} value={lives} color="text-red-500" />
       </div>
 
-      {/* Lires Master Card (Sem alteração) */}
+      {/* Lires Master Card (Atualizado com onClick) */}
       <div className="p-1 rounded-[24px] bg-gradient-to-br from-teal-200 to-blue-300">
         <div className="bg-gradient-to-br from-blue-800 via-indigo-900 to-black text-white rounded-[20px] relative overflow-hidden p-5">
-            <div className="flex justify-between items-center">
-                <div className="relative z-10">
-                    <img src={liresMasterLogoImg} alt="Líres Master" className="w-32 mb-3" />
-                    <p className="font-bold text-lg text-white mb-1">Seja MASTER agora!</p>
-                    <p className="text-xs text-blue-200 mb-4 leading-snug">
-                        Sem anuncios, vida ilimitada e<br/>skins gratis!
-                    </p>
-                    <button className="bg-gradient-to-r from-[#D7A3EB] to-[#9E57C3] text-white font-bold py-2 px-6 rounded-full w-fit shadow-lg hover:brightness-110 transition-all">
-                        Assine agora
-                    </button>
-                </div>
-                <div className="absolute right-[-25px] bottom-[-15px] w-40 h-40 z-0">
-                    <img src={robotMascotImg} alt="Robô Mascote" className="w-full h-full object-contain" />
-                </div>
+          <div className="flex justify-between items-center">
+            <div className="relative z-10">
+              <img src={liresMasterLogoImg} alt="Líres Master" className="w-32 mb-3" />
+              <p className="font-bold text-lg text-white mb-1">Seja MASTER agora!</p>
+              <p className="text-xs text-blue-200 mb-4 leading-snug">
+                Sem anuncios, vida ilimitada e<br/>skins gratis!
+              </p>
+              {/* 4. ADICIONADO O 'onClick' PARA NAVEGAÇÃO */}
+              <button 
+                onClick={() => navigate('/configuracoes/assinatura')}
+                className="bg-gradient-to-r from-[#D7A3EB] to-[#9E57C3] text-white font-bold py-2 px-6 rounded-full w-fit shadow-lg hover:brightness-110 transition-all"
+              >
+                Assine agora
+              </button>
             </div>
+            <div className="absolute right-[-25px] bottom-[-15px] w-40 h-40 z-0">
+              <img src={robotMascotImg} alt="Robô Mascote" className="w-full h-full object-contain" />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Card de Missões (Atualizado) */}
+      {/* Card de Missões (Atualizado com XP dinâmico) */}
       <div className={`
         p-5 rounded-2xl space-y-4
         ${theme === 'escuro' 
@@ -107,26 +123,27 @@ export default function SidebarRight() {
         </div>
         <div className="flex items-center gap-4">
           <div>
-            {/* --- INÍCIO DA MODIFICAÇÃO (Avatar Dinâmico) --- */}
+            {/* Avatar Dinâmico */}
             <img 
               src={avatarUrl} 
               alt="Avatar do Usuário" 
               className="w-12 h-12 rounded-full border-2 border-purple-200 bg-white" 
             />
-            {/* --- FIM DA MODIFICAÇÃO --- */}
           </div>
           <div className="flex-1 relative">
             <div className={`
               rounded-full h-6 w-full
               ${theme === 'escuro' ? 'bg-gray-600' : 'bg-slate-200'}
             `}>
+              {/* 5. LARGURA DA BARRA DINÂMICA */}
               <div 
                 className="bg-gradient-to-r from-purple-400 to-indigo-500 h-6 rounded-full" 
-                style={{ width: '60%' }}
+                style={{ width: `${xpPercentage}%` }}
               ></div>
             </div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-white font-bold text-xs">150 / 250 XP</span>
+              {/* 6. TEXTO DE XP DINÂMICO */}
+              <span className="text-white font-bold text-xs">{currentXp} / {DAILY_XP_GOAL} XP</span>
             </div>
           </div>
           <div className="flex flex-col items-center">
@@ -136,7 +153,7 @@ export default function SidebarRight() {
         </div>
       </div>
       
-      {/* Card de Anúncio (Sem alteração) */}
+      {/* Card de Anúncio (Como pedido) */}
       <div className={`
         p-4 rounded-2xl border text-center flex-shrink-0
         ${theme === 'escuro' 
@@ -148,7 +165,7 @@ export default function SidebarRight() {
         </div>
       </div>
       
-      {/* Footer (Sem alteração) */}
+      {/* Footer */}
       <footer className={`
         text-xs text-center space-x-2 pt-4 flex-shrink-0
         ${theme === 'escuro' ? 'text-slate-400' : 'text-slate-500'}
