@@ -1,13 +1,19 @@
 // src/lessons/lessonMap.js
 
-// Importamos a definição da sua primeira lição
+// --- 1. IMPORTAR AS NOVAS LIÇÕES ---
 import { comecarDoZeroLesson } from './comecarDoZeroLesson.jsx';
+import { saudacoesAvancadasLesson } from './saudacoesAvancadasLesson.jsx';
+import { checkpoint1Lesson } from './checkpoint1Lesson.jsx';
+import { alfabetoLetraALesson } from './alfabetoLetraALesson.jsx';
+import { alfabetoConsoantesLesson } from './alfabetoConsoantesLesson.jsx';
+import { alfabetoRevisaoLesson } from './alfabetoRevisaoLesson.jsx';
+
 
 /**
  * Conta quantos passos "interativos" (perguntas) uma lição possui.
  */
 const countInteractiveSteps = (steps) => {
-  return steps.filter(step => step.type === 'pergunta').length;
+  return steps.filter(step => step.type === 'pergunta').length;
 };
 
 /**
@@ -15,27 +21,48 @@ const countInteractiveSteps = (steps) => {
  * O MainContent vai ler isso para desenhar os cards.
  */
 export const lessonMap = [
-  {
-    id: 'comecar-do-zero',
-    unit: 1, // Unidade 1
-    title: 'Começar do Zero',
-    // Contamos dinamicamente quantos passos de "pergunta" existem
-    totalSteps: countInteractiveSteps(comecarDoZeroLesson.steps), // Isso dará 3
-  },
-  {
-    id: 'saudacoes-avancadas',
-    unit: 1,
-    title: 'Saudações Avançadas',
-    totalSteps: 4, // Exemplo
-  },
-  {
-    id: 'checkpoint-1',
-    unit: 1,
-    title: 'Desafio da Unidade 1',
-    totalSteps: 1, // Desafios (coroas) têm apenas 1 passo
-    isCheckpoint: true, // Para mostrar a coroa
-  },
-  // Adicione mais lições aqui...
+  // --- UNIDADE 1 ---
+  {
+    id: 'comecar-do-zero',
+    unit: 1, // Unidade 1
+    title: 'Começar do Zero',
+    totalSteps: countInteractiveSteps(comecarDoZeroLesson.steps), // 3
+  },
+  {
+    id: 'saudacoes-avancadas',
+    unit: 1,
+    title: 'Saudações Avançadas',
+    totalSteps: countInteractiveSteps(saudacoesAvancadasLesson.steps), // 4
+  },
+  {
+    id: 'checkpoint-1',
+    unit: 1,
+    title: 'Desafio da Unidade 1',
+    totalSteps: countInteractiveSteps(checkpoint1Lesson.steps), // 1
+    isCheckpoint: true, // Para mostrar a coroa
+  },
+  
+  // --- 2. ADICIONAR AS LIÇÕES DA UNIDADE 2 ---
+  {
+    id: 'alfabeto-letra-a',
+    unit: 2, // Unidade 2
+    title: 'Vogais - Parte 1',
+    totalSteps: countInteractiveSteps(alfabetoLetraALesson.steps), // 5
+  },
+  {
+    id: 'alfabeto-consoantes',
+    unit: 2, // Unidade 2
+    title: 'Consoantes - Parte 1',
+    totalSteps: countInteractiveSteps(alfabetoConsoantesLesson.steps), // 6
+  },
+  {
+    id: 'alfabeto-revisao',
+    unit: 2, // Unidade 2
+    title: 'Desafio do Alfabeto',
+    totalSteps: countInteractiveSteps(alfabetoRevisaoLesson.steps), // 1
+    isCheckpoint: true, // Para mostrar a coroa
+  },
+  // Adicione mais lições aqui...
 ];
 
 /**
@@ -43,6 +70,6 @@ export const lessonMap = [
  * O ActivityPlayer usará isso.
  */
 export const lessonLookup = lessonMap.reduce((acc, lesson) => {
-  acc[lesson.id] = lesson;
-  return acc;
+  acc[lesson.id] = lesson;
+  return acc;
 }, {});

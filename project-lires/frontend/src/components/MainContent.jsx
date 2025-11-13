@@ -4,7 +4,10 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 import { useNavigate } from 'react-router-dom';
 
 import { lessonMap } from '../lessons/lessonMap';
-import { useSettings } from './SettingsContext';
+// --- 1. IMPORTAR OS SETTERS DO CONTEXTO ---
+import { 
+    useSettings 
+} from './SettingsContext'; // Corrigido para ir buscar tudo de 'useSettings'
 
 import checkIconImg from '../assets/check-icon.png';
 import diamondIconImg from '../assets/coroa.png';
@@ -13,7 +16,8 @@ import lockIconImg from '../assets/locked-Achievement.png';
 // --- COMPONENTE DO BLOCO DE LIÇÃO ---
 const LessonBlock = ({ status, progress, iconSrc, lessonId, isUnlocked }) => {
     const navigate = useNavigate();
-    const { theme, lives, isRegeneratingLives, livesRegenerationTime } = useSettings();
+    // Pegar apenas o que o componente precisa
+    const { theme, lives, isRegeneratingLives, livesRegenerationTime } = useSettings(); 
     const baseLayout = "rounded-3xl w-48 h-48 flex flex-col items-center justify-center p-4 transition-transform border-b-8";
 
     let content;
@@ -164,12 +168,64 @@ const SectionTitle = ({ children }) => {
 
 // --- COMPONENTE PRINCIPAL ---
 export default function MainContent() {
-    const { lessonProgress, theme } = useSettings();
+    // --- 2. PUXAR OS SETTERS DO CONTEXTO ---
+    const { 
+        lessonProgress, 
+        theme, 
+        setLessonProgress, 
+        setLives, 
+        setLcoins, 
+        setDailyStreak, 
+        setTimeSpentToday, 
+        setLastCompletedTimestamp 
+    } = useSettings();
+
     const [animationClass, setAnimationClass] = useState('');
 
     useEffect(() => {
         setAnimationClass('anim-enter');
     }, []);
+
+    // --- 3. FUNÇÃO DE RESET (DEBUG) ---
+    const handleResetProgress = () => {
+        Swal.fire({
+            title: 'Resetar Progresso? (Debug)',
+            text: "Todo o seu progresso de lições, Lcoins e streak serão zerados. Deseja continuar?",
+            icon: 'warning',
+            iconColor: '#f87171', // Vermelho
+            showCancelButton: true,
+            confirmButtonText: 'Sim, zerar tudo',
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-700 text-slate-200' : ''}`,
+                title: `${theme === 'escuro' ? 'text-red-300' : 'text-slate-800'}`,
+                confirmButton: 'bg-red-600 font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105 mr-2',
+                cancelButton: 'bg-gray-500 font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105',
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Resetar tudo
+                setLessonProgress({});
+                setLives(5);
+                setLcoins(0);
+                setDailyStreak(0);
+                setTimeSpentToday(0);
+                setLastCompletedTimestamp(null);
+                
+                Swal.fire({
+                   title: 'Progresso Resetado!',
+                   text: 'Suas atividades foram zeradas.',
+                   icon: 'success',
+                    customClass: {
+                        popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-700 text-slate-200' : ''}`,
+                        title: `${theme === 'escuro' ? 'text-purple-300' : 'text-slate-800'}`,
+                        confirmButton: 'btn-gradient-glow font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105',
+                    }
+                });
+            }
+        });
+    };
+    // --- FIM DA FUNÇÃO DE RESET ---
 
     // ===== UNIDADE 1: Primeiros Passos =====
     const unit1Lessons = lessonMap.filter(lesson => lesson.unit === 1);
@@ -229,7 +285,7 @@ export default function MainContent() {
             status: isLessonCompleted ? 'completed' : (isUnlocked ? 'in-progress' : 'locked'),
             progress: `${prog?.completed || 0}/${lesson.totalSteps}`,
             lessonId: lesson.id,
-            isUnlocked: isUnlocked,
+            isUnlocked: isUnlocked, // <-- Erro estava aqui (havia 'section:')
             icon: isLessonCompleted ? null : icon,
         };
     });
@@ -255,7 +311,7 @@ export default function MainContent() {
             blocks: [
                 { status: 'locked', progress: '0/4', isUnlocked: false },
                 { status: 'locked', progress: '0/4', isUnlocked: false },
-                { status: 'locked', progress: '0/4', isUnlocked: false }
+                { status: 'locked', progress: '0/4', isUnlocked: false } // <-- Erro estava aqui (havia 'section:')
             ]
         },
     ];
@@ -317,6 +373,24 @@ export default function MainContent() {
                         <h3 className={`text-3xl font-bold ${theme === 'escuro' ? 'text-gray-600' : 'text-slate-400'}`}>BLOQUEADO</h3>
                     </div>
                 </section>
+
+                {/* --- 4. BOTÃO DE DEBUG ADICIONADO AQUI --- */}
+                <section className="mt-16 mb-8 flex justify-center">
+                    <button
+                        onClick={handleResetProgress}
+                        className={`
+                            py-2 px-4 rounded-full font-semibold text-xs
+                            ${theme === 'escuro' 
+                                ? 'bg-gray-800 text-red-400 hover:bg-gray-700' 
+                                : 'bg-red-100 text-red-700 hover:bg-red-200'}
+                            transition-colors
+                        `}
+                    >
+                        [DEBUG] Resetar Progresso
+                    </button>
+                </section>
+                {/* --- FIM DO BOTÃO DE DEBUG --- */}
+
             </main>
         </>
     );
