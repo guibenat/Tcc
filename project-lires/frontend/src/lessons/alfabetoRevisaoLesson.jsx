@@ -426,7 +426,8 @@ export const alfabetoRevisaoLesson = {
     },
     {
       type: 'pergunta',
-      component: (props) => <StepPergunta {...props} questionText="Revisão: Qual sinal representa a letra H?" isFinal={true} />,
+      // --- CORREÇÃO: Removido 'isFinal={true}' ---
+      component: (props) => <StepPergunta {...props} questionText="Revisão: Qual sinal representa a letra H?" />,
       correctAnswer: 1
     }
   ]

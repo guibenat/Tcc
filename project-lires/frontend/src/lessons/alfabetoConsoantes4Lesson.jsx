@@ -38,7 +38,7 @@ function Step1({ onNext }) {
         <div className={`p-8 rounded-2xl border-2 flex items-center gap-8 max-w-2xl ${theme === 'escuro' ? 'bg-gray-800 border-blue-700' : 'bg-white border-blue-400'}`} style={{ boxShadow: '0 0 50px rgba(90, 177, 255, 0.6)' }}>
           <div className="flex-grow text-left">
             <p className="text-xl font-semibold mb-2" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Agora vamos aprender algumas consoantes! Você vai dominar: B, C, D, F, G, H.
+              Última parte! Vamos aprender as letras: V, W, X, Y, Z.
             </p>
             <button onClick={onNext} className="mt-4 text-lg font-semibold py-3 px-8 border-none rounded-2xl cursor-pointer text-white transition transform duration-200 hover:scale-105" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)' }}>
               Iniciar
@@ -170,24 +170,21 @@ function StepPergunta({ onNext, onCheckAnswer, progress, onSelectAnswer, selecte
     );
 }
 
-export const alfabetoConsoantesLesson = {
-  id: 'alfabeto-consoantes',
+export const alfabetoConsoantes4Lesson = {
+  id: 'alfabeto-consoantes-4',
   title: 'Alfabeto Manual',
-  subtitle: 'Consoantes - Parte 1',
+  subtitle: 'Consoantes - Parte 4 (Final)',
   steps: [
     { type: 'modal-inicio', component: Step1 },
     { type: 'video', component: StepVideo },
-    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra B?" />, correctAnswer: 1 },
+    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra V?" />, correctAnswer: 1 },
     { type: 'video', component: StepVideo },
-    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra C?" />, correctAnswer: 3 },
+    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra W?" />, correctAnswer: 3 },
     { type: 'video', component: StepVideo },
-    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra D?" />, correctAnswer: 0 },
+    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra X?" />, correctAnswer: 0 },
     { type: 'video', component: StepVideo },
-    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra F?" />, correctAnswer: 2 },
+    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra Y?" />, correctAnswer: 2 },
     { type: 'video', component: StepVideo },
-    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra G?" />, correctAnswer: 4 },
-    { type: 'video', component: StepVideo },
-    // --- CORREÇÃO: Removido 'isFinal={true}' ---
-    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra H?" />, correctAnswer: 1 }
+    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra Z?" />, correctAnswer: 4 },
   ]
 };

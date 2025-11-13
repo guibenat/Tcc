@@ -211,7 +211,7 @@ function StepPergunta({
     lessonTitle,
     lessonSubtitle,
     questionText,
-    isFinal
+    isFinal // Note: Esta prop é passada pelo ActivityPlayer, não precisamos mais forçá-la
 }) {
     const { theme } = useSettings();
 
@@ -355,7 +355,9 @@ export const checkpoint1Lesson = {
     },
     {
       type: 'pergunta',
-      component: (props) => <StepPergunta {...props} questionText="Revisão: Qual sinal significa 'Obrigado'?" isFinal={true} />,
+      // --- CORREÇÃO: Removido 'isFinal={true}' ---
+      // O ActivityPlayer vai injetar esta prop automaticamente
+      component: (props) => <StepPergunta {...props} questionText="Revisão: Qual sinal significa 'Obrigado'?" />,
       correctAnswer: 0
     }
   ]

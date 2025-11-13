@@ -4,10 +4,7 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 import { useNavigate } from 'react-router-dom';
 
 import { lessonMap } from '../lessons/lessonMap';
-// --- 1. IMPORTAR OS SETTERS DO CONTEXTO ---
-import { 
-    useSettings 
-} from './SettingsContext'; // Corrigido para ir buscar tudo de 'useSettings'
+import { useSettings } from './SettingsContext';
 
 import checkIconImg from '../assets/check-icon.png';
 import diamondIconImg from '../assets/coroa.png';
@@ -16,8 +13,7 @@ import lockIconImg from '../assets/locked-Achievement.png';
 // --- COMPONENTE DO BLOCO DE LIÇÃO ---
 const LessonBlock = ({ status, progress, iconSrc, lessonId, isUnlocked }) => {
     const navigate = useNavigate();
-    // Pegar apenas o que o componente precisa
-    const { theme, lives, isRegeneratingLives, livesRegenerationTime } = useSettings(); 
+    const { theme, lives, isRegeneratingLives, livesRegenerationTime } = useSettings();
     const baseLayout = "rounded-3xl w-48 h-48 flex flex-col items-center justify-center p-4 transition-transform border-b-8";
 
     let content;
@@ -168,7 +164,6 @@ const SectionTitle = ({ children }) => {
 
 // --- COMPONENTE PRINCIPAL ---
 export default function MainContent() {
-    // --- 2. PUXAR OS SETTERS DO CONTEXTO ---
     const { 
         lessonProgress, 
         theme, 
@@ -186,7 +181,6 @@ export default function MainContent() {
         setAnimationClass('anim-enter');
     }, []);
 
-    // --- 3. FUNÇÃO DE RESET (DEBUG) ---
     const handleResetProgress = () => {
         Swal.fire({
             title: 'Resetar Progresso? (Debug)',
@@ -225,16 +219,9 @@ export default function MainContent() {
             }
         });
     };
-    // --- FIM DA FUNÇÃO DE RESET ---
 
     // ===== UNIDADE 1: Primeiros Passos =====
     const unit1Lessons = lessonMap.filter(lesson => lesson.unit === 1);
-    const unit1TotalSteps = unit1Lessons.reduce((acc, lesson) => acc + lesson.totalSteps, 0);
-    const unit1CompletedSteps = unit1Lessons.reduce((acc, lesson) => {
-        return acc + (lessonProgress[lesson.id]?.completed || 0);
-    }, 0);
-    const unit1ProgressString = `${unit1CompletedSteps}/${unit1TotalSteps}`;
-    const unit1IsFullyCompleted = unit1CompletedSteps === unit1TotalSteps;
 
     let previousLessonWasCompleted = true;
     const unit1Blocks = unit1Lessons.map(lesson => {
@@ -255,21 +242,12 @@ export default function MainContent() {
         };
     });
 
-    unit1Blocks.push({
-        status: unit1IsFullyCompleted ? 'completed' : 'in-progress',
-        progress: unit1ProgressString,
-        icon: diamondIconImg,
-        isUnlocked: true
-    });
-
     // ===== UNIDADE 2: Alfabeto Manual =====
     const unit2Lessons = lessonMap.filter(lesson => lesson.unit === 2);
-    const unit2TotalSteps = unit2Lessons.reduce((acc, lesson) => acc + lesson.totalSteps, 0);
-    const unit2CompletedSteps = unit2Lessons.reduce((acc, lesson) => {
-        return acc + (lessonProgress[lesson.id]?.completed || 0);
-    }, 0);
-    const unit2ProgressString = `${unit2CompletedSteps}/${unit2TotalSteps}`;
-    const unit2IsFullyCompleted = unit2CompletedSteps === unit2TotalSteps;
+    // Verifica se a Unidade 1 está completa para desbloquear a 2
+    const unit1IsFullyCompleted = unit1Lessons.every(lesson => 
+        lessonProgress[lesson.id]?.completed === lesson.totalSteps
+    );
 
     let unit2PreviousCompleted = unit1IsFullyCompleted;
     const unit2Blocks = unit2Lessons.map(lesson => {
@@ -285,16 +263,9 @@ export default function MainContent() {
             status: isLessonCompleted ? 'completed' : (isUnlocked ? 'in-progress' : 'locked'),
             progress: `${prog?.completed || 0}/${lesson.totalSteps}`,
             lessonId: lesson.id,
-            isUnlocked: isUnlocked, // <-- Erro estava aqui (havia 'section:')
+            isUnlocked: isUnlocked,
             icon: isLessonCompleted ? null : icon,
         };
-    });
-
-    unit2Blocks.push({
-        status: unit2IsFullyCompleted ? 'completed' : 'in-progress',
-        progress: unit2ProgressString,
-        icon: diamondIconImg,
-        isUnlocked: unit1IsFullyCompleted
     });
 
     const lessonsData = [
@@ -311,7 +282,7 @@ export default function MainContent() {
             blocks: [
                 { status: 'locked', progress: '0/4', isUnlocked: false },
                 { status: 'locked', progress: '0/4', isUnlocked: false },
-                { status: 'locked', progress: '0/4', isUnlocked: false } // <-- Erro estava aqui (havia 'section:')
+                { status: 'locked', progress: '0/4', isUnlocked: false }
             ]
         },
     ];
@@ -374,7 +345,7 @@ export default function MainContent() {
                     </div>
                 </section>
 
-                {/* --- 4. BOTÃO DE DEBUG ADICIONADO AQUI --- */}
+                {/* --- BOTÃO DE DEBUG --- */}
                 <section className="mt-16 mb-8 flex justify-center">
                     <button
                         onClick={handleResetProgress}

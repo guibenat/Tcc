@@ -1,11 +1,14 @@
 // src/lessons/lessonMap.js
 
-// --- 1. IMPORTAR AS NOVAS LIÇÕES ---
+// --- 1. IMPORTAR TODAS AS LIÇÕES ---
 import { comecarDoZeroLesson } from './comecarDoZeroLesson.jsx';
 import { saudacoesAvancadasLesson } from './saudacoesAvancadasLesson.jsx';
 import { checkpoint1Lesson } from './checkpoint1Lesson.jsx';
 import { alfabetoLetraALesson } from './alfabetoLetraALesson.jsx';
 import { alfabetoConsoantesLesson } from './alfabetoConsoantesLesson.jsx';
+import { alfabetoConsoantes2Lesson } from './alfabetoConsoantes2Lesson.jsx';
+import { alfabetoConsoantes3Lesson } from './alfabetoConsoantes3Lesson.jsx';
+import { alfabetoConsoantes4Lesson } from './alfabetoConsoantes4Lesson.jsx';
 import { alfabetoRevisaoLesson } from './alfabetoRevisaoLesson.jsx';
 
 
@@ -38,11 +41,11 @@ export const lessonMap = [
     id: 'checkpoint-1',
     unit: 1,
     title: 'Desafio da Unidade 1',
-    totalSteps: countInteractiveSteps(checkpoint1Lesson.steps), // 1
+    totalSteps: countInteractiveSteps(checkpoint1Lesson.steps), // 3
     isCheckpoint: true, // Para mostrar a coroa
   },
   
-  // --- 2. ADICIONAR AS LIÇÕES DA UNIDADE 2 ---
+  // --- 2. ADICIONAR TODAS AS LIÇÕES DA UNIDADE 2 ---
   {
     id: 'alfabeto-letra-a',
     unit: 2, // Unidade 2
@@ -56,10 +59,28 @@ export const lessonMap = [
     totalSteps: countInteractiveSteps(alfabetoConsoantesLesson.steps), // 6
   },
   {
+    id: 'alfabeto-consoantes-2',
+    unit: 2, // Unidade 2
+    title: 'Consoantes - Parte 2',
+    totalSteps: countInteractiveSteps(alfabetoConsoantes2Lesson.steps), // 5
+  },
+  {
+    id: 'alfabeto-consoantes-3',
+    unit: 2, // Unidade 2
+    title: 'Consoantes - Parte 3',
+    totalSteps: countInteractiveSteps(alfabetoConsoantes3Lesson.steps), // 5
+  },
+  {
+    id: 'alfabeto-consoantes-4',
+    unit: 2, // Unidade 2
+    title: 'Consoantes - Parte 4 (Final)',
+    totalSteps: countInteractiveSteps(alfabetoConsoantes4Lesson.steps), // 5
+  },
+  {
     id: 'alfabeto-revisao',
     unit: 2, // Unidade 2
     title: 'Desafio do Alfabeto',
-    totalSteps: countInteractiveSteps(alfabetoRevisaoLesson.steps), // 1
+    totalSteps: countInteractiveSteps(alfabetoRevisaoLesson.steps), // 11
     isCheckpoint: true, // Para mostrar a coroa
   },
   // Adicione mais lições aqui...

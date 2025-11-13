@@ -1,11 +1,13 @@
 import React from 'react';
 import { useSettings } from '../components/SettingsContext';
 
+// --- Assets ---
 import robotImage from '../assets/robot-happy.png';
 import liresLogoImage from '../assets/logo-lires.png';
 import logoLiresEscuraImg from '../assets/logo-lires-branca.png';
 import coracaoImage from '../assets/coracaoo.png';
 
+// --- Componentes de UI Reutilizáveis ---
 const PlayIconPlaceholder = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-16 h-16 text-white opacity-90">
     <path fillRule="evenodd" d="M4.5 5.653c0-1.082 1.397-1.786 2.37-1.272l12.72 6.848c.974.522.974 1.942 0 2.464L6.87 20.62c-.973.514-2.37-.19-2.37-1.272V5.653z" clipRule="evenodd" />
@@ -38,7 +40,7 @@ function Step1({ onNext }) {
         <div className={`p-8 rounded-2xl border-2 flex items-center gap-8 max-w-2xl ${theme === 'escuro' ? 'bg-gray-800 border-blue-700' : 'bg-white border-blue-400'}`} style={{ boxShadow: '0 0 50px rgba(90, 177, 255, 0.6)' }}>
           <div className="flex-grow text-left">
             <p className="text-xl font-semibold mb-2" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Agora vamos aprender algumas consoantes! Você vai dominar: B, C, D, F, G, H.
+              Vamos continuar as consoantes! Você vai dominar: J, K, L, M, N.
             </p>
             <button onClick={onNext} className="mt-4 text-lg font-semibold py-3 px-8 border-none rounded-2xl cursor-pointer text-white transition transform duration-200 hover:scale-105" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)' }}>
               Iniciar
@@ -170,24 +172,21 @@ function StepPergunta({ onNext, onCheckAnswer, progress, onSelectAnswer, selecte
     );
 }
 
-export const alfabetoConsoantesLesson = {
-  id: 'alfabeto-consoantes',
+export const alfabetoConsoantes2Lesson = {
+  id: 'alfabeto-consoantes-2',
   title: 'Alfabeto Manual',
-  subtitle: 'Consoantes - Parte 1',
+  subtitle: 'Consoantes - Parte 2',
   steps: [
     { type: 'modal-inicio', component: Step1 },
     { type: 'video', component: StepVideo },
-    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra B?" />, correctAnswer: 1 },
+    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra J?" />, correctAnswer: 1 },
     { type: 'video', component: StepVideo },
-    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra C?" />, correctAnswer: 3 },
+    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra K?" />, correctAnswer: 3 },
     { type: 'video', component: StepVideo },
-    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra D?" />, correctAnswer: 0 },
+    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra L?" />, correctAnswer: 0 },
     { type: 'video', component: StepVideo },
-    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra F?" />, correctAnswer: 2 },
+    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra M?" />, correctAnswer: 2 },
     { type: 'video', component: StepVideo },
-    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra G?" />, correctAnswer: 4 },
-    { type: 'video', component: StepVideo },
-    // --- CORREÇÃO: Removido 'isFinal={true}' ---
-    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra H?" />, correctAnswer: 1 }
+    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra N?" />, correctAnswer: 4 },
   ]
 };

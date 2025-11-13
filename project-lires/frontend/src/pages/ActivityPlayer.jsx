@@ -9,6 +9,10 @@ import { saudacoesAvancadasLesson } from '../lessons/saudacoesAvancadasLesson.js
 import { checkpoint1Lesson } from '../lessons/checkpoint1Lesson.jsx';
 import { alfabetoLetraALesson } from '../lessons/alfabetoLetraALesson.jsx';
 import { alfabetoConsoantesLesson } from '../lessons/alfabetoConsoantesLesson.jsx';
+// --- 1. IMPORTAR AS NOVAS LIÇÕES ---
+import { alfabetoConsoantes2Lesson } from '../lessons/alfabetoConsoantes2Lesson.jsx';
+import { alfabetoConsoantes3Lesson } from '../lessons/alfabetoConsoantes3Lesson.jsx';
+import { alfabetoConsoantes4Lesson } from '../lessons/alfabetoConsoantes4Lesson.jsx';
 import { alfabetoRevisaoLesson } from '../lessons/alfabetoRevisaoLesson.jsx';
 import coracaoImage from '../assets/coracaoo.png';
 import robotReviewImage from '../assets/robot-review.png';
@@ -19,6 +23,10 @@ const lessonDatabase = {
     'checkpoint-1': checkpoint1Lesson,
     'alfabeto-letra-a': alfabetoLetraALesson,
     'alfabeto-consoantes': alfabetoConsoantesLesson,
+    // --- 2. ADICIONAR AS NOVAS LIÇÕES AO DATABASE ---
+    'alfabeto-consoantes-2': alfabetoConsoantes2Lesson,
+    'alfabeto-consoantes-3': alfabetoConsoantes3Lesson,
+    'alfabeto-consoantes-4': alfabetoConsoantes4Lesson,
     'alfabeto-revisao': alfabetoRevisaoLesson,
 };
 

@@ -334,6 +334,7 @@ export const alfabetoLetraALesson = {
     { type: 'video', component: StepVideo },
     { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra O?" />, correctAnswer: 4 },
     { type: 'video', component: StepVideo },
-    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra U?" isFinal={true} />, correctAnswer: 3 }
+    // --- CORREÇÃO: Removido 'isFinal={true}' ---
+    { type: 'pergunta', component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra U?" />, correctAnswer: 3 }
   ]
 };
