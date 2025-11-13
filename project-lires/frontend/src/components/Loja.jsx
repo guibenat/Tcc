@@ -1,11 +1,11 @@
 import React, { useState, useEffect, Fragment } from "react"; // <-- Adicionado Fragment
-import { useSettings } from './SettingsContext'; 
+import { useSettings } from './SettingsContext';
 import { useNavigate } from 'react-router-dom'; // <-- Importado useNavigate
 import Swal from 'sweetalert2'; // <-- Importado Swal
 
 // --- IMAGENS BANNER ---
-import robotPremiumImg from '../assets/robot-premium.png'; 
-import liresMasterLogo from '../assets/lires-master-logo.png'; 
+import robotPremiumImg from '../assets/robot-premium.png';
+import liresMasterLogo from '../assets/lires-master-logo.png';
 
 // --- IMAGENS LCOINS ---
 import lcoinIconImg from '../assets/lcoin.png'; // Ícone do título
@@ -17,7 +17,7 @@ import coinCartImg from '../assets/coin-cart.png'; // Imagem para 6500
 const copyToClipboard = (text, onSuccess) => {
     const textArea = document.createElement('textarea');
     textArea.value = text;
-    textArea.style.position = 'fixed'; 
+    textArea.style.position = 'fixed';
     textArea.style.opacity = '0';
     document.body.appendChild(textArea);
     textArea.focus();
@@ -155,7 +155,7 @@ const PixPaymentModal = ({ isOpen, onClose, onConfirm, theme, pack }) => {
 
 export default function LojaContent() {
     // --- INÍCIO DA MODIFICAÇÃO (Hooks) ---
-    const { theme, lcoins, setLcoins } = useSettings(); // Pega lcoins e setLcoins
+    const { theme, setLcoins } = useSettings(); // Pega SOMENTE setLcoins
     const navigate = useNavigate(); // Hook para navegação
     
     const [animationClass, setAnimationClass] = useState('');
@@ -175,21 +175,12 @@ export default function LojaContent() {
     const getSwalBackground = () => (theme === 'escuro' ? '#1f2937' : '#fff');
 
     const handlePaymentSuccess = (amount) => {
-        // 1. Adiciona as Lcoins
+        // 1. Adiciona as Lcoins (O Contexto salvará)
         setLcoins(prevLcoins => prevLcoins + amount);
         
-        // 2. Salva no localStorage (o setLcoins já faz isso!)
-        // Apenas para garantir que o 'currentUser' seja atualizado
-        const userString = localStorage.getItem('currentUser');
-        const dbString = localStorage.getItem('liresUsersDB');
-        if(userString && dbString) {
-            const currentUser = JSON.parse(userString);
-            const db = JSON.parse(dbString);
-            const updatedUser = { ...currentUser, lcoins: lcoins + amount }; // Usa lcoins do contexto
-            const updatedDB = db.map(u => u.id === currentUser.id ? updatedUser : u);
-            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-            localStorage.setItem('liresUsersDB', JSON.stringify(updatedDB));
-        }
+        // 2. REMOVIDO: Bloco de atualização manual do localStorage
+        // O useEffect no SettingsContext cuidará disso automaticamente.
+        // O código antigo aqui continha um bug (usava 'lcoins' estagnado).
 
         // 3. Fecha o modal
         setModalData({ isOpen: false, amount: 0, price: 0.0 });
@@ -213,7 +204,7 @@ export default function LojaContent() {
         // --- INÍCIO DA MODIFICAÇÃO (Fragment) ---
         <Fragment>
             <div className={`flex flex-col gap-8 w-full content-box ${animationClass}`}> 
-        
+            
                 {/* BANNER PREMIUM (Atualizado com onClick) */}
                 <div className="bg-gradient-to-br from-blue-600 to-indigo-800 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-4 overflow-hidden">
                     <div className="flex-1 text-center md:text-left z-10">
@@ -228,7 +219,7 @@ export default function LojaContent() {
                         <p className="text-blue-100 text-base mb-6 max-w-md mx-auto md:mx-0">
                             Mais conteúdo, mais prática e recursos exclusivos para acelerar seu aprendizado.
                         </p>
-        
+                
                         <div className="inline-block bg-gradient-to-r from-lime-300 via-yellow-300 to-lime-400 p-[3px] rounded-full shadow-lg">
                             <button 
                                 onClick={() => navigate('/configuracoes/assinatura')} // <-- NAVEGAÇÃO
@@ -238,7 +229,7 @@ export default function LojaContent() {
                             </button>
                         </div>
                     </div>
-        
+                
                     <div className="flex-shrink-0">
                         <img 
                             src={robotPremiumImg} 
@@ -246,7 +237,7 @@ export default function LojaContent() {
                             className="w-72 h-72 object-contain" 
                         />
                     </div>
-        
+                
                 </div>
 
                 {/* LCOINS ATUALIZADO */}
@@ -270,7 +261,7 @@ export default function LojaContent() {
                             <span className="font-bold text-2xl text-yellow-300">1200</span>
                             <span className="text-base text-white/90 font-medium">R$ 17,90</span>
                         </div>
-            
+                
                         {/* Pacote 2 (3000) */}
                         <div 
                             onClick={() => setModalData({ isOpen: true, amount: 3000, price: 34.00 })}
@@ -280,7 +271,7 @@ export default function LojaContent() {
                             <span className="font-bold text-2xl text-yellow-300">3000</span>
                             <span className="text-base text-white/90 font-medium">R$ 34,00</span>
                         </div>
-            
+                
                         {/* Pacote 3 (6500) */}
                         <div 
                             onClick={() => setModalData({ isOpen: true, amount: 6500, price: 51.20 })}
