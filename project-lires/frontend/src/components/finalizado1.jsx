@@ -13,7 +13,10 @@ import unlockedAchievementImage from '../assets/unlocked-Achievement.png';
 import achievementBadgeImage from '../assets/achievement-Badge.png';
 import robotIconImage from '../assets/robot-Icon.png';
 
-// Animações (Sem alteração)
+// --- IMPORTAR O NOVO MAPA DE CONQUISTAS ---
+import { achievementsMap } from '../lessons/achievementsMap'; 
+
+// Animações
 const animations = `
   @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -35,9 +38,8 @@ const CountUp = ({ end, duration, start }) => {
     return <span>{count}</span>;
 };
 
-// --- Sub-componentes (CongratulationsScreen, SequenciaAtivaScreen) ---
-// (Sem alteração)
-function CongratulationsScreen({ onContinue, errorCount, totalExercises }) {
+// --- Tela de Parabéns (Sem alteração) ---
+function CongratulationsScreen({ onContinue, errorCount, totalExercises, xpGained }) {
     const { theme } = useSettings();
     const [startCounting, setStartCounting] = useState(false);
     useEffect(() => { const timer = setTimeout(() => setStartCounting(true), 600); return () => clearTimeout(timer); }, []);
@@ -58,13 +60,18 @@ function CongratulationsScreen({ onContinue, errorCount, totalExercises }) {
                 <h1 className="text-4xl sm:text-5xl font-bold mb-4" style={{ ...animationStyle(0.2), backgroundImage: 'linear-gradient(90deg, #b081ff, #849dff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Parabéns!</h1>
                 <p className={`text-xl sm:text-2xl mb-8 ${
                     theme === 'escuro' ? 'text-gray-300' : 'text-gray-700'
-                }`} style={animationStyle(0.4)}>Você concluiu todas as atividades<br />do módulo <strong>Começar do Zero!</strong></p>
+                }`} style={animationStyle(0.4)}>Você concluiu a atividade!</p>
+                
                 <div className="flex flex-col gap-2 mb-8 text-lg text-center" style={animationStyle(0.6)}>
                     <p className={`font-bold tracking-wider ${
                         theme === 'escuro' ? 'text-gray-200' : 'text-gray-800'
                     }`}><CountUp end={errorCount} duration={1000} start={startCounting} /> ERROS</p>
+                    
                     <p className="font-bold text-blue-600 tracking-wider"><CountUp end={totalExercises} duration={1000} start={startCounting} /> EXERCÍCIOS FEITOS</p>
+                    
+                    <p className="font-bold text-yellow-500 tracking-wider">+<CountUp end={xpGained} duration={1000} start={startCounting} /> XP</p>
                 </div>
+
                 <img src={robotCongratsImage} alt="Robô Festejando" className="w-40 h-40 sm:w-48 sm:h-48" style={{ ...animationStyle(0.8), animationName: 'float, fadeInUp', animationDuration: '3s, 0.5s', animationTimingFunction: 'ease-in-out, ease-out', animationIterationCount: 'infinite, 1', animationDelay: '0s, 0.8s', animationFillMode: 'forwards' }} />
             </div>
             <div className="w-full flex justify-end"><button onClick={onContinue} className="text-lg font-semibold py-3 px-12 border-none rounded-full cursor-pointer text-white transition transform duration-200 hover:scale-105" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)' }}>Continuar</button></div>
@@ -72,6 +79,7 @@ function CongratulationsScreen({ onContinue, errorCount, totalExercises }) {
     );
 }
 
+// --- Tela de Sequência (Sem alteração) ---
 function SequenciaAtivaScreen({ onContinue }) {
     const { theme, dailyStreak } = useSettings();
     const [isAnimating, setIsAnimating] = useState(false);
@@ -102,8 +110,8 @@ function SequenciaAtivaScreen({ onContinue }) {
     );
 }
 
-// Componente de Recompensa de Conquista (Sem alteração)
-function AchievementRewardScreen({ onContinue }) {
+// --- TELA DE CONQUISTA (Totalmente atualizada) ---
+function AchievementRewardScreen({ onContinue, unlockedLessonId }) {
     const { theme } = useSettings();
     const [progress, setProgress] = useState(0);
     const [isShaking, setIsShaking] = useState(false);
@@ -111,23 +119,59 @@ function AchievementRewardScreen({ onContinue }) {
     const [showModal, setShowModal] = useState(false);
     const [textKey, setTextKey] = useState(1);
     
+    // --- LÓGICA DINÂMICA ---
+    const achievements = achievementsMap;
+    // Encontra o ÍNDICE da conquista que acabamos de desbloquear
+    const unlockedIndex = achievements.findIndex(ach => ach.id === unlockedLessonId);
+    // Pega os dados da conquista (título, descrição)
+    const unlockedAchievement = achievements[unlockedIndex] ?? achievements[0]; // Fallback
+    const totalAchievements = achievements.length;
+    // --- FIM DA LÓGICA ---
+
     useEffect(() => {
-        const progressTimer = setTimeout(() => { setProgress(2); }, 1000);
+        // Se a conquista não for encontrada, não faz nada
+        if (unlockedIndex < 0) {
+            console.error("Conquista não encontrada para o ID:", unlockedLessonId);
+            return;
+        }
+
+        const currentProgressPercent = ((unlockedIndex + 1) / totalAchievements) * 100;
+        const prevProgressPercent = (unlockedIndex / totalAchievements) * 100;
+
+        setProgress(prevProgressPercent);
+        
+        const progressTimer = setTimeout(() => { setProgress(currentProgressPercent); }, 1000);
         const shakeTimer = setTimeout(() => { setIsShaking(true); }, 3000);
         const unlockTimer = setTimeout(() => { setIsShaking(false); setIsUnlocked(true); }, 4500);
         const modalShowTimer = setTimeout(() => { setShowModal(true); }, 4800);
         const modalHideTimer = setTimeout(() => { setShowModal(false); setTextKey(2); }, 7300);
+        
         return () => { clearTimeout(progressTimer); clearTimeout(shakeTimer); clearTimeout(unlockTimer); clearTimeout(modalShowTimer); clearTimeout(modalHideTimer); };
-    }, []);
+    }, [unlockedIndex, totalAchievements, unlockedLessonId]); // Adicionada dependência
 
-    const achievements = Array(7).fill(0); 
-    const unlockedIndex = 0; 
-    
+    // Se a conquista não for válida (ex: -1), nem renderiza
+    if (unlockedIndex < 0) {
+        // Em vez de quebrar, nós pulamos esta tela
+        useEffect(() => {
+            onContinue();
+        }, [onContinue]);
+        return null;
+    }
+
     return (
         <div className={`w-full h-full flex flex-col items-center font-poppins p-10 relative overflow-hidden ${
           theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
         }`}>
-             {showModal && (<div style={{ animation: 'glow-pop-in 0.7s forwards, fade-out 0.5s 2.2s forwards' }} className="absolute inset-0 flex flex-col items-center justify-center z-20"><p className="text-4xl font-bold mb-2" style={{color: '#8A2BE2'}}>Conquista</p><p className="text-5xl font-bold mb-4" style={{color: '#FFFF00'}}>DESBLOQUEADA</p><img src={achievementBadgeImage} alt="Conquista Desbloqueada" className="w-72 h-72" /></div>)}
+            
+            {/* --- POP-UP MODAL (Atualizado com Título/Descrição) --- */}
+            {showModal && (
+              <div style={{ animation: 'glow-pop-in 0.7s forwards, fade-out 0.5s 2.2s forwards' }} className="absolute inset-0 flex flex-col items-center justify-center z-20">
+                <p className="text-4xl font-bold mb-2" style={{color: '#8A2BE2'}}>{unlockedAchievement.title}</p>
+                <p className="text-3xl font-bold mb-4" style={{color: '#FFFF00'}}>{unlockedAchievement.description}</p>
+                <img src={achievementBadgeImage} alt="Conquista Desbloqueada" className="w-72 h-72" />
+              </div>
+            )}
+            
             <div className="w-full flex justify-start">
               <img 
                 src={theme === 'escuro' ? logoLiresEscuraImg : liresLogoImage} 
@@ -135,17 +179,35 @@ function AchievementRewardScreen({ onContinue }) {
                 className="h-24" 
               />
             </div>
+            
             <div className="flex-grow flex flex-col items-center justify-center text-center w-full max-w-5xl">
-                 {isUnlocked ? (<div key={textKey} style={{animation: 'fadeInUp 0.5s forwards'}}><p className="text-2xl font-semibold mb-4" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #849dff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Continue as atividades para desbloquear mais conquistas</p><img src={robotIconImage} alt="Ícone Robô" className="h-16 mb-8 mx-auto" /></div>) : (<div className="h-28"></div>)}
+                {isUnlocked ? (<div key={textKey} style={{animation: 'fadeInUp 0.5s forwards'}}><p className="text-2xl font-semibold mb-4" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #849dff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Continue as atividades para desbloquear mais conquistas</p><img src={robotIconImage} alt="Ícone Robô" className="h-16 mb-8 mx-auto" /></div>) : (<div className="h-28"></div>)}
+                
                 <div className="w-full relative mt-12">
-                     <div className={`w-full h-4 rounded-full relative ${
-                       theme === 'escuro' ? 'bg-gray-700' : 'bg-purple-200'
-                     }`}>
-                          <div className="h-full bg-purple-600 rounded-full" style={{ width: `${progress}%`, transition: 'width 2s ease-out' }}></div>
-                     </div>
-                     <div className="absolute -bottom-8 w-full flex justify-between px-2">
-                          {achievements.map((_, index) => (<div key={index} className="relative w-16 h-16 flex items-center justify-center">{index < unlockedIndex ? <img src={unlockedAchievementImage} alt="Conquista Anterior" className="h-14 w-14"/> : index === unlockedIndex && isUnlocked ? <img src={unlockedAchievementImage} alt="Conquista Desbloqueada" className="h-16 w-16"/> : <img src={lockedAchievementImage} alt="Cadeado" className="h-16 w-16" style={{ animation: index === unlockedIndex && isShaking ? 'shake 1.5s' : 'none' }} />}</div>))}
-                     </div>
+                    <div className={`w-full h-4 rounded-full relative ${
+                        theme === 'escuro' ? 'bg-gray-700' : 'bg-purple-200'
+                    }`}>
+                        <div className="h-full bg-purple-600 rounded-full" style={{ width: `${progress}%`, transition: 'width 2s ease-out' }}></div>
+                    </div>
+                    
+                    <div className="absolute -bottom-8 w-full flex justify-between px-2">
+                        {achievements.map((ach, index) => (
+                          <div key={index} className="relative w-16 h-16 flex items-center justify-center">
+                            {/* Mostra desbloqueado se o índice for MENOR OU IGUAL ao desbloqueado */}
+                            {index <= unlockedIndex ? (
+                                <img src={unlockedAchievementImage} alt="Conquista Desbloqueada" className="h-16 w-16"/>
+                            ) : (
+                                // Mostra o cadeado (e o shake se for o próximo)
+                                <img 
+                                  src={lockedAchievementImage} 
+                                  alt="Cadeado" 
+                                  className="h-16 w-16" 
+                                  style={{ animation: index === (unlockedIndex + 1) && isShaking ? 'shake 1.5s' : 'none' }} 
+                                />
+                            )}
+                          </div>
+                        ))}
+                    </div>
                 </div>
             </div>
             <div className="w-full flex justify-end"><button onClick={onContinue} className="text-lg font-semibold py-3 px-12 border-none rounded-full cursor-pointer text-white transition transform duration-200 hover:scale-105" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)' }}>Continuar</button></div>
@@ -153,8 +215,7 @@ function AchievementRewardScreen({ onContinue }) {
     );
 }
 
-// --- INÍCIO DA MODIFICAÇÃO (LcoinsScreen) ---
-// Agora ele salva as Lcoins se 'isFirstTime' for verdadeiro
+// --- TELA DE LCOINS (Sem alteração) ---
 function LcoinsScreen({ onContinue, isFirstTime }) {
     const { theme, setLcoins } = useSettings(); 
     const [startAnimations, setStartAnimations] = useState(false);
@@ -162,19 +223,14 @@ function LcoinsScreen({ onContinue, isFirstTime }) {
 
     useEffect(() => {
         const timer = setTimeout(() => setStartAnimations(true), 100);
-        
-        // --- NOVO ---
-        // Se a tela for mostrada e for a primeira vez,
-        // adicione as Lcoins.
         if (isFirstTime) {
             console.log("finalizado1.jsx: Adicionando 50 Lcoins.");
             setLcoins(prevLcoins => prevLcoins + rewardAmount);
         } else {
             console.log("finalizado1.jsx: Não é a primeira vez, Lcoins já foram dadas.");
         }
-        
         return () => clearTimeout(timer);
-    }, [isFirstTime, setLcoins]); // Dependências
+    }, [isFirstTime, setLcoins]); 
     
     return (
         <div className={`w-full h-full flex flex-col items-center font-poppins p-10 ${
@@ -190,15 +246,13 @@ function LcoinsScreen({ onContinue, isFirstTime }) {
             <div className="flex-grow flex flex-col items-center justify-center text-center">
                 <img src={lcoinImage} alt="Lcoin" className="w-32 h-32 mb-4" style={{ animation: startAnimations ? 'coin-drop-glow 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards' : 'none' }} />
                 <p className="text-2xl font-bold" style={{ animation: startAnimations ? 'fadeInUp 0.5s ease-out 1s forwards' : 'none', opacity: 0 }}>
-                    {/* --- NOVO --- */}
-                    {/* Só mostra a animação de contagem se for a primeira vez */}
                     {isFirstTime ? (
                         <>
                             <span style={{ color: '#FBC02D' }}>+<CountUp end={rewardAmount} duration={3000} start={startAnimations} /></span>
                             <span style={{ color: '#1E88E5' }}> LCOINS</span>
                         </>
                     ) : (
-                        <span style={{ color: '#1E88E5' }}>Lcoins</span>
+                        <span style={{ color: '#1E88E5' }}>Lição Refeita!</span>
                     )}
                 </p>
             </div>
@@ -206,27 +260,59 @@ function LcoinsScreen({ onContinue, isFirstTime }) {
         </div>
     );
 }
-// --- FIM DA MODIFICAÇÃO ---
 
-// --- Componente Principal ---
+// --- Componente Principal (LÓGICA DE NAVEGAÇÃO ATUALIZADA) ---
 export default function Finalizado1() {
-    const [screen, setScreen] = useState('congrats');
+    const [screen, setScreen] = useState('congrats'); // Começa sempre nos parabéns
     const navigate = useNavigate();
     const { state } = useLocation();
     
-    // Lê os dados do ActivityPlayer
+    // --- PUXAR TODOS OS DADOS (INCLUINDO 'lessonId') ---
     const errorCount = state?.errorCount ?? 0;
-    const totalExercises = state?.totalExercises ?? 3; // Padrão de 3
-    // --- NOVO ---
-    // Verifica se é a primeira vez (para dar Lcoins)
+    const totalExercises = state?.totalExercises ?? 3;
     const isFirstTime = state?.isFirstTime ?? false;
+    const xpGained = state?.xpGained ?? 5;
+    // const isCheckpoint = state?.isCheckpoint ?? false; // Não precisamos mais disto
+    const isFirstLessonOfDay = state?.isFirstLessonOfDay ?? false;
+    const lessonId = state?.lessonId ?? null; // <-- O ID DA LIÇÃO
+
+    // --- CORREÇÃO: Lógica de navegação atualizada ---
+    // Verifica se a lição completada DESBLOQUEIA uma conquista
+    const unlocksAchievement = achievementsMap.some(ach => ach.id === lessonId);
 
     const handleNavigation = () => {
-        if (screen === 'congrats') setScreen('sequence');
-        else if (screen === 'sequence') setScreen('achievements');
-        else if (screen === 'achievements') setScreen('lcoins');
+        if (screen === 'congrats') {
+            // 1. Deve mostrar a sequência?
+            if (isFirstLessonOfDay) {
+                setScreen('sequence');
+            } 
+            // 2. Se não for, deve mostrar a conquista?
+            // (Só mostra se for a 1ª vez E se esta lição desbloquear uma)
+            else if (unlocksAchievement && isFirstTime) { 
+                setScreen('achievements');
+            }
+            // 3. Se não for nenhum desses, vai para Lcoins
+            else {
+                setScreen('lcoins');
+            }
+        } 
+        else if (screen === 'sequence') {
+            // 1. Depois da sequência, deve mostrar a conquista?
+            if (unlocksAchievement && isFirstTime) {
+                setScreen('achievements');
+            }
+            // 2. Se não, vai para Lcoins
+            else {
+                setScreen('lcoins');
+            }
+        } 
+        else if (screen === 'achievements') {
+            // Depois da conquista, vai sempre para Lcoins
+            setScreen('lcoins');
+        } 
         else if (screen === 'lcoins') {
-            window.location.href = '/home'; 
+            // Depois dos Lcoins, volta para casa
+            navigate('/home'); 
         }
     }
 
@@ -239,16 +325,16 @@ export default function Finalizado1() {
                     onContinue={handleNavigation} 
                     errorCount={errorCount}
                     totalExercises={totalExercises}
+                    xpGained={xpGained} 
                 />
             )}
             
             {screen === 'sequence' && <SequenciaAtivaScreen onContinue={handleNavigation} />}
             
-            {screen === 'achievements' && <AchievementRewardScreen onContinue={handleNavigation} />}
+            {/* --- PASSAR O 'lessonId' PARA A TELA DE CONQUISTA --- */}
+            {screen === 'achievements' && <AchievementRewardScreen onContinue={handleNavigation} unlockedLessonId={lessonId} />}
             
-            {/* --- INÍCIO DA MODIFICAÇÃO (Passa 'isFirstTime' para LcoinsScreen) --- */}
             {screen === 'lcoins' && <LcoinsScreen onContinue={handleNavigation} isFirstTime={isFirstTime} />}
-            {/* --- FIM DA MODIFICAÇÃO --- */}
         </div>
     );
 }
