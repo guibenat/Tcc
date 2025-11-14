@@ -1,26 +1,32 @@
 import React from 'react';
-// Este import provavelmente funciona pois você deve ter um alias para "components"
 import { useSettings } from '../components/SettingsContext'; 
 
-// --- Assets Específicos da Lição (CAMINHOS CORRIGIDOS) ---
+// --- Assets Específicos da Lição ---
 import robotImage from '../assets/robot-happy.png';
 import liresLogoImage from '../assets/logo-lires.png';
 import logoLiresEscuraImg from '../assets/logo-lires-branca.png';
-import coracaoImage from '../assets/coracaoo.png'; // Importado aqui para a UI
+import coracaoImage from '../assets/coracaoo.png';
+
+// --- 1. IMPORTAR ASSETS DE VÍDEO (MP4) ---
+// (Usamos 'new URL' para garantir que o Vite encontre os ficheiros)
+const videoOi = new URL('../assets/PrimeirosPassosVideo/Oi.mp4', import.meta.url).href;
+const videoTchau = new URL('../assets/PrimeirosPassosVideo/Tchau.mp4', import.meta.url).href;
+const videoObrigado = new URL('../assets/PrimeirosPassosVideo/Obrigado.mp4', import.meta.url).href;
+
+// --- 2. IMPORTAR ASSETS DE ALTERNATIVAS (GIF) ---
+const gifOi = new URL('../assets/PrimeirosPassos/Oi.gif', import.meta.url).href;
+const gifTchau = new URL('../assets/PrimeirosPassos/Tchau.gif', import.meta.url).href;
+const gifObrigado = new URL('../assets/PrimeirosPassos/Obrigado.gif', import.meta.url).href;
+const gifBomDia = new URL('../assets/PrimeirosPassos/Bom dia.gif', import.meta.url).href;
+const gifBoaTarde = new URL('../assets/PrimeirosPassos/Boa tarde.gif', import.meta.url).href;
+const gifBoaNoite = new URL('../assets/PrimeirosPassos/Boa noite.gif', import.meta.url).href;
+const gifAteLogo = new URL('../assets/PrimeirosPassos/Até logo.gif', import.meta.url).href;
+
 
 // --- Componentes de UI Específicos da Lição ---
-// (Quase idênticos ao original, mas agora recebem props do ActivityPlayer)
 
-const PlayIconPlaceholder = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    className="w-16 h-16 text-white opacity-90"
-  >
-    <path fillRule="evenodd" d="M4.5 5.653c0-1.082 1.397-1.786 2.37-1.272l12.72 6.848c.974.522.974 1.942 0 2.464L6.87 20.62c-.973.514-2.37-.19-2.37-1.272V5.653z" clipRule="evenodd" />
-  </svg>
-);
+// (Placeholder não é mais necessário)
+// const PlayIconPlaceholder = () => ( ... );
 
 function ProgressBar({ progress }) {
   const { theme } = useSettings();
@@ -42,7 +48,7 @@ function ProgressBar({ progress }) {
   );
 }
 
-// Tela 1: Modal de Início
+// Tela 1: Modal de Início (Sem alteração)
 function Step1({ onNext }) {
   const { theme } = useSettings();
   return (
@@ -108,8 +114,9 @@ function Step1({ onNext }) {
   );
 }
 
-// Tela 2: Vídeo (Usada por Step2, 4, 6)
-function StepVideo({ onNext, progress, lives, lessonTitle, lessonSubtitle }) {
+// --- 3. TELA DE VÍDEO (Atualizada) ---
+// (Agora aceita 'videoSrc' e mostra um <video>)
+function StepVideo({ onNext, progress, lives, lessonTitle, lessonSubtitle, videoSrc }) {
     const { theme } = useSettings();
     return (
         <>
@@ -161,16 +168,30 @@ function StepVideo({ onNext, progress, lives, lessonTitle, lessonSubtitle }) {
                         <ProgressBar progress={progress} />
                     </div>
                     
+                    {/* --- ÁREA DO VÍDEO ATUALIZADA --- */}
                     <div className="flex-grow flex flex-col items-center min-h-0 px-10">
                         <div className="w-full max-w-2xl aspect-[16/10] p-1 cursor-pointer my-auto max-h-full" style={{ backgroundImage: 'linear-gradient(to bottom right, #e0b0ff, #c0d8ff)', borderRadius: '1.5rem', boxShadow: '0 0 50px rgba(181, 130, 255, 0.6)' }}>
                             <div 
                               className="relative w-full h-full rounded-2xl flex justify-center items-center" 
                               style={{ backgroundColor: theme === 'escuro' ? '#37304a' : '#f0e0ff' }}
                             >
-                                <PlayIconPlaceholder />
+                                {/* Substituído o placeholder pelo <video> */}
+                                <video
+                                  key={videoSrc} // Força o react a recarregar o vídeo
+                                  src={videoSrc}
+                                  autoPlay
+                                  muted
+                                  loop
+                                  playsInline
+                                  className="relative w-full h-full rounded-2xl object-contain"
+                                >
+                                  Seu navegador não suporta vídeos MP4.
+                                </video>
                             </div>
                         </div>
                     </div>
+                    {/* --- FIM DA ÁREA DO VÍDEO --- */}
+
 
                      <div className="flex-shrink-0 px-10 pb-10">
                         <div className="w-full max-w-2xl mx-auto">
@@ -201,7 +222,8 @@ function StepVideo({ onNext, progress, lives, lessonTitle, lessonSubtitle }) {
     );
 }
 
-// Tela 3: Pergunta (Usada por Step3, 5, 7)
+// --- 4. TELA DE PERGUNTA (Atualizada) ---
+// (Agora aceita 'options' e mostra os GIFs)
 function StepPergunta({ 
     onNext, 
     onCheckAnswer, 
@@ -213,6 +235,7 @@ function StepPergunta({
     lessonTitle, 
     lessonSubtitle,
     questionText,
+    options, // <-- Prop nova
     isFinal
 }) {
     const { theme } = useSettings();
@@ -265,13 +288,16 @@ function StepPergunta({
                         </div>
                         <ProgressBar progress={progress} />
                     </div>
+                    
+                    {/* --- ÁREA DAS OPÇÕES (Atualizada) --- */}
                     <div className="flex-grow flex flex-col items-center overflow-y-auto px-10">
                         <div className="w-full max-w-3xl text-left my-auto">
                             <p className="text-xl font-semibold mb-6" style={{ color: theme === 'escuro' ? '#d8b4fe' : '#4b3670' }}>
                                 {questionText}
                             </p>
                             <div className="flex justify-center flex-wrap gap-4 sm:gap-8 w-full">
-                                {[...Array(5)].map((_, index) => (
+                                {/* Mapeia as 'options' (GIFs) em vez de um array vazio */}
+                                {options.map((optionGif, index) => (
                                     <div 
                                       key={index} 
                                       onClick={() => !isChecking && onSelectAnswer(index)} 
@@ -284,18 +310,27 @@ function StepPergunta({
                                       }}
                                     >
                                         <div 
-                                          className="w-full h-full rounded-xl" 
+                                          className="w-full h-full rounded-xl flex items-center justify-center" 
                                           style={{ 
                                             backgroundColor: selectedAnswer === index 
                                               ? (theme === 'escuro' ? '#5a4b7a' : '#c0d8ff') 
                                               : (theme === 'escuro' ? '#4b3670' : '#f0e0ff') 
                                           }}
-                                        ></div>
+                                        >
+                                          {/* Mostra o GIF da opção */}
+                                          <img 
+                                            src={optionGif} 
+                                            alt={`Opção ${index + 1}`} 
+                                            className="w-full h-full object-contain rounded-xl"
+                                          />
+                                        </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     </div>
+                    {/* --- FIM DA ÁREA DAS OPÇÕES --- */}
+                    
                      <div className="flex-shrink-0 px-10 pb-10">
                         <div className="w-full max-w-3xl mx-auto">
                             <hr 
@@ -310,7 +345,7 @@ function StepPergunta({
                                         theme === 'escuro' ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-600'
                                       }`}
                                     >
-                                        Pular
+                                      Pular
                                     </span>
                                 </button>
                                 <button onClick={onCheckAnswer} disabled={isChecking} className="text-lg font-semibold py-3 px-8 border-none rounded-2xl cursor-pointer text-white transition transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)' }}>
@@ -326,7 +361,8 @@ function StepPergunta({
 }
 
 
-// --- O "Pacote de Lição" ---
+// --- 5. O "PACOTE DE LIÇÃO" (Atualizado) ---
+// (Agora passa 'videoSrc' e 'options' para os componentes)
 export const comecarDoZeroLesson = {
   id: 'comecar-do-zero',
   title: 'Primeira Aula Prática',
@@ -338,29 +374,39 @@ export const comecarDoZeroLesson = {
     },
     { 
       type: 'video', 
-      component: StepVideo 
+      component: (props) => <StepVideo {...props} videoSrc={videoOi} /> 
     },
     { 
       type: 'pergunta', 
-      component: (props) => <StepPergunta {...props} questionText="Qual desses sinais significa Oi?" />,
+      component: (props) => <StepPergunta {...props} 
+        questionText="Qual desses sinais significa Oi?" 
+        options={[gifTchau, gifOi, gifBomDia, gifBoaTarde, gifObrigado]} // Opções para a Pergunta 1
+      />,
       correctAnswer: 1 
     },
     { 
       type: 'video', 
-      component: StepVideo 
+      component: (props) => <StepVideo {...props} videoSrc={videoTchau} /> 
     },
     { 
       type: 'pergunta', 
-      component: (props) => <StepPergunta {...props} questionText="Qual desses sinais significa Tchau?" />,
+      component: (props) => <StepPergunta {...props} 
+        questionText="Qual desses sinais significa Tchau?" 
+        options={[gifOi, gifBomDia, gifAteLogo, gifTchau, gifBoaNoite]} // Opções para a Pergunta 2
+      />,
       correctAnswer: 3
     },
     { 
       type: 'video', 
-      component: StepVideo 
+      component: (props) => <StepVideo {...props} videoSrc={videoObrigado} /> 
     },
     { 
       type: 'pergunta', 
-      component: (props) => <StepPergunta {...props} questionText="Qual desses sinais significa Obrigado?" isFinal={true} />,
+      component: (props) => <StepPergunta {...props} 
+        questionText="Qual desses sinais significa Obrigado?" 
+        options={[gifObrigado, gifTchau, gifBoaTarde, gifOi, gifBomDia]} // Opções para a Pergunta 3
+        isFinal={true} 
+      />,
       correctAnswer: 0
     }
   ]
