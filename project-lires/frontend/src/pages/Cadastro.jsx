@@ -4,7 +4,7 @@ import logoLiresClaraImg from '../assets/logo-lires.png';
 import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; 
 import { useSettings } from '../components/SettingsContext';
 
-// --- Componentes de Ícones (Sem alterações) ---
+// --- Componentes de Ícones ---
 const GoogleIcon = () => (
     <svg className="w-6 h-6 mr-2" viewBox="0 0 48 48">
         {/* ... paths do ícone ... */}
@@ -14,11 +14,9 @@ const GoogleIcon = () => (
         <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.022,35.283,44,30.036,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
     </svg>
 );
-const FacebookIcon = () => (
-    <svg className="w-6 h-6 mr-2" viewBox="0 0 24 24" fill="currentColor" color="#1877F2">
-        <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.323-1.325z"></path>
-    </svg>
-);
+
+// --- ÍCONE DO FACEBOOK REMOVIDO ---
+
 const EyeIcon = ({ theme }) => (
     <svg className={`w-6 h-6 ${theme === 'escuro' ? 'text-gray-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -75,9 +73,9 @@ const AgeStep = ({ age, setAge, onNext, theme }) => (
                 onClick={() => setAge(prev => Math.min(100, prev + 1))}
                 disabled={age >= 100}
                 className={`w-12 h-12 text-3xl font-bold rounded-full transition-colors ${
-                            theme === 'escuro'
-                            ? 'text-white bg-pink-600 hover:bg-pink-700 disabled:bg-gray-600'
-                            : 'text-white bg-pink-300 hover:bg-pink-400 disabled:bg-gray-200'
+                        theme === 'escuro'
+                        ? 'text-white bg-pink-600 hover:bg-pink-700 disabled:bg-gray-600'
+                        : 'text-white bg-pink-300 hover:bg-pink-400 disabled:bg-gray-200'
                 }`}
             >
                 +
@@ -279,9 +277,7 @@ export default function Cadastro() {
             lessonProgress: {},
             followers: [], 
             following: [], 
-            // --- INÍCIO DA MODIFICAÇÃO ---
-            timeSpentToday: 0, // Novo campo para a meta diária
-            // --- FIM DA MODIFICAÇÃO ---
+            timeSpentToday: 0, 
             preferences: {
                 theme: 'claro', 
                 fontSize: 'medio',
@@ -313,8 +309,8 @@ export default function Cadastro() {
                 <div className="absolute inset-0 z-0 overflow-hidden">
                     <svg className="absolute bottom-0 left-0 w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="none">
                         <path fill={theme === 'escuro' ? '#3b82f6' : "#93c5fd"} fillOpacity="0.5" d="M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z">
-                                <animate attributeName="d" dur="8s" repeatCount="indefinite"
-                                    values="M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z; M0,450 C360,550 480,350 720,450 C960,550 1080,350 1440,450 L1440,800 L0,800 Z; M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z" />
+                            <animate attributeName="d" dur="8s" repeatCount="indefinite"
+                                values="M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z; M0,450 C360,550 480,350 720,450 C960,550 1080,350 1440,450 L1440,800 L0,800 Z; M0,400 C360,300 480,500 720,400 C960,300 1080,500 1440,400 L1440,800 L0,800 Z" />
                         </path>
                         <path fill={theme === 'escuro' ? '#2563eb' : "#7dd3fc"} fillOpacity="0.4" d="M0,500 C360,400 480,600 720,500 C960,400 1080,600 1440,500 L1440,800 L0,800 Z">
                             <animate attributeName="d" dur="12s" repeatCount="indefinite"
@@ -368,6 +364,7 @@ export default function Cadastro() {
                             <hr className={`flex-grow ${theme === 'escuro' ? 'border-gray-600' : 'border-gray-300'}`} />
                         </div>
                         
+                        {/* --- BOTÃO DO FACEBOOK REMOVIDO --- */}
                         <div className="flex flex-col sm:flex-row gap-4">
                             <button className={`flex items-center justify-center w-full py-3 rounded-lg border transition-colors ${
                                 theme === 'escuro' 
@@ -376,14 +373,6 @@ export default function Cadastro() {
                             }`}>
                                 <GoogleIcon />
                                 <span className={`font-semibold ${theme === 'escuro' ? 'text-slate-200' : 'text-gray-700'}`}>Google</span>
-                            </button>
-                            <button className={`flex items-center justify-center w-full py-3 rounded-lg border transition-colors ${
-                                    theme === 'escuro' 
-                                ? 'bg-gray-700 border-gray-600 hover:bg-gray-600' 
-                                : 'bg-pink-100 border-pink-200 hover:bg-pink-200'
-                            }`}>
-                                <FacebookIcon />
-                                <span className="font-semibold text-blue-600">Facebook</span>
                             </button>
                         </div>
 

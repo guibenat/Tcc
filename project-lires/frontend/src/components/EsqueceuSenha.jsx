@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react'; // Adicionado useEffect
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// 1. IMPORTAR LOGOS E HOOK
+import Swal from 'sweetalert2'; // 1. IMPORTAR SWAL
+import 'sweetalert2/dist/sweetalert2.min.css'; // 1. IMPORTAR CSS DO SWAL
 import logoLiresClaraImg from '../assets/logo-lires.png';
-import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; // <- Verifique este caminho/nome
+import logoLiresEscuraImg from '../assets/logo-lires-branca.png';
 import { useSettings } from '../components/SettingsContext';
 
-// --- Ícones e Componentes Auxiliares (ATUALIZADOS) ---
+// --- Ícones e Componentes Auxiliares ---
 
-// ATUALIZADO: Aceita 'theme'
 const EyeIcon = ({ onClick, theme }) => (
     <svg onClick={onClick} className={`w-6 h-6 cursor-pointer ${theme === 'escuro' ? 'text-gray-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -15,7 +15,6 @@ const EyeIcon = ({ onClick, theme }) => (
     </svg>
 );
 
-// ATUALIZADO: Aceita 'theme'
 const FooterText = ({ theme }) => (
     <div className={`text-center text-xs space-y-2 z-10 mt-auto py-4 px-4 ${
         theme === 'escuro' ? 'text-gray-400' : 'text-gray-500'
@@ -31,8 +30,27 @@ const FooterText = ({ theme }) => (
     </div>
 );
 
+// 2. FUNÇÃO DE ESTILO PARA O SWAL
+const getSwalPopupStyles = (theme, type = 'info') => {
+    let titleColor = '';
+    if (type === 'success') {
+        titleColor = theme === 'escuro' ? 'text-green-300' : 'text-green-600';
+    } else if (type === 'error') {
+        titleColor = theme === 'escuro' ? 'text-red-300' : 'text-red-600';
+    } else {
+        titleColor = theme === 'escuro' ? 'text-purple-300' : 'text-slate-800';
+    }
+
+    return {
+        popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-800 text-slate-200' : ''}`,
+        title: titleColor,
+        confirmButton: 'btn-gradient-glow font-semibold py-2 px-8 rounded-full text-white border-none cursor-pointer transition transform duration-200 hover:scale-105',
+        htmlContainer: `${theme === 'escuro' ? 'text-slate-300' : 'text-gray-700'}`,
+    };
+};
+
+
 export default function EsqueceuSenha() { 
-    // 2. LER O TEMA
     const { theme } = useSettings();
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
@@ -59,6 +77,7 @@ export default function EsqueceuSenha() {
         }, 800); 
     };
 
+    // --- 3. LÓGICA DO PASSO 1 (Verificar E-mail) ---
     const validateAndProceedStep1 = () => {
         if (!email) {
             setError('Por favor, preencha o campo de e-mail.');
@@ -69,20 +88,49 @@ export default function EsqueceuSenha() {
             setError('Por favor, insira um e-mail válido.');
             return;
         }
-        console.log('E-mail:', email);
+        
+        // Verificar se o e-mail existe no localStorage
+        const usersDB = JSON.parse(localStorage.getItem('liresUsersDB')) || [];
+        const userExists = usersDB.some(user => user.email === email);
+
+        if (!userExists) {
+            setError('E-mail não encontrado na nossa base de dados.');
+            return;
+        }
+        
+        // E-mail válido, simular envio de código
+        console.log('DEBUG: O código de verificação é 123456');
+        // Mostrar um pop-up para o utilizador (simulando o envio)
+        Swal.fire({
+            title: 'Código Enviado!',
+            text: `Um código de 6 dígitos foi (simulado) enviado para ${email}. (DEBUG: O código é 123456)`,
+            icon: 'success',
+            customClass: getSwalPopupStyles(theme, 'success'),
+            buttonsStyling: false
+        });
+        
         handleStepChange(2);
     };
 
+    // --- 4. LÓGICA DO PASSO 2 (Verificar Código) ---
     const validateAndProceedStep2 = () => {
         const fullCode = code.join('');
         if (fullCode.length < 6) {
             setError('Por favor, insira o código de 6 dígitos.');
             return;
         }
-        console.log('Código:', fullCode);
+        
+        // Verificar o "código secreto"
+        if (fullCode !== '123456') {
+            setError('Código de verificação incorreto.');
+            return;
+        }
+        
+        // Código correto
         handleStepChange(3);
     };
 
+    // --- 5. LÓGICA DO PASSO 3 (Mudar Senha) ---
     const handleFinishReset = () => {
         if (!password || !confirmPassword) {
             setError('Por favor, preencha ambos os campos de senha.');
@@ -96,9 +144,38 @@ export default function EsqueceuSenha() {
             setError('As senhas não coincidem.');
             return;
         }
-        console.log('Nova Senha:', password);
-        handleBackToLogin(); 
+
+        // Atualizar a senha no localStorage
+        const usersDB = JSON.parse(localStorage.getItem('liresUsersDB')) || [];
+        const updatedUsersDB = usersDB.map(user => {
+            if (user.email === email) {
+                // Encontrou o utilizador, atualiza a senha
+                return { ...user, password: password };
+            }
+            return user; // Retorna os outros utilizadores sem alteração
+        });
+
+        // Salvar a base de dados atualizada
+        localStorage.setItem('liresUsersDB', JSON.stringify(updatedUsersDB));
+        
+        console.log('Senha atualizada com sucesso para:', email);
+        
+        Swal.fire({
+            title: 'Senha Redefinida!',
+            text: 'Sua senha foi atualizada com sucesso. Você será redirecionado para o login.',
+            icon: 'success',
+            customClass: getSwalPopupStyles(theme, 'success'),
+            buttonsStyling: false,
+            timer: 2000, // Mostra por 2 segundos
+            showConfirmButton: false,
+        });
+
+        // Espera o pop-up fechar e depois volta ao login
+        setTimeout(() => {
+            handleBackToLogin();
+        }, 2100);
     };
+    // --- FIM DAS ALTERAÇÕES DE LÓGICA ---
 
     const handleBackToLogin = () => {
         setEnterAnimationClass(''); 
@@ -128,7 +205,7 @@ export default function EsqueceuSenha() {
         }
     };
 
-    // --- Classes Dinâmicas ---
+    // --- Classes Dinâmicas (Sem alteração) ---
     const inputClasses = `w-full px-6 py-4 text-lg rounded-xl border focus:outline-none focus:ring-2 placeholder-pink-400 ${
         theme === 'escuro' 
         ? 'bg-gray-700 border-gray-600 focus:ring-pink-500 text-slate-100 placeholder-gray-400' 
@@ -159,7 +236,14 @@ export default function EsqueceuSenha() {
 
     return (
         <>
-            {/* 3. APLICAR TEMA AO FUNDO */}
+            {/* 6. ADICIONAR STYLE TAG PARA O BOTÃO DO SWAL */}
+            <style>{`
+                .btn-gradient-glow {
+                    background-image: linear-gradient(90deg, #b081ff, #59b1ff);
+                    box-shadow: 0 4px 15px rgba(90, 177, 255, 0.4);
+                }
+            `}</style>
+            
             <div className={`w-screen min-h-screen flex flex-col relative overflow-hidden ${
                 theme === 'escuro' ? 'bg-gray-900 text-slate-300' : 'bg-gray-50 text-gray-800'
             }`}>
@@ -217,7 +301,7 @@ export default function EsqueceuSenha() {
                                 </div>
                                 {error && <p className="text-red-500 text-sm text-center mt-4">{error}</p>}
                                 <button onClick={validateAndProceedStep2} className={buttonClasses}>Avançar</button>
-                                <p className={linkClasses}>Não recebeu o código? <a href="#" className="text-blue-500 hover:underline">Reenviar</a></p>
+                                <p className={linkClasses}>Não recebeu o código? <button onClick={validateAndProceedStep1} className="text-blue-500 hover:underline bg-transparent border-none cursor-pointer">Reenviar</button></p>
                                 <p className={`text-center mt-4 ${theme === 'escuro' ? 'text-gray-400' : 'text-gray-600'}`}>Digitou o e-mail errado? <button onClick={() => handleStepChange(1)} className="text-blue-500 hover:underline bg-transparent border-none cursor-pointer">Voltar</button></p>
                             </>
                         )}

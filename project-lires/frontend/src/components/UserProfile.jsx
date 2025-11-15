@@ -9,7 +9,7 @@ import Perfil from "../assets/Perfil.png";
 import Bandeira from "../assets/Brasil.jpg";
 import Foguinho from '../assets/Foguinho.png';
 import LcoinIcon from '../assets/lcoin.png';
-import CrownIcon from '../assets/Foguinho.png'; 
+import CrownIcon from '../assets/robot-Icon.png'; // Corrigido
 import SinaisIcon from '../assets/sinaisAprendidosIcon.png'; 
 import Aprendizado from "../assets/Aprendizado.png";
 import Social from "../assets/Social.png";
@@ -260,7 +260,7 @@ const Achievements = ({ theme, onShowAchievements }) => (
             onClick={onShowAchievements} 
             className="w-full flex items-center gap-4 bg-yellow-300 rounded-2xl p-4 shadow-md cursor-pointer hover:bg-yellow-400 transition-colors"
         >
-            <img src={CrownIcon} alt="Ícone de Coroa" className="w-12 h-12" />
+            <img src={CrownIcon} alt="Ícone de Conquista" className="w-12 h-12 object-contain" />
             <div>
                 <p className="font-bold text-yellow-800">NOVA CONQUISTA!</p>
                 <span className="text-sm text-yellow-700">Clique para ver mais</span>
@@ -539,7 +539,7 @@ const UserListModal = ({
                                     <h4 className={`p-3 text-sm font-semibold sticky top-0 ${theme === 'escuro' ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-500'}`}>Sugestões</h4>
                                     {suggestions.length > 0
                                         ? suggestions.map(user => <RenderUserRow key={user.id} user={user} />)
-                                        : <p className={`p-4 text-center ${theme === 'escuro' ? 'text-gray-400' : 'text-gray-500'}`}>Nenhuma sugestão. (Crie outra conta para testar!)</p>}
+                                        : <p className={`p-4 text-center ${theme === 'escuro' ? 'text-gray-400' : 'text-gray-500'}`}>Nenhuma sugestão.</p>}
                                 </>
                             )}
                         </>
@@ -569,7 +569,7 @@ export default function UserProfile() {
   
   const { username } = useParams(); 
   const navigate = useNavigate();
-  const location = useLocation(); // <-- Pega a localização
+  const location = useLocation(); 
   const [isMyProfile, setIsMyProfile] = useState(true); 
 
   const [animationClass, setAnimationClass] = useState('');
@@ -601,7 +601,9 @@ export default function UserProfile() {
   // useEffect dinâmico (Carrega o perfil correto)
   useEffect(() => {
     setAnimationClass('anim-enter');
-    const dbUsers = JSON.parse(localStorage.getItem('LiresUsersDB')) || []; 
+    
+    // --- CORREÇÃO 1: Usar 'liresUsersDB' (minúsculo) ---
+    const dbUsers = JSON.parse(localStorage.getItem('liresUsersDB')) || []; 
     setAllUsers(dbUsers); 
     
     const userString = localStorage.getItem('currentUser');
@@ -641,11 +643,11 @@ export default function UserProfile() {
   }, [username, navigate, dailyStreak, lcoins, lessonProgress, location]); 
   
 
-  // Funções de Follow/Unfollow (Sem alteração)
+  // Funções de Follow/Unfollow
   const handleShowFollowers = () => {
     const userFollowers = currentUser?.followers || [];
     const followersData = userFollowers
-        .map(id => allUsers.find(u => u.id === id))
+        .map(id => allUsers.find(u => u.id === id)) // <-- 'allUsers' agora está preenchido
         .filter(Boolean) 
         .map(user => ({ ...user, isFollowing: loggedInFollowing.includes(user.id) })); 
     setModalState({ isOpen: true, title: 'Seguidores', users: followersData });
@@ -653,7 +655,7 @@ export default function UserProfile() {
   const handleShowFollowing = () => {
     const userFollowing = currentUser?.following || [];
     const followingData = userFollowing
-        .map(id => allUsers.find(u => u.id === id))
+        .map(id => allUsers.find(u => u.id === id)) // <-- 'allUsers' agora está preenchido
         .filter(Boolean)
         .map(user => ({ ...user, isFollowing: loggedInFollowing.includes(user.id) })); 
     setModalState({ isOpen: true, title: 'Seguindo', users: followingData });
@@ -694,7 +696,8 @@ export default function UserProfile() {
         return user;
     });
 
-    localStorage.setItem('LiresUsersDB', JSON.stringify(updatedAllUsers)); 
+    // --- CORREÇÃO 2: Usar 'liresUsersDB' (minúsculo) ---
+    localStorage.setItem('liresUsersDB', JSON.stringify(updatedAllUsers)); 
     setAllUsers(updatedAllUsers);
     setFollowing(newFollowingList); 
 
@@ -703,6 +706,7 @@ export default function UserProfile() {
         ...updatedAllUsers.find(u => u.id === prevUser.id)
     }));
     
+    // (Lógica de atualização do modal)
     if (modalState.title === 'Seguindo') {
         const userFollowing = updatedAllUsers.find(u => u.id === currentUser.id)?.following || [];
         const newFollowingData = userFollowing
@@ -733,11 +737,11 @@ export default function UserProfile() {
     }
   };
 
-  // --- Lógica dos Objetivos (Sem alteração) ---
+  // --- Lógica dos Objetivos (ATUALIZADA) ---
   const allObjectives = {
     'Aprendizado': [
-        { id: 'aprend_1', description: 'Aprenda 3 sinais', reward: 25, isCompleted: () => signsLearned >= 3 },
-        { id: 'aprend_2', description: 'Aprenda 10 sinais', reward: 50, isCompleted: () => signsLearned >= 10 },
+        { id: 'aprend_1', description: 'Complete 3 passos', reward: 25, isCompleted: () => signsLearned >= 3 },
+        { id: 'aprend_2', description: 'Complete 10 passos', reward: 50, isCompleted: () => signsLearned >= 10 },
         { id: 'aprend_3', description: 'Complete a lição "Começar do Zero"', reward: 50, isCompleted: () => (lessonProgress['comecar-do-zero']?.completed || 0) >= 3 },
     ],
     'Social': [
@@ -752,8 +756,8 @@ export default function UserProfile() {
     ],
     'Exploracao': [
         { id: 'explor_1', description: 'Complete a configuração inicial', reward: 25, isCompleted: () => !!onboardingSelections?.time },
-        { id: 'explor_2', description: 'Acesse o Alfabeto', reward: 25, isCompleted: () => false }, 
-        { id: 'explor_3', description: 'Assista um vídeo', reward: 25, isCompleted: () => false }, 
+        { id: 'explor_2', description: 'Comece a lição do Alfabeto', reward: 25, isCompleted: () => Object.keys(lessonProgress).some(key => key.startsWith('alfabeto-')) }, 
+        { id: 'explor_3', description: 'Obtenha 50 Lcoins', reward: 25, isCompleted: () => lcoins >= 50 }, 
     ],
   };
   const objectivesData = [
