@@ -1,7 +1,7 @@
-import React, { useState, useEffect, Fragment } from "react"; // <-- Adicionado Fragment
+import React, { useState, useEffect, Fragment } from "react"; // Fragment é necessário porque agora eu retorno o Modal fora da div principal
 import { useSettings } from './SettingsContext';
-import { useNavigate } from 'react-router-dom'; // <-- Importado useNavigate
-import Swal from 'sweetalert2'; // <-- Importado Swal
+import { useNavigate } from 'react-router-dom'; // Para o botão 'Assinar'
+import Swal from 'sweetalert2'; // Para os pop-ups de sucesso
 
 // --- IMAGENS BANNER ---
 import robotPremiumImg from '../assets/robot-premium.png';
@@ -13,11 +13,15 @@ import coinChestImg from '../assets/coin-chest.png'; // Imagem para 1200
 import coinBarrelImg from '../assets/coin-barrel.png'; // Imagem para 3000
 import coinCartImg from '../assets/coin-cart.png'; // Imagem para 6500
 
-// --- INÍCIO DA MODIFICAÇÃO (Função de Copiar) ---
+/**
+ * Função utilitária (helper) para copiar texto para a área de transferência.
+ * Cria um textarea, joga o texto lá, seleciona, copia e remove o elemento.
+ * Recebe um callback 'onSuccess' para eu poder mudar o estado do botão (ex: "Copiado!").
+ */
 const copyToClipboard = (text, onSuccess) => {
     const textArea = document.createElement('textarea');
     textArea.value = text;
-    textArea.style.position = 'fixed';
+    textArea.style.position = 'fixed'; // Tira da tela
     textArea.style.opacity = '0';
     document.body.appendChild(textArea);
     textArea.focus();
@@ -25,47 +29,55 @@ const copyToClipboard = (text, onSuccess) => {
     try {
         const successful = document.execCommand('copy');
         if (successful) {
-            onSuccess();
+            onSuccess(); // Chama o callback se a cópia der certo
         }
     } catch (err) {
         console.error('Erro ao copiar:', err);
     }
     document.body.removeChild(textArea);
 };
-// --- FIM DA MODIFICAÇÃO ---
 
-// --- INÍCIO DA MODIFICAÇÃO (Modal de Pagamento PIX) ---
-// (Este modal é para comprar LCOINS com dinheiro real)
+/**
+ * Componente: PixPaymentModal
+ * Este é o modal que abre ao clicar em um pacote de Lcoins.
+ * Ele é "burro", apenas exibe os dados (pack) e chama as funções (onClose, onConfirm).
+ */
 const PixPaymentModal = ({ isOpen, onClose, onConfirm, theme, pack }) => {
+    // Não renderiza nada se não estiver aberto
     if (!isOpen) return null;
 
+    // Estado para o feedback do botão 'copiar'
     const [copySuccess, setCopySuccess] = useState(false);
     
-    // Simula uma chave PIX "Copia e Cola" diferente para cada valor
+    // Gero uma chave PIX "Copia e Cola" SIMULADA.
+    // O valor (pack.price) é injetado na string.
     const pixCopiaECola = `00020126580014br.gov.bcb.pix0136caua.arthur2006@gmail.com5204000053039865405${pack.price.toFixed(2)}5802BR5910Caua Ramos6009SAO PAULO62070503***6304E5B9`;
     
-    // Gera a URL do QR Code (usando a API)
+    // Gero a URL do QR Code (usando a API gratuita qrserver.com)
     const qrData = encodeURIComponent(pixCopiaECola);
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qrData}`;
 
 
+    // Função chamada pelo botão 'Copiar Chave'
     const handleCopy = () => {
         copyToClipboard(pixCopiaECola, () => {
-            setCopySuccess(true);
-            setTimeout(() => setCopySuccess(false), 2000); 
+            setCopySuccess(true); // Ativa o feedback
+            setTimeout(() => setCopySuccess(false), 2000); // Reseta depois de 2s
         });
     };
 
     return (
+        // O overlay (fundo escuro)
         <div 
             className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 font-poppins"
-            onClick={onClose}
+            onClick={onClose} // Fecha ao clicar fora
         >
+            {/* O card do modal */}
             <div 
                 className={`w-full max-w-md rounded-2xl shadow-xl flex flex-col ${
                     theme === 'escuro' ? 'bg-gray-800 text-slate-100' : 'bg-white text-gray-900'
                 }`}
-                onClick={e => e.stopPropagation()}
+                onClick={e => e.stopPropagation()} // Impede de fechar ao clicar DENTRO
             >
                 {/* Cabeçalho */}
                 <div className="flex justify-between items-center p-4 border-b">
@@ -80,7 +92,7 @@ const PixPaymentModal = ({ isOpen, onClose, onConfirm, theme, pack }) => {
                     </button>
                 </div>
                 
-                {/* Conteúdo do Modal */}
+                {/* Conteúdo do Modal (QR Code, Valor, Copia e Cola) */}
                 <div className="p-6 flex flex-col items-center">
                     <h2 className="text-2xl font-bold text-center mb-4"
                         style={{ color: '#FBC02D' }} // Amarelo Lcoin
@@ -91,11 +103,11 @@ const PixPaymentModal = ({ isOpen, onClose, onConfirm, theme, pack }) => {
                         Valor: R$ {pack.price.toFixed(2)}
                     </p>
                     
-                    {/* QR Code Simulado */}
+                    {/* QR Code Simulado (a API gera a imagem) */}
                     <img 
                         src={qrCodeUrl}
                         alt="QR Code PIX Simulado"
-                        className="w-48 h-48 rounded-lg bg-white"
+                        className="w-48 h-48 rounded-lg bg-white" // bg-white pra garantir
                     />
                     
                     <p className={`mt-4 font-semibold ${theme === 'escuro' ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -118,7 +130,7 @@ const PixPaymentModal = ({ isOpen, onClose, onConfirm, theme, pack }) => {
                             onClick={handleCopy}
                             className={`w-full mt-2 font-semibold py-2 px-4 rounded-lg transition-colors ${
                                 copySuccess 
-                                ? 'bg-green-500 text-white' 
+                                ? 'bg-green-500 text-white' // Feedback de sucesso
                                 : 'bg-purple-500 text-white hover:bg-purple-600'
                             }`}
                         >
@@ -127,7 +139,7 @@ const PixPaymentModal = ({ isOpen, onClose, onConfirm, theme, pack }) => {
                     </div>
                 </div>
                 
-                {/* Botões de Ação */}
+                {/* Rodapé com botões de ação */}
                 <div className="flex justify-end gap-3 p-4 border-t">
                     <button
                         onClick={onClose}
@@ -139,6 +151,7 @@ const PixPaymentModal = ({ isOpen, onClose, onConfirm, theme, pack }) => {
                     >
                         Cancelar
                     </button>
+                    {/* Botão de "Pagamento Concluído" (Simulação) */}
                     <button
                         onClick={() => onConfirm(pack.amount)} // Passa a quantidade de Lcoins
                         className="bg-green-500 text-white font-semibold py-2 px-6 rounded-full hover:bg-green-600 transition-colors"
@@ -150,23 +163,29 @@ const PixPaymentModal = ({ isOpen, onClose, onConfirm, theme, pack }) => {
         </div>
     );
 };
-// --- FIM DA MODIFICAÇÃO ---
 
 
+/**
+ * Componente Principal: LojaContent
+ * Esta é a página da loja.
+ */
 export default function LojaContent() {
-    // --- INÍCIO DA MODIFICAÇÃO (Hooks) ---
-    const { theme, setLcoins } = useSettings(); // Pega SOMENTE setLcoins
-    const navigate = useNavigate(); // Hook para navegação
+    // Puxo o 'setLcoins' do meu contexto. Não preciso do 'lcoins' aqui.
+    const { theme, setLcoins } = useSettings(); 
+    const navigate = useNavigate(); // Hook para navegar para a pag de assinatura
     
     const [animationClass, setAnimationClass] = useState('');
+    
+    // Estado que controla o modal de PIX
+    // 'pack' vai guardar os dados (amount, price) do pacote clicado
     const [modalData, setModalData] = useState({ isOpen: false, amount: 0, price: 0.0 });
-    // --- FIM DA MODIFICAÇÃO ---
 
+    // Animação de entrada
     useEffect(() => {
         setAnimationClass('anim-enter');
     }, []); 
 
-    // --- INÍCIO DA MODIFICAÇÃO (Função de Sucesso) ---
+    // Helpers para estilizar o pop-up do Swal
     const getSwalCustomClasses = () => ({
         popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-800 text-slate-200' : 'bg-white'}`,
         title: `${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`,
@@ -174,18 +193,20 @@ export default function LojaContent() {
     });
     const getSwalBackground = () => (theme === 'escuro' ? '#1f2937' : '#fff');
 
+    /**
+     * Chamado quando o usuário clica em "Pagamento Concluído" no modal.
+     * @param {number} amount - A quantidade de Lcoins compradas (ex: 1200)
+     */
     const handlePaymentSuccess = (amount) => {
-        // 1. Adiciona as Lcoins (O Contexto salvará)
+        // 1. Adiciona as Lcoins ao estado global.
+        // O SettingsContext vai automaticamente salvar isso no localStorage
+        // por causa do useEffect que coloquei lá. Isso é bem mais limpo.
         setLcoins(prevLcoins => prevLcoins + amount);
         
-        // 2. REMOVIDO: Bloco de atualização manual do localStorage
-        // O useEffect no SettingsContext cuidará disso automaticamente.
-        // O código antigo aqui continha um bug (usava 'lcoins' estagnado).
-
-        // 3. Fecha o modal
+        // 2. Fecha o modal
         setModalData({ isOpen: false, amount: 0, price: 0.0 });
 
-        // 4. Mostra pop-up de sucesso
+        // 3. Mostra pop-up de sucesso
         Swal.fire({
             title: 'Compra Efetuada!',
             text: `Você recebeu ${amount} Lcoins!`,
@@ -196,16 +217,17 @@ export default function LojaContent() {
             background: getSwalBackground()
         });
     };
-    // --- FIM DA MODIFICAÇÃO ---
 
+    // Classe base dos cards de Lcoin
     const baseCardClass = "flex flex-col items-center p-4 rounded-xl shadow-lg transition-all transform cursor-pointer hover:scale-105 hover:shadow-xl hover:shadow-yellow-500/20";
 
     return (
-        // --- INÍCIO DA MODIFICAÇÃO (Fragment) ---
+        // Uso o Fragment porque o Modal é um "irmão" da div principal
         <Fragment>
+            {/* Conteúdo principal da página */}
             <div className={`flex flex-col gap-8 w-full content-box ${animationClass}`}> 
             
-                {/* BANNER PREMIUM (Atualizado com onClick) */}
+                {/* BANNER PREMIUM (Master) */}
                 <div className="bg-gradient-to-br from-blue-600 to-indigo-800 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-4 overflow-hidden">
                     <div className="flex-1 text-center md:text-left z-10">
                         <img 
@@ -219,10 +241,12 @@ export default function LojaContent() {
                         <p className="text-blue-100 text-base mb-6 max-w-md mx-auto md:mx-0">
                             Mais conteúdo, mais prática e recursos exclusivos para acelerar seu aprendizado.
                         </p>
-                
+                    
+                        {/* Truque do botão com borda gradiente */}
                         <div className="inline-block bg-gradient-to-r from-lime-300 via-yellow-300 to-lime-400 p-[3px] rounded-full shadow-lg">
                             <button 
-                                onClick={() => navigate('/configuracoes/assinatura')} // <-- NAVEGAÇÃO
+                                // Navega para a página de Assinatura nas Configurações
+                                onClick={() => navigate('/configuracoes/assinatura')} 
                                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-10 rounded-full w-full transition-colors text-lg"
                             >
                                 Assinar agora
@@ -240,7 +264,7 @@ export default function LojaContent() {
                 
                 </div>
 
-                {/* LCOINS ATUALIZADO */}
+                {/* Seção de LCOINS */}
                 <div>
                     <div className="flex items-center gap-2 mb-4">
                         <img src={lcoinIconImg} alt="Lcoins" className="w-8 h-8" />
@@ -249,11 +273,12 @@ export default function LojaContent() {
                         }`}>Lcoins</span>
                     </div>
 
-                    {/* --- INÍCIO DA MODIFICAÇÃO (Cards Clicáveis) --- */}
+                    {/* Grid dos pacotes de Lcoin (clicáveis) */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         
                         {/* Pacote 1 (1200) */}
                         <div 
+                            // Ao clicar, defino os dados do modal e mando abrir
                             onClick={() => setModalData({ isOpen: true, amount: 1200, price: 17.90 })}
                             className={`${baseCardClass} bg-gradient-to-br from-blue-400 to-indigo-500 border-2 border-blue-300`}
                         >
@@ -283,19 +308,17 @@ export default function LojaContent() {
                         </div>
                         
                     </div>
-                    {/* --- FIM DA MODIFICAÇÃO --- */}
                 </div>
             </div>
             
-            {/* --- INÍCIO DA MODIFICAÇÃO (Renderiza o Modal) --- */}
+            {/* Aqui eu renderizo o Modal. Ele só vai ser visível se 'modalData.isOpen' for true */}
             <PixPaymentModal
                 isOpen={modalData.isOpen}
-                onClose={() => setModalData({ isOpen: false, amount: 0, price: 0.0 })}
+                onClose={() => setModalData({ isOpen: false, amount: 0, price: 0.0 })} // Reseta e fecha
                 onConfirm={handlePaymentSuccess}
                 theme={theme}
-                pack={modalData}
+                pack={modalData} // Passo o 'pack' (amount e price) para o modal
             />
-            {/* --- FIM DA MODIFICAÇÃO --- */}
         </Fragment>
     );
 }

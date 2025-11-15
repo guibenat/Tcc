@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. IMPORTADO O 'useNavigate'
-// 2. IMPORTADO O 'useSettings' E O CAMINHO CORRIGIDO (para minúsculas)
-import { useSettings } from './settingscontext'; 
+import { useNavigate } from 'react-router-dom'; // Para navegar com o clique
+// Puxo meu hook de Contexto. Corrigi o case para 'SettingsContext'
+import { useSettings } from './SettingsContext'; 
 
-// --- Imagens ---
-// Assumindo que 'sidebarright.jsx' está em 'src/components/'
-// e 'assets' está em 'src/assets/'
-import userAvatarImg from '../assets/perfil.png';
+// --- Imagens da Sidebar ---
+import userAvatarImg from '../assets/perfil.png'; // Fallback
 import moneyBagImg from '../assets/bolsinha-dinheiro.png';
 import fireIconImg from '../assets/foguinho.png';
 import lcoinIconImg from '../assets/lcoin.png';
 import heartIconImg from '../assets/coracaoo.png';
 import liresMasterLogoImg from '../assets/lires-master-logo.png'; 
 import robotMascotImg from '../assets/robot-mascot.png';     
-import AdImage from '../assets/anuncio.png';
+import AdImage from '../assets/anuncio.png'; // Placeholder
 
-// --- Função de Avatar ---
+/**
+ * Helper: getAvatarUrl
+ * Função que gera a URL do avatar do usuário usando a API do DiceBear.
+ */
 const colorPalette = [
     'f0d3f7', 'c0aede', 'd1d4f9', 'fde047', 'a78bfa',
     '7c3aed', '4ade80', '2dd4bf', 'fb7185', 'f97316'
@@ -24,12 +25,15 @@ const colorPalette = [
 const getAvatarUrl = (seed, style) => {
     const finalStyle = style || 'bottts-neutral'; // Padrão é robô
     if (!seed) {
-        return userAvatarImg; // Retorna o placeholder
+        return userAvatarImg; // Retorna o placeholder se não tiver seed
     }
     return `https://api.dicebear.com/7.x/${finalStyle}/svg?seed=${seed}&radius=50&backgroundColor=${colorPalette}`;
 };
 
-// --- Componente UserStat ---
+/**
+ * Componente: UserStat
+ * Mini-display reutilizável para os ícones (fogo, lcoin, coração).
+ */
 const UserStat = ({ iconSrc, value, color }) => (
     <div className="flex items-center gap-3">
         <img src={iconSrc} alt="Ícone de Status" className="w-8 h-8" />
@@ -37,33 +41,41 @@ const UserStat = ({ iconSrc, value, color }) => (
     </div>
 );
 
-// --- Componente Principal ---
+/**
+ * Componente Principal: SidebarRight
+ * A barra lateral direita (fixa) que mostra status, premium, missões e anúncios.
+ * Visível apenas em desktop (lg:block).
+ */
 export default function SidebarRight() {
-  // 3. PUXADO O 'timeSpentToday' E INICIADO O 'navigate'
+  // Puxo todos os dados dinâmicos do usuário e o tema do Contexto
   const { theme, lives, lcoins, dailyStreak, timeSpentToday } = useSettings();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Hook para o botão de Assinatura
 
-  // --- Carregar Avatar do Usuário ---
-  const [avatarUrl, setAvatarUrl] = useState(userAvatarImg); // Começa com o placeholder
+  // Estado para o avatar (começa com o placeholder)
+  const [avatarUrl, setAvatarUrl] = useState(userAvatarImg); 
 
+  // Efeito para carregar o avatar do usuário logado (só roda 1 vez no mount)
   useEffect(() => {
-    // Carrega os dados do usuário logado no localStorage
     const userString = localStorage.getItem('currentUser');
     if (userString) {
         const user = JSON.parse(userString);
         // Gera a URL do avatar com a seed e o estilo salvos
         setAvatarUrl(getAvatarUrl(user?.avatarSeed || user?.username, user?.avatarStyle));
     }
-  }, []); // Roda só uma vez quando o componente é montado
+  }, []); // [] = Roda só no 'mount'
 
-  // --- Lógica de XP ---
-  const DAILY_XP_GOAL = 250; // O seu objetivo diário
-  // timeSpentToday vem em minutos (ex: 10.5), arredondamos para baixo
+  // --- Lógica de XP (Meta Diária) ---
+  // A meta diária é baseada no tempo gasto (que estou tratando como XP)
+  // TODO: Mudar essa variável 'timeSpentToday' para 'dailyXp' no Contexto depois
+  const DAILY_XP_GOAL = 250; // Meta de 250 XP/min por dia
+  
+  // Pego o 'timeSpentToday' (que está em minutos no Contexto) e trato como XP
   const currentXp = Math.floor(timeSpentToday || 0); 
-  // Calcula a percentagem, mas limita a 100%
+  // Calculo a porcentagem da barra, com um teto (Math.min) de 100%
   const xpPercentage = Math.min((currentXp / DAILY_XP_GOAL) * 100, 100);
 
   return (
+    // Container principal da Sidebar (fixo, à direita, só em 'lg')
     <aside className={`
       w-96 p-6 space-y-6 fixed top-0 right-0 h-screen overflow-y-auto hidden lg:block
       ${theme === 'escuro' 
@@ -71,7 +83,7 @@ export default function SidebarRight() {
         : 'bg-[#F9F8FF] border-l border-slate-200'}
     `}>
       
-      {/* User Stats */}
+      {/* 1. Bloco de User Stats (Vidas, Lcoins, Streak) */}
       <div className={`
         flex justify-around items-center p-2 rounded-xl
         ${theme === 'escuro' ? 'bg-gray-800' : 'bg-slate-50'}
@@ -81,7 +93,7 @@ export default function SidebarRight() {
         <UserStat iconSrc={heartIconImg} value={lives} color="text-red-500" />
       </div>
 
-      {/* Lires Master Card (Atualizado com onClick) */}
+      {/* 2. Card Lires Master (Premium) */}
       <div className="p-1 rounded-[24px] bg-gradient-to-br from-teal-200 to-blue-300">
         <div className="bg-gradient-to-br from-blue-800 via-indigo-900 to-black text-white rounded-[20px] relative overflow-hidden p-5">
           <div className="flex justify-between items-center">
@@ -91,7 +103,7 @@ export default function SidebarRight() {
               <p className="text-xs text-blue-200 mb-4 leading-snug">
                 Sem anuncios, vida ilimitada e<br/>skins gratis!
               </p>
-              {/* 4. ADICIONADO O 'onClick' PARA NAVEGAÇÃO */}
+              {/* Botão que navega para a página de assinatura */}
               <button 
                 onClick={() => navigate('/configuracoes/assinatura')}
                 className="bg-gradient-to-r from-[#D7A3EB] to-[#9E57C3] text-white font-bold py-2 px-6 rounded-full w-fit shadow-lg hover:brightness-110 transition-all"
@@ -99,6 +111,7 @@ export default function SidebarRight() {
                 Assine agora
               </button>
             </div>
+            {/* Imagem do mascote (posicionada absoluta) */}
             <div className="absolute right-[-25px] bottom-[-15px] w-40 h-40 z-0">
               <img src={robotMascotImg} alt="Robô Mascote" className="w-full h-full object-contain" />
             </div>
@@ -106,7 +119,7 @@ export default function SidebarRight() {
         </div>
       </div>
 
-      {/* Card de Missões (Atualizado com XP dinâmico) */}
+      {/* 3. Card de Missões (Meta Diária de XP) */}
       <div className={`
         p-5 rounded-2xl space-y-4
         ${theme === 'escuro' 
@@ -123,29 +136,32 @@ export default function SidebarRight() {
         </div>
         <div className="flex items-center gap-4">
           <div>
-            {/* Avatar Dinâmico */}
+            {/* Avatar dinâmico do usuário */}
             <img 
               src={avatarUrl} 
               alt="Avatar do Usuário" 
               className="w-12 h-12 rounded-full border-2 border-purple-200 bg-white" 
             />
           </div>
+          {/* Barra de Progresso de XP */}
           <div className="flex-1 relative">
+            {/* Fundo da barra */}
             <div className={`
               rounded-full h-6 w-full
               ${theme === 'escuro' ? 'bg-gray-600' : 'bg-slate-200'}
             `}>
-              {/* 5. LARGURA DA BARRA DINÂMICA */}
+              {/* Preenchimento (com 'width' dinâmico) */}
               <div 
                 className="bg-gradient-to-r from-purple-400 to-indigo-500 h-6 rounded-full" 
-                style={{ width: `${xpPercentage}%` }}
+                style={{ width: `${xpPercentage}%` }} // A largura é controlada pelo %
               ></div>
             </div>
+            {/* Texto (XP / Meta) por cima da barra */}
             <div className="absolute inset-0 flex items-center justify-center">
-              {/* 6. TEXTO DE XP DINÂMICO */}
               <span className="text-white font-bold text-xs">{currentXp} / {DAILY_XP_GOAL} XP</span>
             </div>
           </div>
+          {/* Recompensa */}
           <div className="flex flex-col items-center">
             <span className="font-bold text-amber-600 text-sm">+50</span>
             <img src={moneyBagImg} alt="Recompensa em Lcoins" className="w-12 h-12" />
@@ -153,7 +169,7 @@ export default function SidebarRight() {
         </div>
       </div>
       
-      {/* Card de Anúncio (Como pedido) */}
+      {/* 4. Card de Anúncio (Placeholder) */}
       <div className={`
         p-4 rounded-2xl border text-center flex-shrink-0
         ${theme === 'escuro' 
@@ -165,7 +181,7 @@ export default function SidebarRight() {
         </div>
       </div>
       
-      {/* Footer */}
+      {/* 5. Footer com links */}
       <footer className={`
         text-xs text-center space-x-2 pt-4 flex-shrink-0
         ${theme === 'escuro' ? 'text-slate-400' : 'text-slate-500'}

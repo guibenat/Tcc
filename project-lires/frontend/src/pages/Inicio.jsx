@@ -1,31 +1,35 @@
-import React, { useState, useEffect, useRef } from 'react'; // Adicionado useState, useEffect, useRef
+import React, { useState, useEffect, useRef } from 'react'; 
 import { useNavigate } from 'react-router-dom';
-// 1. IMPORTAR O HOOK DE CONFIGURAÇÕES
+// Puxo o hook do meu contexto para ler o tema
 import { useSettings } from '../components/SettingsContext';
 
-// --- Imagens ---
-// 2. IMPORTAR AMBAS AS LOGOS (CLARA E ESCURA)
+// --- Imports de Assets ---
+// Logos (para o tema claro e escuro)
 import logoLiresClaraImg from '../assets/logo-lires.png';
-import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; // <- Verifique o nome/caminho
+import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; 
+// Imagens de Conteúdo
 import roboPrincipalImg from '../assets/LoginLogo.png';
 import grupoInclusivoImg from '../assets/RoboPessoas.png';
 import conexaoImg from '../assets/GarotaNotebook.png';
 import bandeiraBrasilImg from '../assets/Brasil.jpg';
 
 
-// --- Componentes de Seção (ATUALIZADOS) ---
+// --- Componentes de Layout ---
 
-// ATUALIZADO: Aceita 'theme'
+/**
+ * Componente: Header
+ * Mostra a logo e o seletor de idioma no topo da página (desktop).
+ */
 const Header = ({ theme }) => (
   <header className="py-8">
     <div className="px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-      {/* ATUALIZADO: Usa a logo correta */}
+      {/* Logo Dinâmica */}
       <img 
         src={theme === 'escuro' ? logoLiresEscuraImg : logoLiresClaraImg} 
         alt="Logo Lires" 
         className="h-16 sm:h-20 w-auto" 
       />
-      {/* ATUALIZADO: Botão de idioma */}
+      {/* Botão de idioma */}
       <button className={`flex items-center gap-2 border rounded-full px-4 py-2 text-sm transition-colors ${
         theme === 'escuro' 
         ? 'border-gray-600 text-slate-300 hover:bg-gray-700' 
@@ -38,18 +42,21 @@ const Header = ({ theme }) => (
   </header>
 );
 
-// ATUALIZADO: Aceita 'theme'
+/**
+ * Componente: StickyActions
+ * Barra de ação fixa que aparece quando o usuário rola o Hero para fora da tela.
+ */
 const StickyActions = ({ onStart, onLogin, isVisible, theme }) => (
   <div
     className={`fixed top-0 left-0 right-0 backdrop-blur-sm shadow-md z-50 transition-all duration-300 ease-in-out ${
-      isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'
+      isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none' // Lógica de esconder/mostrar
     } ${
-      theme === 'escuro' ? 'bg-gray-800/90' : 'bg-white/90' // Fundo atualizado
+      theme === 'escuro' ? 'bg-gray-800/90' : 'bg-white/90' // Fundo semi-transparente
     }`}
   >
     <div className="px-4 sm:px-6 lg:px-8 flex justify-between items-center py-3">
       <div>
-        {/* ATUALIZADO: Usa a logo correta */}
+        {/* Logo menor na barra sticky */}
         <img 
           src={theme === 'escuro' ? logoLiresEscuraImg : logoLiresClaraImg} 
           alt="Logo Lires" 
@@ -57,7 +64,7 @@ const StickyActions = ({ onStart, onLogin, isVisible, theme }) => (
         />
       </div>
       <div className="flex gap-2 sm:gap-4">
-        {/* Botão Comece Agora (gradiente, sem mudança visual) */}
+        {/* Botão Comece Agora */}
         <button
           onClick={onStart}
           className="hidden sm:block text-sm sm:text-base font-semibold py-2 px-4 sm:px-8 border-none rounded-full cursor-pointer text-white transition transform duration-200 hover:scale-105"
@@ -68,7 +75,7 @@ const StickyActions = ({ onStart, onLogin, isVisible, theme }) => (
         >
           Comece agora
         </button>
-        {/* ATUALIZADO: Botão Login */}
+        {/* Botão Login */}
         <button
           onClick={onLogin}
           className={`text-sm sm:text-base font-semibold py-2 px-4 sm:px-8 rounded-full border-2 transition-colors duration-300 ${
@@ -84,7 +91,10 @@ const StickyActions = ({ onStart, onLogin, isVisible, theme }) => (
   </div>
 );
 
-// ATUALIZADO: Aceita 'theme'
+/**
+ * Componente: Hero
+ * A seção de destaque da página inicial, com robô flutuante e CTAs.
+ */
 const Hero = ({ imagemRobo, onStart, onLogin, theme }) => (
   <section className="text-center md:text-left py-16 md:py-24">
     <div className="px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-center gap-8 lg:gap-12">
@@ -92,7 +102,6 @@ const Hero = ({ imagemRobo, onStart, onLogin, theme }) => (
         <img src={imagemRobo} alt="Robô Lires amigável" className="w-64 h-64 md:w-80 md:h-80 object-cover rounded-lg floating-robot" />
       </div>
       <div className="md:w-1/2 flex flex-col items-center md:items-start fade-in-up" style={{ animationDelay: '0.4s' }}>
-        {/* ATUALIZADO: Texto */}
         <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4 ${
           theme === 'escuro' ? 'text-slate-100' : 'text-gray-800'
         }`}>
@@ -100,7 +109,6 @@ const Hero = ({ imagemRobo, onStart, onLogin, theme }) => (
           <span className={`${theme === 'escuro' ? 'text-purple-400' : 'text-purple-500'}`}> divertido com a gente!</span>
         </h2>
         <div className="flex flex-col gap-4 mt-6 w-full max-w-xs">
-          {/* Botão Comece agora (gradiente, sem mudança) */}
           <button
             onClick={onStart}
             className="text-lg font-semibold py-3 px-12 border-none rounded-full cursor-pointer text-white transition transform duration-200 hover:scale-105"
@@ -111,7 +119,6 @@ const Hero = ({ imagemRobo, onStart, onLogin, theme }) => (
           >
             Comece agora
           </button>
-          {/* ATUALIZADO: Botão Já tenho conta */}
           <button
             onClick={onLogin}
             className={`text-lg font-semibold py-3 px-12 rounded-full border-2 transition-colors duration-300 ${
@@ -128,14 +135,16 @@ const Hero = ({ imagemRobo, onStart, onLogin, theme }) => (
   </section>
 );
 
-// ATUALIZADO: Aceita 'theme'
+/**
+ * Componente: Features
+ * Seções de marketing (Inclusivo, Conexão).
+ */
 const Features = ({ imagemGrupo, imagemConexao, theme }) => (
   <>
-    {/* Seção de Features 1 */}
+    {/* Seção 1: Inclusivo e Transformador */}
     <section className="py-16 text-center md:text-left">
       <div className="px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-12">
         <div className="md:w-1/2 fade-in-up flex flex-col justify-center">
-          {/* ATUALIZADO: Textos */}
           <h3 className={`text-3xl sm:text-4xl font-bold mb-4 ${theme === 'escuro' ? 'text-teal-400' : 'text-teal-500'}`}>
             Acessível, Inclusivo e Transformador.
           </h3>
@@ -149,11 +158,10 @@ const Features = ({ imagemGrupo, imagemConexao, theme }) => (
       </div>
     </section>
 
-    {/* Seção de Features 2 */}
+    {/* Seção 2: Mantenha a Conexão (Layout Invertido) */}
     <section className="py-16 text-center md:text-left">
       <div className="px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row-reverse items-center gap-12">
         <div className="md:w-1/2 fade-in-up flex flex-col justify-center">
-          {/* ATUALIZADO: Textos */}
           <h3 className={`text-3xl sm:text-4xl font-bold mb-4 ${theme === 'escuro' ? 'text-teal-400' : 'text-teal-500'}`}>
             Mantenha a conexão
           </h3>
@@ -169,11 +177,13 @@ const Features = ({ imagemGrupo, imagemConexao, theme }) => (
   </>
 );
 
-// ATUALIZADO: Aceita 'theme'
+/**
+ * Componente: CallToAction (CTA)
+ * Chamada final para a ação.
+ */
 const CallToAction = ({ theme }) => (
     <section className="text-center py-16">
       <div className="px-4 sm:px-6 lg:px-8">
-        {/* ATUALIZADO: Texto */}
         <h4 className={`text-3xl sm:text-4xl font-bold ${
           theme === 'escuro' ? 'text-slate-100' : 'text-gray-800'
         }`}>
@@ -183,7 +193,10 @@ const CallToAction = ({ theme }) => (
     </section>
 );
  
-// ATUALIZADO: Aceita 'theme'
+/**
+ * Componente: Footer
+ * Rodapé com links e onda de transição.
+ */
 const Footer = ({ theme }) => (
     <footer className="relative bg-gradient-to-b from-violet-400 to-blue-500 text-white pt-20 pb-8">
       {/* Top Wavy SVG */}
@@ -195,10 +208,10 @@ const Footer = ({ theme }) => (
           preserveAspectRatio="none"
           className="relative block w-full h-[150px]"
         >
-          {/* ATUALIZADO: Cor da onda */}
+          {/* Cor da onda de fundo (muda com o tema) */}
           <path
             d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
-            className={theme === 'escuro' ? 'fill-gray-900' : 'fill-white'} // <- Muda a cor da onda de fundo
+            className={theme === 'escuro' ? 'fill-gray-900' : 'fill-white'} 
           ></path>
         </svg>
       </div>
@@ -222,17 +235,18 @@ const Footer = ({ theme }) => (
 // --- Componente Principal ---
 
 export default function Inicio() {
-  // 3. LER O TEMA
+  // Puxo o tema do contexto global
   const { theme } = useSettings();
-  const [showSticky, setShowSticky] = useState(false);
-  const heroRef = useRef(null); // Corrigido para useRef
+  const [showSticky, setShowSticky] = useState(false); // Controla a barra fixa
+  const heroRef = useRef(null); // Referência para medir a seção Hero
   const navigate = useNavigate();
 
-  useEffect(() => { // Corrigido para useEffect
+  // Efeito que monitora o scroll
+  useEffect(() => {
     const handleScroll = () => {
       const heroElement = heroRef.current;
       if (heroElement) {
-        // Mostra a barra fixa quando o scroll passar do topo da seção Hero
+        // Mostra a barra fixa quando o scroll passar da metade da seção Hero
         if (window.scrollY > heroElement.offsetTop + heroElement.offsetHeight / 2) { 
           setShowSticky(true);
         } else {
@@ -243,35 +257,39 @@ export default function Inicio() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
 
+    // Função de limpeza (performance)
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []); // Array vazio garante que rode apenas na montagem/desmontagem
+  }, []); 
 
   const handleStartNow = () => {
-    navigate('/cadastro');
+    navigate('/cadastro'); // Inicia o cadastro
   };
 
   const handleAlreadyHaveAccount = () => {
-    navigate('/login');
+    navigate('/login'); // Vai para o login
   };
 
   return (
-    // 4. APLICAR TEMA AO FUNDO PRINCIPAL
+    // Container principal (fundo e tema)
     <div className={` ${
       theme === 'escuro' ? 'bg-gray-900 text-slate-300' : 'bg-white text-gray-800'
-    }`}>       
-      {/* 5. PASSAR O TEMA PARA OS SUBCOMPONENTES */}
+    }`}> 
+      
+      {/* 1. Barra de Ação Fixa (Aparece no scroll) */}
       <StickyActions 
         onStart={handleStartNow} 
         onLogin={handleAlreadyHaveAccount} 
         isVisible={showSticky} 
-        theme={theme}
+        theme={theme} // Passa o tema
       />
 
+      {/* 2. Header (Logo e Idioma) */}
       <Header theme={theme} />
+      
       <main>
-        {/* Usamos ref para saber quando mostrar a barra fixa */}
+        {/* Seção Hero (com a ref para medir a posição) */}
         <div ref={heroRef}> 
           <Hero 
             imagemRobo={roboPrincipalImg} 
@@ -280,16 +298,21 @@ export default function Inicio() {
             theme={theme}
           />
         </div>
+        
         {/* Divisor */}
         <div className="px-4 sm:px-6 lg:px-8">
           <div className={`border-t-2 my-16 ${theme === 'escuro' ? 'border-gray-700' : 'border-gray-100'}`}></div>
         </div>
+        
+        {/* Seções de Features */}
         <Features 
           imagemGrupo={grupoInclusivoImg} 
           imagemConexao={conexaoImg} 
           theme={theme}
         />
       </main>
+      
+      {/* CTA e Rodapé Final */}
       <CallToAction theme={theme} />
       <Footer theme={theme} />
     </div>

@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-// IMPORTA O HOOK QUE CRIAMOS
+// Puxo o hook que me dá acesso ao tema e aos setters de preferência global
 import { useSettings } from '../components/SettingsContext';
 
+/**
+ * Componente: Preferencias
+ * Permite ao usuário configurar o tema, tamanho da fonte, filtros de daltonismo
+ * e legendas automáticas.
+ */
 export default function Preferencias() {
-  // --- USA O CONTEXTO GLOBAL ---
+  // Puxo todos os estados de preferência e seus respectivos setters
   const {
-    fontSize,
-    setFontSize,
-    theme,
-    setTheme,
-    colorBlindFilter,
-    setColorBlindFilter,
-    autoLegends,
-    setAutoLegends
+    fontSize, setFontSize,
+    theme, setTheme,
+    colorBlindFilter, setColorBlindFilter,
+    autoLegends, setAutoLegends
   } = useSettings();
 
   // Animação de entrada
@@ -23,7 +24,8 @@ export default function Preferencias() {
 
   return (
     <>
-      <div className={`content-box w-full ${animationClass} ${theme === 'escuro' ? 'tema-escuro' : ''}`}>
+      {/* O fundo da página é definido pelo SettingsLayout, mas este box reage ao tema */}
+      <div className={`content-box w-full ${animationClass}`}>
         
         {/* Título principal - REAGE AO TEMA */}
         <h1 className={`font-bold text-2xl md:text-3xl lg:text-5xl mb-8 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
@@ -31,13 +33,13 @@ export default function Preferencias() {
         </h1>
 
         <div className="space-y-8">
-          {/* Seção Visuais - REAGE AO TEMA */}
+          {/* Seção 1: Visuais (Tema, Fonte, Daltonismo) */}
           <div className={`rounded-lg shadow-md p-6 ${theme === 'escuro' ? 'bg-gray-800' : 'bg-white'}`}>
             <h2 className={`font-bold text-xl md:text-2xl lg:text-3xl mb-6 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
               Visuais
             </h2>
 
-            {/* Tamanho do texto - REAGE AO TEMA */}
+            {/* 1. Tamanho do texto */}
             <div className="mb-6">
               <label className={`block font-semibold mb-2 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
                 Tamanho do texto
@@ -45,7 +47,7 @@ export default function Preferencias() {
               <div className="relative">
                 <select
                   value={fontSize} 
-                  onChange={(e) => setFontSize(e.target.value)} 
+                  onChange={(e) => setFontSize(e.target.value)} // Atualiza o estado global
                   className={`w-full appearance-none border-2 rounded-full px-6 py-3 pr-12 font-medium cursor-pointer transition-colors focus:outline-none ${
                     theme === 'escuro'
                       ? 'bg-gray-700 border-purple-500 text-gray-200 hover:border-purple-400 focus:border-purple-300'
@@ -63,7 +65,7 @@ export default function Preferencias() {
               </div>
             </div>
 
-            {/* Tema - REAGE AO TEMA */}
+            {/* 2. Tema */}
             <div className="mb-6">
               <label className={`block font-semibold mb-2 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
                 Tema
@@ -71,7 +73,7 @@ export default function Preferencias() {
               <div className="relative">
                 <select
                   value={theme} 
-                  onChange={(e) => setTheme(e.target.value)} 
+                  onChange={(e) => setTheme(e.target.value)} // Atualiza o estado global (dispara a mudança de tema em todo o app)
                   className={`w-full appearance-none border-2 rounded-full px-6 py-3 pr-12 font-medium cursor-pointer transition-colors focus:outline-none ${
                     theme === 'escuro'
                       ? 'bg-gray-700 border-purple-500 text-gray-200 hover:border-purple-400 focus:border-purple-300'
@@ -87,7 +89,7 @@ export default function Preferencias() {
               </div>
             </div>
 
-            {/* Filtros para daltonismo - REAGE AO TEMA */}
+            {/* 3. Filtros para daltonismo */}
             <div className="mb-6">
               <label className={`block font-semibold mb-2 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
                 Filtros para daltonismo
@@ -95,7 +97,7 @@ export default function Preferencias() {
               <div className="relative">
                 <select
                   value={colorBlindFilter} 
-                  onChange={(e) => setColorBlindFilter(e.target.value)} 
+                  onChange={(e) => setColorBlindFilter(e.target.value)} // Atualiza o estado global (dispara a aplicação do filtro no root)
                   className={`w-full appearance-none border-2 rounded-full px-6 py-3 pr-12 font-medium cursor-pointer transition-colors focus:outline-none ${
                     theme === 'escuro'
                       ? 'bg-gray-700 border-purple-500 text-gray-200 hover:border-purple-400 focus:border-purple-300'
@@ -114,7 +116,7 @@ export default function Preferencias() {
               </div>
             </div>
 
-            {/* Áudio e Vídeo - REAGE AO TEMA */}
+            {/* 4. Áudio e Vídeo (Legendas automáticas) */}
             <h3 className={`font-bold text-lg mt-8 mb-4 ${theme === 'escuro' ? 'text-purple-400' : 'text-purple-600'}`}>
               Áudio e Vídeo
             </h3>
@@ -125,14 +127,13 @@ export default function Preferencias() {
               <div className="relative">
                 <select
                   value={autoLegends} 
-                  onChange={(e) => setAutoLegends(e.target.value)} 
+                  onChange={(e) => setAutoLegends(e.target.value)} // Atualiza o estado global
                   className={`w-full appearance-none border-2 rounded-full px-6 py-3 pr-12 font-medium cursor-pointer transition-colors focus:outline-none ${
                     theme === 'escuro'
                       ? 'bg-gray-700 border-purple-500 text-gray-200 hover:border-purple-400 focus:border-purple-300'
                       : 'bg-white border-purple-300 text-gray-700 hover:border-purple-400 focus:border-purple-500'
                   }`}
                 >
-                  {/* --- AQUI ESTAVA O ERRO --- */}
                   <option value="desativado">Desativado</option>
                   <option value="ativado">Ativado</option>
                 </select>
@@ -142,7 +143,7 @@ export default function Preferencias() {
               </div>
             </div>
 
-            {/* Demonstração de cores - REAGE AO TEMA */}
+            {/* 5. Pré-visualização de cores */}
             <div className={`mt-8 p-6 rounded-xl border-2 ${
               theme === 'escuro'
                 ? 'bg-gray-700 border-purple-500'

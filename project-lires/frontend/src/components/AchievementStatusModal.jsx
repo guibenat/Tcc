@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSettings } from '../components/SettingsContext';
 
-// --- Imports dos Assets ---
+// Imports dos assets (imagens, etc)
 import liresLogoImage from '../assets/logo-lires.png';
 import logoLiresEscuraImg from '../assets/logo-lires-branca.png';
 import lockedAchievementImage from '../assets/locked-Achievement.png';
 import robotIconImage from '../assets/robot-Icon.png';
 
-// --- INÍCIO DA MODIFICAÇÃO (Importar a imagem correta) ---
-// Esta é a imagem que aparece na tela 'finalizado1.jsx'
+// Imagem do emblema de conquista (o mesmo usado na tela 'finalizado1')
 import achievementBadgeImage from '../assets/achievement-Badge.png';
-// --- FIM DA MODIFICAÇÃO ---
 
 
 // Animações simples para este modal
@@ -18,21 +16,19 @@ export const animations = `
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 `;
 
-// --- INÍCIO DA MODIFICAÇÃO ---
-// Mapeamento de IDs de conquista para suas imagens (agora com a imagem importada)
+// Mapeamento dos IDs de conquista para suas respectivas imagens de emblema
 const achievementImages = {
-    'comecar-do-zero': achievementBadgeImage, // Usar a variável importada
-    // Adicione aqui outros módulos quando tiver as imagens:
+    'comecar-do-zero': achievementBadgeImage, // 'comecar-do-zero' usa o emblema padrão
+    // TODO: Adicionar os emblemas dos outros módulos quando estiverem prontos
     // 'modulo-2': aprendizAchievementImage,
     // ...
 };
-// --- FIM DA MODIFICAÇÃO ---
 
-// --- Componente do Modal de Status de Conquistas ---
+// Componente principal do Modal de Conquistas
 export function AchievementStatusModal({ onClose }) {
     const { theme, lessonProgress } = useSettings();
 
-    // Lógica de quais conquistas estão desbloqueadas (Sem alteração)
+    // Define todas as conquistas possíveis no app
     const allAchievements = [
         { id: 'comecar-do-zero', name: 'Iniciante' },
         { id: 'modulo-2', name: 'Aprendiz' },
@@ -45,11 +41,12 @@ export function AchievementStatusModal({ onClose }) {
 
     const unlockedIds = new Set();
     
-    // Lógica de desbloqueio (Sem alteração)
+    // Verifica o progresso do usuário para desbloquear as conquistas
     const progressData = lessonProgress['comecar-do-zero'];
     const completedSteps = progressData?.completed || 0;
     const totalSteps = progressData?.total || 3; 
     
+    // Logs de debug para verificar o progresso
     console.log(`ACHIEVEMENT_MODAL: Lendo progresso 'comecar-do-zero': ${completedSteps} / ${totalSteps}`);
 
     if (completedSteps >= totalSteps && totalSteps > 0) {
@@ -62,9 +59,11 @@ export function AchievementStatusModal({ onClose }) {
     const unlockedCount = unlockedIds.size;
     const progressPercent = (unlockedCount / allAchievements.length) * 100;
 
-    // Estado da animação da barra (Sem alteração)
+    // Estado para animar a barra de progresso (para ela crescer suavemente)
     const [progressAnimation, setProgressAnimation] = useState(0);
+    
     useEffect(() => {
+        // Aplica um pequeno delay na animação da barra para dar tempo da UI carregar
         const timer = setTimeout(() => { 
             setProgressAnimation(progressPercent); 
         }, 500); 
@@ -76,7 +75,7 @@ export function AchievementStatusModal({ onClose }) {
           theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
         }`}>
             
-            {/* Cabeçalho com botão Voltar e Logo (Sem alteração) */}
+            {/* Cabeçalho: Botão de fechar (voltar) e Logo */}
             <div className="w-full flex justify-between items-center">
               <button 
                 onClick={onClose} 
@@ -96,10 +95,10 @@ export function AchievementStatusModal({ onClose }) {
               <div className="w-8"></div> 
             </div>
 
-            {/* Conteúdo Principal */}
+            {/* Conteúdo principal do modal */}
             <div className="flex-grow flex flex-col items-center justify-center text-center w-full max-w-5xl">
                 
-                {/* Mensagem de Incentivo (Sem alteração) */}
+                {/* Mensagem de incentivo e robô (animação de entrada) */}
                 <div style={{animation: 'fadeInUp 0.5s forwards 1s', opacity: 0}}>
                     <p className="text-2xl font-semibold mb-4" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #849dff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                         {unlockedCount > 0 ? "Belo começo! Continue assim para desbloquear mais!" : "Sua jornada está só começando. Vamos lá!"}
@@ -107,43 +106,41 @@ export function AchievementStatusModal({ onClose }) {
                     <img src={robotIconImage} alt="Ícone Robô" className="h-16 mb-8 mx-auto" />
                 </div>
 
-                {/* Barra de Progresso e Cadeados/Conquistas */}
+                {/* Seção da Barra de Progresso e Conquistas */}
                 <div className="w-full relative mt-12">
-                     {/* A Barra (Sem alteração) */}
-                     <div className={`w-full h-4 rounded-full relative ${
-                       theme === 'escuro' ? 'bg-gray-700' : 'bg-purple-200'
-                     }`}>
-                          {/* O Progresso (Sem alteração) */}
-                          <div className="h-full bg-purple-600 rounded-full" style={{ width: `${progressAnimation}%`, transition: 'width 2s ease-out' }}></div>
-                     </div>
-                     {/* Os Cadeados/Conquistas */}
-                     <div className="absolute -bottom-8 w-full flex justify-between px-2">
-                          {allAchievements.map((ach) => {
-                            const isAchUnlocked = unlockedIds.has(ach.id);
+                        {/* Fundo da barra de progresso */}
+                        <div className={`w-full h-4 rounded-full relative ${
+                          theme === 'escuro' ? 'bg-gray-700' : 'bg-purple-200'
+                        }`}>
+                            {/* Preenchimento da barra (o progresso em si) */}
+                            <div className="h-full bg-purple-600 rounded-full" style={{ width: `${progressAnimation}%`, transition: 'width 2s ease-out' }}></div>
+                        </div>
+                        
+                        {/* Renderiza os ícones de conquista/cadeado sobre a barra */}
+                        <div className="absolute -bottom-8 w-full flex justify-between px-2">
+                            {allAchievements.map((ach) => {
+                              const isAchUnlocked = unlockedIds.has(ach.id);
 
-                            // --- INÍCIO DA MODIFICAÇÃO (Lógica da imagem) ---
-                            // Se a conquista estiver desbloqueada E tiver uma imagem específica, usa essa imagem.
-                            // Caso contrário, usa a imagem do cadeado.
-                            const imageSrc = isAchUnlocked && achievementImages[ach.id] 
-                                ? achievementImages[ach.id] 
-                                : lockedAchievementImage;
-                            // --- FIM DA MODIFICAÇÃO ---
+                              // Define qual imagem usar: o emblema desbloqueado (se existir no map) ou o cadeado.
+                              const imageSrc = isAchUnlocked && achievementImages[ach.id] 
+                                  ? achievementImages[ach.id] 
+                                  : lockedAchievementImage;
 
-                            return (
-                                <div key={ach.id} className="relative w-16 h-16 flex items-center justify-center">
-                                    <img 
-                                        src={imageSrc} 
-                                        alt={isAchUnlocked ? ach.name : "Cadeado"} 
-                                        className="h-16 w-16" 
-                                    />
-                                </div>
-                            );
-                          })}
-                     </div>
+                              return (
+                                  <div key={ach.id} className="relative w-16 h-16 flex items-center justify-center">
+                                      <img 
+                                          src={imageSrc} 
+                                          alt={isAchUnlocked ? ach.name : "Cadeado"} 
+                                          className="h-16 w-16" 
+                                      />
+                                  </div>
+                              );
+                            })}
+                        </div>
                 </div>
             </div>
             
-            {/* Rodapé (espaçador) (Sem alteração) */}
+            {/* Espaçador no rodapé para layout */}
             <div className="w-full h-16"></div> 
         </div>
     );

@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import Perfil from '../assets/Perfil.png'; // Importado como fallback
-import Bandeira from '../assets/Brasil.jpg'; // <-- Importando a bandeira
-import { useSettings } from '../components/SettingsContext'; 
 import { useNavigate } from 'react-router-dom'; 
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+// Contexto global para tema e Lcoins
+import { useSettings } from '../components/SettingsContext'; 
+
+// --- Assets ---
+import Perfil from '../assets/Perfil.png'; // Fallback
+import Bandeira from '../assets/Brasil.jpg';
 import LcoinIcon from '../assets/lcoin.png'; 
 
-// --- Função de Avatar e Lista de "Sementes" (Sem alteração) ---
+// --- Helper: Função de Avatar ---
 const AVATAR_STYLE = 'bottts-neutral'; 
-
 const avatarSeeds = [
     'caua', 'maria', 'joao', 'ana', 'pedro', 'lucas', 'bia', 'leo', 
     'sofia', 'davi', 'gato', 'sol', 'lua', 'happy', 'smile', 'code', 
@@ -24,10 +28,10 @@ const getAvatarUrl = (seed, style = AVATAR_STYLE) => {
     ].join(',');
     return `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}&radius=50&backgroundColor=${colorPalette}`;
 };
-// --- FIM ---
+// --- Fim do Helper ---
 
 
-// --- Componente: O Modal de Seleção (AvatarPickerModal) (Sem alteração) ---
+// --- Componente: AvatarPickerModal ---
 const AvatarPickerModal = ({ isOpen, onClose, onSelect, currentSeed, theme }) => {
     if (!isOpen) return null;
 
@@ -84,17 +88,15 @@ const AvatarPickerModal = ({ isOpen, onClose, onSelect, currentSeed, theme }) =>
         </div>
     );
 };
-// --- FIM ---
 
-// --- INÍCIO DA MODIFICAÇÃO (Novo Componente: Modal de Verificação) ---
+// --- Componente: Modal de Verificação (E-mail/Número) ---
 const VerificationModal = ({ isOpen, onClose, onConfirm, target, theme, code, setCode, error, value }) => {
     if (!isOpen) return null;
 
-    const targetDisplay = target === 'email' ? "seu e-mail" : "seu número de telefone";
     const displayValue = target === 'email' ? value : `...${value.slice(-4)}`; // Ofusca o número
     
     return (
-         <div 
+        <div 
             className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
             onClick={onClose}
         >
@@ -158,14 +160,14 @@ const VerificationModal = ({ isOpen, onClose, onConfirm, target, theme, code, se
         </div>
     );
 };
-// --- FIM DA MODIFICAÇÃO ---
+// --- Fim dos Componentes Auxiliares ---
 
 
 export default function GerenciamentoConta() { 
     const { theme, lcoins, setLcoins } = useSettings(); 
     const navigate = useNavigate(); 
 
-    // --- INÍCIO DA MODIFICAÇÃO (Novos Estados) ---
+    // --- Estados para Inputs e Dados Atuais ---
     const [nome, setNome] = useState('');
     const [username, setUsername] = useState(''); 
     const [email, setEmail] = useState('');
@@ -174,20 +176,19 @@ export default function GerenciamentoConta() {
     const [idioma, setIdioma] = useState('pt-br'); 
     const [avatarSeed, setAvatarSeed] = useState('');
     
-    // Valores originais
+    // --- Estados para Valores Originais/Regras de Negócio ---
     const [originalNome, setOriginalNome] = useState('');
     const [originalUsername, setOriginalUsername] = useState('');
-    const [originalEmail, setOriginalEmail] = useState(''); // <-- NOVO
-    const [originalNumero, setOriginalNumero] = useState('');
+    const [originalEmail, setOriginalEmail] = useState(''); // Email originalmente verificado
+    const [originalNumero, setOriginalNumero] = useState(''); // Número originalmente verificado
     const [originalDataNascimento, setOriginalDataNascimento] = useState('');
     
-    // Regras de Negócio
     const [lastNomeChangeTimestamp, setLastNomeChangeTimestamp] = useState(null);
     const [usernameChangeCount, setUsernameChangeCount] = useState(0);
-    const [isEmailVerified, setIsEmailVerified] = useState(false); // <-- NOVO
-    const [isNumeroVerified, setIsNumeroVerified] = useState(false); // <-- NOVO
+    const [isEmailVerified, setIsEmailVerified] = useState(false); // Status de verificação do Email
+    const [isNumeroVerified, setIsNumeroVerified] = useState(false); // Status de verificação do Número
 
-    // UI
+    // --- Estados de UI/Fluxo ---
     const [saveMessage, setSaveMessage] = useState(''); 
     const [nomeError, setNomeError] = useState('');
     const [usernameError, setUsernameError] = useState('');
@@ -199,16 +200,17 @@ export default function GerenciamentoConta() {
     const [verificationTarget, setVerificationTarget] = useState(''); // 'email' ou 'numero'
     const [verificationCode, setVerificationCode] = useState('');
     const [verificationError, setVerificationError] = useState('');
-    // --- FIM DA MODIFICAÇÃO ---
+    // --- Fim dos Estados ---
     
-
-    // --- INÍCIO DA MODIFICAÇÃO (useEffect carrega tudo) ---
+    // --- 1. useEffect: Carregar Estado Inicial ---
     useEffect(() => {
         setAnimationClass('anim-enter');
         
         const userString = localStorage.getItem('currentUser');
         if (userString) {
             const user = JSON.parse(userString);
+            
+            // Carrega os dados atuais nos campos
             setNome(user.name || '');
             setUsername(user.username || '');
             setEmail(user.email || '');
@@ -217,24 +219,24 @@ export default function GerenciamentoConta() {
             setIdioma(user.idioma || 'pt-br'); 
             setAvatarSeed(user.avatarSeed || user.username); 
 
-            // Define os valores originais
+            // Define os valores originais (para detecção de mudança/cooldown)
             setOriginalNome(user.name || '');
             setOriginalUsername(user.username || '');
             setOriginalEmail(user.email || '');
             setOriginalNumero(user.numero || '');
             setOriginalDataNascimento(user.dataNascimento || '');
             
-            // Carrega status de verificação
+            // Carrega status de verificação e contadores
             setIsEmailVerified(user.isEmailVerified || false);
             setIsNumeroVerified(user.isNumeroVerified || false);
-            
             setLastNomeChangeTimestamp(user.lastNomeChange || null);
             setUsernameChangeCount(user.usernameChangeCount || 0);
         }
-    }, []);
-    // --- FIM DA MODIFICAÇÃO ---
+    }, []); // Roda apenas no mount
     
-    // --- Funções de Lógica (checkNomeCooldown, getUsernameChangeCost) ---
+    // --- 2. Regras de Negócio ---
+    
+    // Regra: Não pode mudar o nome em menos de 7 dias
     const checkNomeCooldown = () => {
         if (!lastNomeChangeTimestamp) return { canChange: true };
         const daysToWait = 7;
@@ -251,17 +253,19 @@ export default function GerenciamentoConta() {
         }
         return { canChange: true };
     };
+    
+    // Regra: Custo de 1000 Lcoins após a primeira mudança de @username
     const getUsernameChangeCost = () => {
         return usernameChangeCount === 0 ? 0 : 1000;
     };
-    // --- FIM ---
-
-    // --- INÍCIO DA MODIFICAÇÃO (Novas Funções de Verificação) ---
+    
+    // --- 3. Lógica de Verificação (Modal) ---
     const handleSendVerification = (target) => {
         setVerificationTarget(target);
         setVerificationError('');
         setVerificationCode('');
         
+        // Verifica se o campo está vazio
         if(target === 'email' && !email) {
             setSaveMessage("Por favor, digite um e-mail.");
             setTimeout(() => setSaveMessage(''), 3000);
@@ -273,12 +277,12 @@ export default function GerenciamentoConta() {
             return;
         }
 
-        console.log(`Enviando código de verificação para ${target}...`);
+        console.log(`Simulando envio de código para ${target}... (Código: 123456)`);
         setIsVerificationModalOpen(true);
     };
 
     const handleConfirmVerification = () => {
-        // --- CÓDIGO DE TESTE ---
+        // Validação do Código (Hardcoded para 123456)
         if (verificationCode !== '123456') {
             setVerificationError('Código inválido. Tente novamente.');
             return;
@@ -287,34 +291,34 @@ export default function GerenciamentoConta() {
         let bonus = 0;
         let successMessage = '';
 
+        // Aplica o bônus e a flag de verificação
         if (verificationTarget === 'email') {
             setIsEmailVerified(true);
-            setOriginalEmail(email); // Trava o e-mail como "verificado"
+            setOriginalEmail(email); // O e-mail atual é agora o "original verificado"
             bonus = 50;
             successMessage = `E-mail verificado! +${bonus} Lcoins!`;
         } else if (verificationTarget === 'numero') {
             setIsNumeroVerified(true);
-            setOriginalNumero(numero); // Trava o número
+            setOriginalNumero(numero); // O número atual é agora o "original verificado"
             bonus = 25;
             successMessage = `Número verificado! +${bonus} Lcoins!`;
         }
 
+        // Dá o bônus e salva (a chamada a handleSave fará a persistência)
         setLcoins(l => l + bonus);
         setSaveMessage(successMessage);
         setIsVerificationModalOpen(false);
         setVerificationCode('');
         
-        // Salva imediatamente
-        handleSave(true); // Chama o 'handleSave' para persistir os dados
+        // Chama o save para persistir a flag 'isVerified' e o saldo de Lcoins
+        handleSave(true); 
         setTimeout(() => setSaveMessage(''), 4000); 
     };
-    // --- FIM DA MODIFICAÇÃO ---
     
-
-    // --- INÍCIO DA MODIFICAÇÃO (handleSave atualizado) ---
-    // 'triggeredByVerification' evita mostrar msg de "Salvo!" duas vezes
+    // --- 4. Função Central de Salvar e Persistir ---
     const handleSave = (triggeredByVerification = false) => {
         if (!triggeredByVerification) {
+            // Limpa erros e mensagens se for um clique normal
             setSaveMessage('');
             setNomeError('');
             setUsernameError('');
@@ -324,18 +328,18 @@ export default function GerenciamentoConta() {
         const dbString = localStorage.getItem('liresUsersDB'); 
         
         if (!userString || !dbString) {
-            setSaveMessage("Erro: Não foi possível encontrar os dados do usuário.");
+            if (!triggeredByVerification) setSaveMessage("Erro: Não foi possível encontrar os dados do usuário.");
             return;
         }
 
         const currentUser = JSON.parse(userString);
         const liresUsersDB = JSON.parse(dbString); 
-
+        const updatedUser = { ...currentUser };
+        
         let lcoinsToDeduct = 0;
         let bonusLcoins = 0;
-        const updatedUser = { ...currentUser };
 
-        // Lógica de Mudança de NOME
+        // --- A. Lógica de Mudança de NOME ---
         const nomeChanged = nome !== originalNome;
         if (nomeChanged) {
             const nomeCheck = checkNomeCooldown();
@@ -347,7 +351,7 @@ export default function GerenciamentoConta() {
             updatedUser.lastNomeChange = Date.now();
         }
 
-        // Lógica de Mudança de USERNAME
+        // --- B. Lógica de Mudança de USERNAME (com Custo) ---
         const usernameChanged = username !== originalUsername;
         if (usernameChanged) {
             const cost = getUsernameChangeCost();
@@ -359,27 +363,27 @@ export default function GerenciamentoConta() {
             updatedUser.username = username;
             updatedUser.usernameChangeCount = (usernameChangeCount || 0) + 1;
         }
-
-        // Bônus por Data de Nascimento
+        
+        // --- C. Bônus por Adicionar Dados (só se não existiam antes) ---
         const justAddedDataNascimento = !originalDataNascimento && dataNascimento;
         if (justAddedDataNascimento) bonusLcoins += 25;
         
-        // Bônus por Número (se foi salvo aqui, e não verificado)
+        // Bônus para número (só se foi salvo aqui, e não verificado pelo modal)
         const justAddedNumero = !originalNumero && numero && !isNumeroVerified;
         if (justAddedNumero) bonusLcoins += 25;
 
 
-        // Salva TODOS os campos
+        // --- D. Salva TODOS os campos (incluindo as flags de verificação) ---
         updatedUser.avatarSeed = avatarSeed; 
         updatedUser.avatarStyle = AVATAR_STYLE;
         updatedUser.email = email; 
         updatedUser.numero = numero; 
         updatedUser.dataNascimento = dataNascimento; 
         updatedUser.idioma = idioma; 
-        // Salva o status de verificação (que pode ter sido atualizado pela outra função)
         updatedUser.isEmailVerified = isEmailVerified;
         updatedUser.isNumeroVerified = isNumeroVerified;
         
+        // 5. Persiste nos dois DBs
         const updatedDB = liresUsersDB.map(user => 
             user.id === currentUser.id ? updatedUser : user
         );
@@ -387,30 +391,30 @@ export default function GerenciamentoConta() {
         localStorage.setItem('currentUser', JSON.stringify(updatedUser));
         localStorage.setItem('liresUsersDB', JSON.stringify(updatedDB)); 
 
+        // 6. Atualiza o saldo global de Lcoins
         const newLcoins = lcoins - lcoinsToDeduct + bonusLcoins;
         if (newLcoins !== lcoins) {
             setLcoins(newLcoins);
         }
         
-        // Atualiza os estados "originais"
+        // 7. Atualiza os estados "originais" para evitar re-salvar/cooldowns
         setOriginalNome(nome);
         setOriginalUsername(username);
-        // Só atualiza os originais de data e numero se eles foram *salvos*
         if (justAddedDataNascimento) setOriginalDataNascimento(dataNascimento);
         if (justAddedNumero) setOriginalNumero(numero);
-
         if (nomeChanged) setLastNomeChangeTimestamp(updatedUser.lastNomeChange);
         if (usernameChanged) setUsernameChangeCount(updatedUser.usernameChangeCount);
 
-        // Só mostra a mensagem de "Salvo" se não for uma verificação
+        // 8. Feedback
         if (!triggeredByVerification) {
             setSaveMessage(`Alterações salvas! ${bonusLcoins > 0 ? `+${bonusLcoins} Lcoins!` : ''}`);
             setTimeout(() => setSaveMessage(''), 3000); 
         }
     };
-    // --- FIM DA MODIFICAÇÃO ---
+    // --- Fim da Função Central de Salvar ---
 
-    // --- Classes de Estilo Dinâmicas (Sem alteração) ---
+
+    // --- Classes de Estilo Dinâmicas ---
     const inputClasses = theme === 'escuro'
         ? 'bg-gray-700 border-2 border-gray-600 rounded-lg px-4 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500' 
         : 'border-2 border-cyan-400 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-cyan-400'; 
@@ -436,23 +440,20 @@ export default function GerenciamentoConta() {
     const helperTextClasses = theme === 'escuro'
         ? 'text-sm text-slate-400 mt-2'
         : 'text-sm text-gray-500 mt-2';
-            
+        
     const dividerClasses = theme === 'escuro'
         ? 'w-full h-px bg-gray-700 mb-6' 
         : 'w-full h-px bg-blue-400 mb-6'; 
 
     const nomeCooldown = checkNomeCooldown();
     const usernameCost = getUsernameChangeCost();
-    
-    // --- INÍCIO DA MODIFICAÇÃO (Novas Variáveis de UI) ---
-    // Verifica se o texto do e-mail/número mudou do original *verificado*
     const emailChanged = email !== originalEmail;
     const numeroChanged = numero !== originalNumero;
-    // --- FIM DA MODIFICAÇÃO ---
 
 
     return (
         <>
+            {/* Modal de Escolha de Avatar */}
             <AvatarPickerModal
                 isOpen={showAvatarModal}
                 onClose={() => setShowAvatarModal(false)}
@@ -464,6 +465,7 @@ export default function GerenciamentoConta() {
                 }}
             />
             
+            {/* Modal de Verificação (Email/Número) */}
             <VerificationModal
                 isOpen={isVerificationModalOpen}
                 onClose={() => setIsVerificationModalOpen(false)}
@@ -473,7 +475,7 @@ export default function GerenciamentoConta() {
                 code={verificationCode}
                 setCode={setVerificationCode}
                 error={verificationError}
-                value={verificationTarget === 'email' ? email : numero} // Passa o valor
+                value={verificationTarget === 'email' ? email : numero} 
             />
 
             <div className={`content-box w-full ${animationClass}`}>
@@ -516,18 +518,17 @@ export default function GerenciamentoConta() {
                                 </p>
                             </div>
 
-                            {/* Lado Direito: Inputs E Botão */}
+                            {/* Lado Direito: Inputs */}
                             <div className="flex-grow w-full space-y-6">
                                 {/* Nome */}
                                 <div>
-                                    <h3 className={subtitleClasses}>
-                                        Nome
-                                    </h3>
+                                    <h3 className={subtitleClasses}>Nome</h3>
                                     <input
                                         type="text"
                                         value={nome}
                                         onChange={(e) => setNome(e.target.value)}
                                         placeholder="Digite seu nome"
+                                        // Desabilita se o cooldown não permitir
                                         disabled={!nomeCooldown.canChange} 
                                         className={`w-full max-w-md ${inputClasses} ${!nomeCooldown.canChange ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     />
@@ -535,16 +536,14 @@ export default function GerenciamentoConta() {
                                         <p className="text-sm text-red-500 mt-2">{nomeError}</p>
                                     ) : (
                                         <p className={helperTextClasses}>
-                                            {nomeCooldown.canChange ? "" : nomeCooldown.message}
+                                            {nomeCooldown.canChange ? "Você pode alterar." : nomeCooldown.message}
                                         </p>
                                     )}
                                 </div>
                                 
                                 {/* Usuário */}
                                 <div>
-                                    <h3 className={subtitleClasses}>
-                                        Usuário
-                                    </h3>
+                                    <h3 className={subtitleClasses}>Usuário</h3>
                                     <input
                                         type="text"
                                         value={username}
@@ -568,17 +567,16 @@ export default function GerenciamentoConta() {
                                     )}
                                 </div>
 
-                                {/* --- INÍCIO DA MODIFICAÇÃO (Campo de E-mail) --- */}
+                                {/* E-mail (com Verificação) */}
                                 <div>
-                                    <h3 className={subtitleClasses}>
-                                        E-mail
-                                    </h3>
+                                    <h3 className={subtitleClasses}>E-mail</h3>
                                     <div className="flex items-center gap-2">
                                         <input
                                             type="text"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="Digite seu email"
+                                            // Desabilita a edição se estiver verificado e não houver mudança
                                             className={`w-full max-w-md ${inputClasses} ${(isEmailVerified && !emailChanged) ? 'opacity-50' : ''}`}
                                             disabled={isEmailVerified && !emailChanged}
                                         />
@@ -599,13 +597,10 @@ export default function GerenciamentoConta() {
                                         </p>
                                     )}
                                 </div>
-                                {/* --- FIM DA MODIFICAÇÃO --- */}
 
-                                {/* --- INÍCIO DA MODIFICAÇÃO (Campo de Número) --- */}
+                                {/* Número (com Verificação) */}
                                 <div>
-                                    <h3 className={subtitleClasses}>
-                                        Número
-                                    </h3>
+                                    <h3 className={subtitleClasses}>Número</h3>
                                     <div className="flex items-center gap-2">
                                         <input
                                             type="text"
@@ -632,13 +627,10 @@ export default function GerenciamentoConta() {
                                         </p>
                                     )}
                                 </div>
-                                {/* --- FIM DA MODIFICAÇÃO --- */}
                                 
                                 {/* Data de Nascimento */}
                                 <div>
-                                    <h3 className={subtitleClasses}>
-                                        Data de nascimento
-                                    </h3>
+                                    <h3 className={subtitleClasses}>Data de nascimento</h3>
                                     <input
                                         type="text"
                                         value={dataNascimento}
@@ -653,9 +645,7 @@ export default function GerenciamentoConta() {
                                 
                                 {/* Idioma */}
                                 <div className='w-full max-w-md'>
-                                    <h3 className={subtitleClasses}>
-                                        Idioma
-                                    </h3>
+                                    <h3 className={subtitleClasses}>Idioma</h3>
                                     <div className="relative">
                                         <img src={Bandeira} alt="Idioma" className="w-6 h-6 rounded-full absolute left-4 top-1/2 -translate-y-1/2" />
                                         <select
@@ -675,21 +665,18 @@ export default function GerenciamentoConta() {
                                 {/* Botão Salvar */}
                                 <div className="flex items-center gap-4 pt-4">
                                     <button
-                                        onClick={() => handleSave(false)} // Clique normal
+                                        onClick={() => handleSave(false)} 
                                         className="bg-purple-500 text-white font-semibold py-2 px-6 rounded-full hover:bg-purple-600 transition-colors"
                                     >
                                         Salvar Alterações
                                     </button>
-                                    {saveMessage && (
-                                        <p className={`text-sm ${saveMessage.startsWith('Erro') ? 'text-red-500' : 'text-green-500'}`}>{saveMessage}</p>
-                                    )}
+                                    <p className="text-sm text-center">
+                                        <span className={`text-sm ${saveMessage.startsWith('Erro') ? 'text-red-500' : 'text-green-500'}`}>{saveMessage}</span>
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                
-                    {/* --- CARDS REMOVIDOS --- */}
-                
                 </div>
             </div>
         </>

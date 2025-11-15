@@ -1,15 +1,17 @@
 // CAMINHO: src/pages/VideosPage.jsx
+
 import React, { useState, useEffect } from 'react';
+// Layout e Contexto
 import SidebarLeft from '../components/SidebarLeft';
 import SidebarRight from '../components/SidebarRight';
 import MobileTopBar from '../components/MobileTopBar';
 import MobileBottomBar from '../components/MobileBottomBar';
-// 1. IMPORTAR O CONTEXTO E O MAPA DE LIÇÕES
+// Puxo o estado global e o mapa de lições (estrutura do curso)
 import { useSettings } from '../components/SettingsContext';
-import { lessonMap } from '../lessons/lessonMap'; // Precisamos disto para saber as unidades
+import { lessonMap } from '../lessons/lessonMap'; 
 
-// --- Ícones (Sem alteração) ---
-const PlayIcon = ({ theme }) => (
+// --- Ícones (SVG) ---
+const PlayIcon = ({ theme }) => ( /* ... código SVG ... */ 
   <svg 
     className={`w-10 h-10 transition-colors ${
       theme === 'escuro' 
@@ -22,7 +24,7 @@ const PlayIcon = ({ theme }) => (
     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path>
   </svg>
 );
-const LockIcon = ({ theme }) => (
+const LockIcon = ({ theme }) => ( /* ... código SVG ... */ 
   <svg 
     className={`w-8 h-8 ${
       theme === 'escuro' ? 'text-slate-500' : 'text-slate-400'
@@ -33,7 +35,7 @@ const LockIcon = ({ theme }) => (
     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"></path>
   </svg>
 );
-const BackArrowIcon = ({ theme }) => (
+const BackArrowIcon = ({ theme }) => ( /* ... código SVG ... */ 
   <svg 
     className={`w-8 h-8 ${
       theme === 'escuro' ? 'text-slate-300' : 'text-slate-600'
@@ -48,15 +50,17 @@ const BackArrowIcon = ({ theme }) => (
 const CloseIcon = () => <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>;
 
 
-// --- 2. IMPORTAR TODOS OS VÍDEOS ESTATICAMENTE ---
-// (Este é o método que funciona no seu projeto)
+// --- 1. Importação Estática de Todos os Vídeos ---
+// (Necessário para que o Vite/Webpack inclua os assets no build final)
 import videoOi from '../assets/PrimeirosPassosVideo/Oi.mp4';
 import videoTchau from '../assets/PrimeirosPassosVideo/Tchau.mp4';
+// ... (outros vídeos de Primeiros Passos)
 import videoObrigado from '../assets/PrimeirosPassosVideo/Obrigado.mp4';
 import videoBomDia from '../assets/PrimeirosPassosVideo/BomDia.mp4';
 import videoBoaTarde from '../assets/PrimeirosPassosVideo/BoaTarde.mp4';
 import videoBoaNoite from '../assets/PrimeirosPassosVideo/BoaNoite.mp4';
 import videoAteLogo from '../assets/PrimeirosPassosVideo/AteLogo.mp4';
+// ... (todos os vídeos do Alfabeto)
 import videoA from '../assets/AlfabetoVideo/A.mp4';
 import videoB from '../assets/AlfabetoVideo/B.mp4';
 import videoC from '../assets/AlfabetoVideo/C.mp4';
@@ -80,7 +84,8 @@ import videoT from '../assets/AlfabetoVideo/T.mp4';
 import videoU from '../assets/AlfabetoVideo/U.mp4';
 import videoV from '../assets/AlfabetoVideo/V.mp4';
 
-// --- 3. MAPA DE LIÇÕES PARA VÍDEOS ---
+// --- 2. MAPA DE LIÇÕES PARA VÍDEOS ---
+// Associa o ID da lição (lessonId) aos vídeos que ela ensinou.
 const lessonVideoMap = {
   'comecar-do-zero': [
     { id: 'v1', title: 'Oi', url: videoOi },
@@ -117,19 +122,25 @@ const lessonVideoMap = {
   ],
   'alfabeto-consoantes-3': [
     { id: 'd1', title: 'Letra P', url: videoP },
+    // Q está em falta
     { id: 'd2', title: 'Letra R', url: videoR },
     { id: 'd3', title: 'Letra S', url: videoS },
     { id: 'd4', title: 'Letra T', url: videoT },
   ],
   'alfabeto-consoantes-4': [
     { id: 'e1', title: 'Letra V', url: videoV },
+    // W, X, Y, Z estão em falta
   ],
-  'checkpoint-1': [], // Checkpoints não têm vídeos novos
-  'alfabeto-revisao': [], // Revisão não tem vídeos novos
+  'checkpoint-1': [], 
+  'alfabeto-revisao': [], 
 };
 
 
-// --- COMPONENTES DA PÁGINA (Sem alteração) ---
+// --- COMPONENTES DE UI ---
+
+/**
+ * Título de Página Reutilizável
+ */
 const PageTitle = ({ title, subtitle, theme }) => (
   <div className="text-left">
     <div className="relative inline-block mb-1">
@@ -140,6 +151,9 @@ const PageTitle = ({ title, subtitle, theme }) => (
   </div>
 );
 
+/**
+ * Modal do Player de Vídeo (O que aparece em tela cheia)
+ */
 const VideoPlayerModal = ({ videoUrl, onClose }) => (
   <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50" onClick={onClose}>
     <button className="absolute top-4 right-4 text-white z-50"><CloseIcon /></button>
@@ -151,6 +165,9 @@ const VideoPlayerModal = ({ videoUrl, onClose }) => (
   </div>
 );
 
+/**
+ * View da Lista de Módulos (Primeira Tela)
+ */
 const ModuleListView = ({ videoModules, onSelectModule, theme }) => (
   <div className="flex flex-col h-full w-full">
     <div className="mb-12 w-full">
@@ -160,7 +177,8 @@ const ModuleListView = ({ videoModules, onSelectModule, theme }) => (
       {videoModules.map(module => (
         <button
           key={module.id}
-          onClick={() => module.unlocked && onSelectModule(module)}
+          // Só permite o clique se o módulo estiver destrancado
+          onClick={() => module.unlocked && onSelectModule(module)} 
           disabled={!module.unlocked}
           className={`w-full flex items-center p-6 rounded-2xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed group ${
             theme === 'escuro'
@@ -170,6 +188,7 @@ const ModuleListView = ({ videoModules, onSelectModule, theme }) => (
         >
           <div className="mr-5">{module.unlocked ? <PlayIcon theme={theme} /> : <LockIcon theme={theme} />}</div>
           <span className={`text-2xl font-bold ${theme === 'escuro' ? 'text-slate-200' : 'text-slate-700'}`}>{module.title}</span>
+          {/* Contador: Vídeos Assistidos / Total de Vídeos */}
           <span className={`ml-auto text-xl font-semibold ${theme === 'escuro' ? 'text-slate-400' : 'text-slate-500'}`}>{`${module.videosWatched} / ${module.totalVideos}`}</span>
         </button>
       ))}
@@ -177,6 +196,9 @@ const ModuleListView = ({ videoModules, onSelectModule, theme }) => (
   </div>
 );
 
+/**
+ * View em Grid de Vídeos (Segunda Tela)
+ */
 const VideoGridView = ({ module, onBack, onPlayVideo, theme }) => (
   <div className="flex flex-col h-full w-full">
     <div className="flex items-center mb-12 w-full">
@@ -185,7 +207,7 @@ const VideoGridView = ({ module, onBack, onPlayVideo, theme }) => (
       </button>
       <PageTitle title={module.title} subtitle="Revise agora os vídeos que você já aprendeu" theme={theme} />
     </div>
-    {/* --- CORREÇÃO: Removido 'grid-cols-1 sm:grid-cols-2' para 3 colunas --- */}
+    {/* Grid de 2 colunas (mobile) e 3 colunas (desktop/tablet) */}
     <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10 flex-grow">
       {module.videos.map((video, index) => (
         <div key={index}>
@@ -215,76 +237,80 @@ const VideoGridView = ({ module, onBack, onPlayVideo, theme }) => (
 );
 
 
-// --- COMPONENTE PRINCIPAL DA PÁGINA (ATUALIZADO) ---
+// --- COMPONENTE PRINCIPAL DA PÁGINA (VideosPage) ---
 export default function VideosPage() {
+  // Puxo o tema e o progresso do Contexto
   const { theme, lessonProgress } = useSettings(); 
   
-  const [currentView, setCurrentView] = useState('list');
-  const [selectedModule, setSelectedModule] = useState(null);
-  const [playingVideo, setPlayingVideo] = useState(null);
+  // --- Estados da Máquina de Visão ---
+  const [currentView, setCurrentView] = useState('list'); // 'list' (módulos) ou 'grid' (vídeos)
+  const [selectedModule, setSelectedModule] = useState(null); // Módulo selecionado
+  const [playingVideo, setPlayingVideo] = useState(null); // URL do vídeo tocando no modal
   const [enterAnimationClass, setEnterAnimationClass] = useState('anim-enter');
   const [exitAnimationClass, setExitAnimationClass] = useState('');
 
   // --- LÓGICA DINÂMICA PARA CONSTRUIR OS MÓDULOS ---
+  
+  // 1. Definição da Estrutura do Curso (agrupada por Unidade)
   const moduleStructure = [
     { 
       id: 1, 
-      title: 'Primeiros passos', 
-      lessons: lessonMap.filter(l => l.unit === 1).map(l => l.id)
+      title: 'Unidade 1: Primeiros passos', 
+      lessons: lessonMap.filter(l => l.unit === 1).map(l => l.id) // Pega as lições da Unidade 1
     },
     { 
       id: 2, 
-      title: 'Alfabeto', 
-      lessons: lessonMap.filter(l => l.unit === 2).map(l => l.id)
+      title: 'Unidade 2: Alfabeto', 
+      lessons: lessonMap.filter(l => l.unit === 2).map(l => l.id) // Pega as lições da Unidade 2
     },
-    { id: 3, title: 'Símbolos e marcas', lessons: [] },
-    { id: 4, title: 'Não definido', lessons: [] },
-    { id: 5, title: 'Não definido', lessons: [] },
-    { id: 6, title: 'Não definido', lessons: [] },
+    { id: 3, title: 'Unidade 3: Símbolos e marcas', lessons: [] },
+    // ... (Placeholder para unidades futuras)
   ];
 
+  // 2. Mapeia a estrutura para os dados de visualização (videoModules)
   const videoModules = moduleStructure.map(module => {
-    let moduleUnlocked = false;
-    let videosWatched = 0;
-    let allModuleVideos = [];
+    let moduleUnlocked = false; // O módulo está destrancado se pelo menos uma lição estiver completa
+    let videosWatched = 0; // Quantos vídeos estão desbloqueados
+    let allModuleVideos = []; // Lista de vídeos desbloqueados (para o grid)
 
     module.lessons.forEach(lessonId => {
       const progress = lessonProgress[lessonId];
+      // Considero uma lição completa se o objeto de progresso existe
       const isLessonComplete = !!progress; 
       
       const videosForThisLesson = lessonVideoMap[lessonId] || [];
 
       if (isLessonComplete) {
-        moduleUnlocked = true;
+        moduleUnlocked = true; // Se qualquer lição estiver completa, o módulo é desbloqueado
         
         videosForThisLesson.forEach(video => {
-          allModuleVideos.push({ ...video, unlocked: true });
+          allModuleVideos.push({ ...video, unlocked: true }); // Adiciona vídeos desbloqueados
           videosWatched++;
         });
       }
+      // TODO: Para vídeos não assistidos, marcar como unlocked: false e adicioná-los também
     });
 
+    // Calcula o total de vídeos que este módulo possui (para o contador)
     const totalVideosInModule = module.lessons.reduce((acc, lessonId) => {
       return acc + (lessonVideoMap[lessonId]?.length || 0);
     }, 0);
 
-    // --- CORREÇÃO: Lógica de Placeholder Removida ---
-    // (Não vamos mais adicionar vídeos "Bloqueado")
-
     return {
       id: module.id,
       title: module.title,
-      unlocked: moduleUnlocked,
+      unlocked: moduleUnlocked, // Se o módulo está visualmente clicável
       videosWatched: videosWatched,
       totalVideos: totalVideosInModule,
-      // --- CORREÇÃO: .slice(0, 10) Removido ---
-      videos: allModuleVideos, // Mostra TODOS os vídeos desbloqueados
+      videos: allModuleVideos, // Lista de vídeos desbloqueados
     };
   });
   // --- FIM DA LÓGICA DINÂMICA ---
 
 
+  // Handler para ir do "list" (módulos) para o "grid" (vídeos)
   const handleSelectModule = (module) => {
+    // Lógica de animação de saída/entrada
     setEnterAnimationClass('');
     setExitAnimationClass('anim-exit');
     setTimeout(() => {
@@ -295,7 +321,9 @@ export default function VideosPage() {
     }, 800);
   };
 
+  // Handler para voltar do "grid" para o "list"
   const handleBackToList = () => {
+    // Lógica de animação de saída/entrada
     setEnterAnimationClass('');
     setExitAnimationClass('anim-exit');
     setTimeout(() => {
@@ -310,16 +338,21 @@ export default function VideosPage() {
     <div className={`font-poppins relative min-h-screen flex flex-col ${
         theme === 'escuro' ? 'bg-gray-900' : 'bg-gradient-to-b from-[#F9EFFF] to-white'
     }`}>
+      {/* --- Layout Fixo --- */}
       <SidebarLeft />
       <SidebarRight />
       <MobileTopBar />
       <MobileBottomBar />
+      {/* Modal do Player de Vídeo */}
       {playingVideo && <VideoPlayerModal videoUrl={playingVideo} onClose={() => setPlayingVideo(null)} />}
 
       <div className="w-full lg:pl-48 lg:pr-96 flex-grow flex flex-col">
+        {/* Main Content Area */}
         <main className="px-6 lg:px-12 pt-20 pb-24 lg:pt-8 lg:pb-8 w-full flex-grow flex flex-col">
+          {/* Wrapper que controla a animação do conteúdo central */}
           <div className={`content-box w-full flex-grow flex flex-col ${enterAnimationClass} ${exitAnimationClass}`}>
             
+            {/* 1. View de Lista de Módulos */}
             {currentView === 'list' && (
               <ModuleListView 
                 videoModules={videoModules} 
@@ -327,11 +360,13 @@ export default function VideosPage() {
                 theme={theme} 
               />
             )}
+            
+            {/* 2. View em Grid de Vídeos */}
             {currentView === 'grid' && selectedModule && (
               <VideoGridView 
                 module={selectedModule} 
                 onBack={handleBackToList} 
-                onPlayVideo={(url) => setPlayingVideo(url)} 
+                onPlayVideo={(url) => setPlayingVideo(url)} // Abre o modal do player
                 theme={theme} 
               />
             )}

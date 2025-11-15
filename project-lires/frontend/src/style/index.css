@@ -1,62 +1,87 @@
 /* src/index.css */
 
-/* 1. Importa a fonte Poppins do Google Fonts */
+/* --- 1. Setup Global (Tailwind & Font) --- */
+
+/* Importa a fonte principal do projeto */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-/* 2. Inclui as diretivas base do Tailwind */
+/* Inclui as diretivas base do Tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 3. Define estilos globais para o body */
+/* Define o estilo base para o corpo da página */
 body {
-  margin: 0;
-  background-color: #f8f8f8; /* Fundo base para telas sem gradiente */
-  font-family: 'Poppins', sans-serif; /* Define Poppins como fonte padrão */
-  @apply antialiased; /* Opcional: Melhora a renderização da fonte */
-  overflow-x: hidden; /* Evita scroll horizontal indesejado */
+    margin: 0;
+    /* Fundo base para telas sem gradiente (Modo Claro) */
+    background-color: #f8f8f8; 
+    font-family: 'Poppins', sans-serif; 
+    /* antialiased melhora a renderização da fonte em navegadores */
+    @apply antialiased; 
+    /* Evita o scroll horizontal causado por elementos flutuantes */
+    overflow-x: hidden; 
 }
 
-/* 4. Classe do botão de gradiente */
+/* --- 2. Classes de Tema Global (Para o SettingsContext) --- */
+
+/* O 'SettingsContext.jsx' adiciona esta classe ao <body> ou <html> para ativar o tema escuro */
+.tema-escuro {
+    /* Cor de fundo base para o modo escuro */
+    background-color: #1f2937 !important; 
+    /* Cor do texto padrão em modo escuro */
+    color: #e5e7eb;
+}
+
+/* --- 3. Utilities e Animações --- */
+
+/* Classe de botão de gradiente com sombra (usada por Swal, Login, etc.) */
 .btn-gradient-glow {
     background-image: linear-gradient(90deg, #b081ff, #59b1ff);
     box-shadow: 0 4px 15px rgba(90, 177, 255, 0.4);
 }
 
-/* 5. Definições de Animação Globais */
+/* Keyframe: Animação de entrada (fade-in + up) */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
+/* Keyframe: Animação de flutuação (usada em robôs, mascotes, etc.) */
 @keyframes floatAnimation {
-  from { transform: translateY(0); }
-  to { transform: translateY(-20px); }
+    from { transform: translateY(0); }
+    to { transform: translateY(-20px); }
 }
 
-/* Animação para o conteúdo "derreter" */
+/* Keyframe: Animação de saída (fade-out + down com perspectiva para simular 'derretimento') */
 @keyframes fadeOutDown {
-  from { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-  to { opacity: 0; transform: translateY(100vh) scaleY(0.1) rotateX(45deg); filter: blur(10px); }
+    from { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    to { opacity: 0; transform: translateY(100vh) scaleY(0.1) rotateX(45deg); filter: blur(10px); }
 }
 
-/* Classes para aplicar as animações */
+/* Classe de animação para elementos que aparecem na tela (ex: features, textos) */
 .fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
+    animation: fadeInUp 0.8s ease-out forwards;
 }
 
+/* Aplica a animação de flutuação ao robô */
 .floating-robot {
-  animation: floatAnimation 3s ease-in-out infinite alternate;
+    animation: floatAnimation 3s ease-in-out infinite alternate;
 }
 
-/* Classe de transição para Cadastro/Login/EsqueceuSenha */
+/* --- 4. Animações de Transição de Componentes (Máquina de Estados) --- */
+
+/* Classe base para o container que gerencia a transição (ex: no Cadastro) */
 .content-box {
+    /* Define a transição suave */
     transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
-.content-box.anim-exit { /* Usaremos anim-exit para a saída */
-  animation: fadeOutDown 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+
+/* Animação de SAÍDA: Aplica o fadeOutDown com a mesma curva */
+.content-box.anim-exit { 
+    animation: fadeOutDown 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
-.content-box.anim-enter { /* Usaremos anim-enter para a entrada */
+
+/* Animação de ENTRADA: Aplica o fadeInUp com a mesma curva */
+.content-box.anim-enter { 
     animation: fadeInUp 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
-/* --- Fim das Definições de Animação --- */
