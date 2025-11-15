@@ -1,62 +1,60 @@
 import React, { useState, useEffect, useRef } from 'react'; 
 import { useNavigate } from 'react-router-dom';
-// Puxo o hook do meu contexto para ler o tema
+// Puxo apenas o tema do meu contexto global
 import { useSettings } from '../components/SettingsContext';
 
 // --- Imports de Assets ---
-// Logos (para o tema claro e escuro)
 import logoLiresClaraImg from '../assets/logo-lires.png';
 import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; 
-// Imagens de Conteúdo
 import roboPrincipalImg from '../assets/LoginLogo.png';
 import grupoInclusivoImg from '../assets/RoboPessoas.png';
 import conexaoImg from '../assets/GarotaNotebook.png';
-import bandeiraBrasilImg from '../assets/Brasil.jpg';
+// Restaurando a importação da bandeira
+import bandeiraBrasilImg from '../assets/Brasil.jpg'; 
 
 
 // --- Componentes de Layout ---
 
 /**
  * Componente: Header
- * Mostra a logo e o seletor de idioma no topo da página (desktop).
+ * Contém o logo e o indicador de idioma estático.
  */
-const Header = ({ theme }) => (
-  <header className="py-8">
-    <div className="px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-      {/* Logo Dinâmica */}
-      <img 
-        src={theme === 'escuro' ? logoLiresEscuraImg : logoLiresClaraImg} 
-        alt="Logo Lires" 
-        className="h-16 sm:h-20 w-auto" 
-      />
-      {/* Botão de idioma */}
-      <button className={`flex items-center gap-2 border rounded-full px-4 py-2 text-sm transition-colors ${
-        theme === 'escuro' 
-        ? 'border-gray-600 text-slate-300 hover:bg-gray-700' 
-        : 'border-gray-300 text-gray-700 hover:bg-gray-100'
-      }`}>
-        <img src={bandeiraBrasilImg} alt="Bandeira do Brasil" className="w-6 h-auto" />
-        <span>Idioma</span>
-      </button>
-    </div>
-  </header>
-);
+const Header = ({ theme }) => {
+  return (
+    <header className="py-8">
+      <div className="px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+        <img 
+          src={theme === 'escuro' ? logoLiresEscuraImg : logoLiresClaraImg} 
+          alt="Logo Lires" 
+          className="h-16 sm:h-20 w-auto" 
+        />
+        {/* Restaurando o botão de Idioma como indicador estático */}
+        <button className={`flex items-center gap-2 border rounded-full px-4 py-2 text-sm transition-colors ${
+          theme === 'escuro' 
+          ? 'border-gray-600 text-slate-300 hover:bg-gray-700' 
+          : 'border-gray-300 text-gray-700 hover:bg-gray-100'
+        }`}>
+          <img src={bandeiraBrasilImg} alt="Bandeira do Brasil" className="w-6 h-auto" />
+          <span>Idioma</span>
+        </button>
+      </div>
+    </header>
+  );
+};
 
 /**
  * Componente: StickyActions
- * Barra de ação fixa que aparece quando o usuário rola o Hero para fora da tela.
  */
 const StickyActions = ({ onStart, onLogin, isVisible, theme }) => (
   <div
     className={`fixed top-0 left-0 right-0 backdrop-blur-sm shadow-md z-50 transition-all duration-300 ease-in-out ${
-      isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none' // Lógica de esconder/mostrar
+      isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none' 
     } ${
-      theme === 'escuro' ? 'bg-gray-800/90' : 'bg-white/90' // Fundo semi-transparente
+      theme === 'escuro' ? 'bg-gray-800/90' : 'bg-white/90' 
     }`}
   >
     <div className="px-4 sm:px-6 lg:px-8 flex justify-between items-center py-3">
       <div>
-        {/* Logo menor na barra sticky */}
         <img 
           src={theme === 'escuro' ? logoLiresEscuraImg : logoLiresClaraImg} 
           alt="Logo Lires" 
@@ -64,7 +62,6 @@ const StickyActions = ({ onStart, onLogin, isVisible, theme }) => (
         />
       </div>
       <div className="flex gap-2 sm:gap-4">
-        {/* Botão Comece Agora */}
         <button
           onClick={onStart}
           className="hidden sm:block text-sm sm:text-base font-semibold py-2 px-4 sm:px-8 border-none rounded-full cursor-pointer text-white transition transform duration-200 hover:scale-105"
@@ -75,7 +72,6 @@ const StickyActions = ({ onStart, onLogin, isVisible, theme }) => (
         >
           Comece agora
         </button>
-        {/* Botão Login */}
         <button
           onClick={onLogin}
           className={`text-sm sm:text-base font-semibold py-2 px-4 sm:px-8 rounded-full border-2 transition-colors duration-300 ${
@@ -92,11 +88,10 @@ const StickyActions = ({ onStart, onLogin, isVisible, theme }) => (
 );
 
 /**
- * Componente: Hero
- * A seção de destaque da página inicial, com robô flutuante e CTAs.
+ * Componente: Hero (Texto em Português Fixo)
  */
 const Hero = ({ imagemRobo, onStart, onLogin, theme }) => (
-  <section className="text-center md:text-left py-16 md:py-24">
+  <section className="text-center md:text-left py-16 md:py-24" ref={null}>
     <div className="px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-center gap-8 lg:gap-12">
       <div className="md:w-1/2 flex justify-center fade-in-up" style={{ animationDelay: '0.2s' }}>
         <img src={imagemRobo} alt="Robô Lires amigável" className="w-64 h-64 md:w-80 md:h-80 object-cover rounded-lg floating-robot" />
@@ -114,7 +109,7 @@ const Hero = ({ imagemRobo, onStart, onLogin, theme }) => (
             className="text-lg font-semibold py-3 px-12 border-none rounded-full cursor-pointer text-white transition transform duration-200 hover:scale-105"
             style={{
               backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)',
-              boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)'
+              boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)',
             }}
           >
             Comece agora
@@ -136,8 +131,7 @@ const Hero = ({ imagemRobo, onStart, onLogin, theme }) => (
 );
 
 /**
- * Componente: Features
- * Seções de marketing (Inclusivo, Conexão).
+ * Componente: Features (Texto em Português Fixo)
  */
 const Features = ({ imagemGrupo, imagemConexao, theme }) => (
   <>
@@ -158,7 +152,7 @@ const Features = ({ imagemGrupo, imagemConexao, theme }) => (
       </div>
     </section>
 
-    {/* Seção 2: Mantenha a Conexão (Layout Invertido) */}
+    {/* Seção 2: Mantenha a Conexão */}
     <section className="py-16 text-center md:text-left">
       <div className="px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row-reverse items-center gap-12">
         <div className="md:w-1/2 fade-in-up flex flex-col justify-center">
@@ -178,8 +172,7 @@ const Features = ({ imagemGrupo, imagemConexao, theme }) => (
 );
 
 /**
- * Componente: CallToAction (CTA)
- * Chamada final para a ação.
+ * Componente: CallToAction (Texto em Português Fixo)
  */
 const CallToAction = ({ theme }) => (
     <section className="text-center py-16">
@@ -194,12 +187,10 @@ const CallToAction = ({ theme }) => (
 );
  
 /**
- * Componente: Footer
- * Rodapé com links e onda de transição.
+ * Componente: Footer (Texto em Português Fixo)
  */
 const Footer = ({ theme }) => (
     <footer className="relative bg-gradient-to-b from-violet-400 to-blue-500 text-white pt-20 pb-8">
-      {/* Top Wavy SVG */}
       <div className="absolute top-0 left-0 w-full overflow-hidden" style={{ lineHeight: 0 }}>
         <svg
           data-name="Layer 1"
@@ -208,7 +199,6 @@ const Footer = ({ theme }) => (
           preserveAspectRatio="none"
           className="relative block w-full h-[150px]"
         >
-          {/* Cor da onda de fundo (muda com o tema) */}
           <path
             d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
             className={theme === 'escuro' ? 'fill-gray-900' : 'fill-white'} 
@@ -235,10 +225,11 @@ const Footer = ({ theme }) => (
 // --- Componente Principal ---
 
 export default function Inicio() {
-  // Puxo o tema do contexto global
-  const { theme } = useSettings();
-  const [showSticky, setShowSticky] = useState(false); // Controla a barra fixa
-  const heroRef = useRef(null); // Referência para medir a seção Hero
+  // Puxo apenas o tema do contexto global
+  const { theme } = useSettings(); 
+  
+  const [showSticky, setShowSticky] = useState(false); 
+  const heroRef = useRef(null); 
   const navigate = useNavigate();
 
   // Efeito que monitora o scroll
@@ -246,7 +237,6 @@ export default function Inicio() {
     const handleScroll = () => {
       const heroElement = heroRef.current;
       if (heroElement) {
-        // Mostra a barra fixa quando o scroll passar da metade da seção Hero
         if (window.scrollY > heroElement.offsetTop + heroElement.offsetHeight / 2) { 
           setShowSticky(true);
         } else {
@@ -264,11 +254,11 @@ export default function Inicio() {
   }, []); 
 
   const handleStartNow = () => {
-    navigate('/cadastro'); // Inicia o cadastro
+    navigate('/cadastro'); 
   };
 
   const handleAlreadyHaveAccount = () => {
-    navigate('/login'); // Vai para o login
+    navigate('/login'); 
   };
 
   return (
@@ -282,10 +272,10 @@ export default function Inicio() {
         onStart={handleStartNow} 
         onLogin={handleAlreadyHaveAccount} 
         isVisible={showSticky} 
-        theme={theme} // Passa o tema
+        theme={theme} 
       />
 
-      {/* 2. Header (Logo e Idioma) */}
+      {/* 2. Header (Logo e Indicador de Idioma) */}
       <Header theme={theme} />
       
       <main>
