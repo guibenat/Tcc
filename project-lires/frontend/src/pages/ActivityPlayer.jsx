@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useSettings } from '../components/SettingsContext';
 
+// --- Importações de Lições ---
 import { lessonLookup } from '../lessons/lessonMap.jsx';
 import { comecarDoZeroLesson } from '../lessons/comecarDoZeroLesson.jsx';
 import { saudacoesAvancadasLesson } from '../lessons/saudacoesAvancadasLesson.jsx';
@@ -28,7 +29,7 @@ const lessonDatabase = {
     'alfabeto-revisao': alfabetoRevisaoLesson,
 };
 
-// --- Componentes Visuais (Sem alterações) ---
+// --- Componentes Visuais ---
 function BottomNotification({ type, message, onContinue }) {
     const { theme } = useSettings();
     const isCorrect = type === 'correct';
@@ -39,51 +40,95 @@ function BottomNotification({ type, message, onContinue }) {
     const buttonStyle = isCorrect ? { backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(176, 129, 255, 0.4)' } : { backgroundImage: 'linear-gradient(90deg, #EF4444, #F87171)', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)' };
     return ( <div className={`fixed bottom-0 left-0 right-0 p-6 shadow-lg z-40 ${containerStyle}`}><div className="container mx-auto flex items-center justify-between max-w-4xl"><div className="flex items-center gap-4"><Icon /><div><p className={`text-2xl font-bold ${titleStyle}`}>{isCorrect ? "Muito bem!" : "Você errou!"}</p><p className={`text-lg ${messageStyle}`}>{isCorrect ? "Você acertou!" : message}</p></div></div><button onClick={onContinue} className="text-xl font-semibold py-4 px-12 border-none rounded-2xl cursor-pointer text-white transition transform duration-200 hover:scale-105" style={buttonStyle}>Continuar</button></div></div> );
 }
+
 const HeartIcon = ({ filled }) => ( <img src={coracaoImage} alt={filled ? "Coração cheio" : "Coração vazio"} className="w-8 h-8" style={{ filter: filled ? 'none' : 'grayscale(1)', opacity: filled ? 1 : 0.4 }}/> );
+
 function FirstIncorrectAnswerModal({ lives, onClose }) {
     const { theme } = useSettings();
     return ( <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 font-poppins"><div className={`p-8 rounded-2xl border-2 max-w-lg text-center ${ theme === 'escuro' ? 'bg-gray-800 border-blue-700' : 'bg-white border-blue-400' }`} style={{ boxShadow: '0 0 50px rgba(90, 177, 255, 0.6)' }}><div className="flex justify-center mb-4">{[...Array(5)].map((_, i) => ( <HeartIcon key={i} filled={i < lives} /> ))}</div><h2 className={`text-2xl font-bold mb-2 ${theme === 'escuro' ? 'text-purple-300' : 'text-[#4b3670]'}`}>Cada erro tira 1 vida!</h2><p className={`text-lg mb-6 ${theme === 'escuro' ? 'text-gray-300' : 'text-gray-700'}`}>Tenha foco e cuidado pra não perder suas vidas. Vai, você consegue!</p><button onClick={onClose} className="mt-4 w-full text-lg font-semibold py-3 px-8 border-none rounded-2xl cursor-pointer text-white transition transform duration-200 hover:scale-105" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)', }}>OK, ENTENDI</button></div></div> );
 }
-function GameOverModal({ regenerationTime }) {
+
+// --- 1. MODAL DE GAME OVER ATUALIZADO ---
+function GameOverModal({ regenerationTime, onGoHome, onWatchAd }) { // <-- Props adicionadas
     const { theme, lives } = useSettings();
     const [timeRemaining, setTimeRemaining] = useState(0);
+
     useEffect(() => {
         const updateTimer = () => {
             const now = Date.now();
             const remaining = Math.max(0, Math.ceil((regenerationTime - now) / 1000));
             setTimeRemaining(remaining);
         };
+
         updateTimer();
         const interval = setInterval(updateTimer, 1000);
         return () => clearInterval(interval);
     }, [regenerationTime, lives]);
+
     const minutes = Math.floor(timeRemaining / 60);
     const seconds = timeRemaining % 60;
+
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 font-poppins p-4">
             <div className={`p-8 sm:p-12 rounded-3xl border-2 max-w-lg text-center ${theme === 'escuro' ? 'bg-gray-800 border-red-700' : 'bg-white border-red-400'}`} style={{ boxShadow: '0 0 50px rgba(239, 68, 68, 0.6)' }}>
                 <div className="flex justify-center mb-6">{[...Array(5)].map((_, i) => ( <HeartIcon key={i} filled={false} /> ))}</div>
                 <h2 className="text-3xl font-bold mb-4" style={{ backgroundImage: 'linear-gradient(90deg, #EF4444, #F87171)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Sem Vidas! 💔</h2>
-                <p className={`text-lg mb-6 ${theme === 'escuro' ? 'text-gray-300' : 'text-gray-700'}`}>Você perdeu todas as suas vidas. Não se preocupe, elas vão regenerar automaticamente!</p>
+                <p className={`text-lg mb-6 ${theme === 'escuro' ? 'text-gray-300' : 'text-gray-700'}`}>Você perdeu todas as suas vidas. Não se preocupe, elas vão regenerar!</p>
+                
                 <div className={`p-6 rounded-2xl mb-6 ${theme === 'escuro' ? 'bg-gray-700' : 'bg-gray-100'}`}>
                     <p className={`text-sm mb-2 ${theme === 'escuro' ? 'text-gray-400' : 'text-gray-600'}`}>Tempo restante para regeneração:</p>
                     <p className="text-5xl font-bold tracking-wider" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}</p>
                 </div>
-                <p className={`text-sm ${theme === 'escuro' ? 'text-gray-400' : 'text-gray-600'}`}>⏱️ Suas 5 vidas voltarão automaticamente quando o tempo acabar!</p>
+                
+                {/* --- BOTÕES ADICIONADOS --- */}
+                <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                    <button
+                        onClick={onGoHome}
+                        className="text-lg font-semibold py-3 px-8 rounded-2xl cursor-pointer transition transform duration-200 hover:scale-105"
+                        style={{ backgroundImage: 'linear-gradient(to right, #b081ff, #59b1ff)', padding: '2px' }}
+                    >
+                        <span 
+                        className={`block px-7 py-2 rounded-xl ${
+                            theme === 'escuro' ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-600'
+                        }`}
+                        >
+                        Voltar para Home
+                        </span>
+                    </button>
+                    <button
+                        onClick={onWatchAd}
+                        className="text-lg font-semibold py-3 px-8 border-none rounded-2xl cursor-pointer text-white transition transform duration-200 hover:scale-105"
+                        style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)' }}
+                    >
+                        Ver Anúncio (+1 Vida)
+                    </button>
+                </div>
+                {/* --- FIM DOS BOTÕES --- */}
+
             </div>
         </div>
     );
 }
+
 function ReviewScreen({ errorCount, onContinue }) {
     const { theme } = useSettings();
     return ( <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 font-poppins p-4"><div className={`p-8 sm:p-12 rounded-3xl flex flex-col items-center gap-6 sm:gap-8 w-full max-w-xl ${ theme === 'escuro' ? 'bg-gray-800' : 'bg-white' }`} style={{boxShadow: '0px 0px 70px 0px rgba(176, 129, 255, 0.5)'}}><div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-12"><p className="text-2xl sm:text-3xl font-semibold text-center sm:text-left" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', }}>Agora vamos refazer<br/>os exercícios que<br/>você errou!</p><img src={robotReviewImage} alt="Robô de revisão" className="w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0" style={{ animation: 'float 3s ease-in-out infinite' }}/></div><p className="text-lg font-bold text-red-500 tracking-widest">{errorCount} {errorCount === 1 ? 'ERRO' : 'ERROS'}</p><button onClick={onContinue} className="text-lg sm:text-xl font-semibold py-3 px-12 sm:py-4 sm:px-16 border-none rounded-full cursor-pointer text-white transition transform duration-200 hover:scale-105" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', boxShadow: '0 4px 15px rgba(176, 129, 255, 0.4)' }}>Continuar</button></div></div> );
 }
+
+const getSwalPopupStyles = (theme) => ({
+    popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-800 text-slate-200' : 'bg-white text-gray-800'}`,
+    title: `${theme === 'escuro' ? 'text-slate-100' : 'text-slate-900'}`,
+    htmlContainer: `${theme === 'escuro' ? 'text-slate-300' : 'text-gray-700'}`,
+    confirmButton: 'btn-gradient-glow text-lg font-semibold py-3 px-8 rounded-2xl text-white border-none cursor-pointer transition transform duration-200 hover:scale-105',
+});
+
 
 // --- COMPONENTE PRINCIPAL ---
 export default function ActivityPlayer() {
     const navigate = useNavigate();
     const { lessonId } = useParams();
 
+    // --- 2. PUXAR 'setLivesRegenerationTime' ---
     const {
         lives, setLives,
         lcoins, setLcoins,
@@ -94,6 +139,8 @@ export default function ActivityPlayer() {
         livesRegenerationTime,
         isRegeneratingLives,
         doubleXpExpiresAt,
+        theme,
+        setLivesRegenerationTime // <-- Adicionado
     } = useSettings();
 
     const initialProgressRef = useRef(lessonProgress[lessonId]?.completed || 0);
@@ -123,7 +170,6 @@ export default function ActivityPlayer() {
     const [isRedoMode, setIsRedoMode] = useState(false);
     const [redoIndex, setRedoIndex] = useState(0);
     const [showReviewScreen, setShowReviewScreen] = useState(false);
-
     const [isFirstLessonOfDay, setIsFirstLessonOfDay] = useState(false);
 
     const allLessonSteps = lessonData.steps;
@@ -145,6 +191,27 @@ export default function ActivityPlayer() {
         if (isChecking) return;
         setSelectedAnswer(index);
     };
+
+    // --- 3. NOVAS FUNÇÕES HANDLER ---
+    const handleGoHome = () => {
+        navigate('/home');
+    };
+
+    const handleWatchAd = () => {
+        // Simula assistir a um anúncio
+        console.log("Simulando anúncio... recompensando com 1 vida.");
+        
+        // Dá 1 vida
+        setLives(1);
+        
+        // Para o temporizador de regeneração
+        setLivesRegenerationTime(null); 
+        
+        // Fecha o modal
+        setShowGameOverModal(false);
+    };
+    // --- FIM DAS NOVAS FUNÇÕES ---
+
 
     const completeLessonAndGiveRewards = () => {
         const today = new Date();
@@ -188,7 +255,6 @@ export default function ActivityPlayer() {
         const isFirstTimeFullCompletion = initialProgressRef.current < finalCompletedSteps;
         console.log(`ActivityPlayer: Progresso inicial era ${initialProgressRef.current}. É a primeira vez? ${isFirstTimeFullCompletion}`);
 
-        // CÁLCULO DE XP (INCLUINDO DOBRO)
         const isDoubleXpActive = doubleXpExpiresAt && Date.now() < doubleXpExpiresAt;
         const xpGained = isDoubleXpActive ? ACTIVITY_TIME_MINUTES * 2 : ACTIVITY_TIME_MINUTES;
         
@@ -198,23 +264,21 @@ export default function ActivityPlayer() {
             console.log("XP normal ganho:", xpGained);
         }
 
-        // VERIFICA SE É UM CHECKPOINT
         const isCheckpoint = lessonInfo?.isCheckpoint ?? false;
 
         if (isFirstTimeFullCompletion) {
             setLcoins(prevLcoins => prevLcoins + LESSON_REWARD);
         }
 
-        // --- CORREÇÃO: Envia todos os dados, incluindo o 'lessonId' ---
         navigate('/finalizado', {
             state: {
                 errorCount: errorCount,
                 totalExercises: finalCompletedSteps,
                 isFirstTime: isFirstTimeFullCompletion,
                 xpGained: xpGained,
-                isCheckpoint: isCheckpoint, // Esta linha é importante
+                isCheckpoint: isCheckpoint,
                 isFirstLessonOfDay: isFirstLessonOfDay,
-                lessonId: lessonId // <-- Esta é a linha que faltava
+                lessonId: lessonId
             }
         });
     };
@@ -272,7 +336,14 @@ export default function ActivityPlayer() {
 
     const handleCheckAnswer = () => {
         if (selectedAnswer === null) {
-            Swal.fire('Opa!', 'Você precisa selecionar uma resposta primeiro.', 'info');
+            Swal.fire({
+                title: 'Opa!',
+                text: 'Você precisa selecionar uma resposta primeiro.',
+                icon: 'info',
+                confirmButtonText: 'OK',
+                customClass: getSwalPopupStyles(theme), 
+                buttonsStyling: false, 
+            });
             return;
         }
 
@@ -336,6 +407,13 @@ export default function ActivityPlayer() {
 
     return (
         <Fragment>
+            <style>{`
+                .btn-gradient-glow {
+                    background-image: linear-gradient(90deg, #b081ff, #59b1ff);
+                    box-shadow: 0 4px 15px rgba(90, 177, 255, 0.4);
+                }
+            `}</style>
+            
             <CurrentStepComponent
                 onNext={handleSkip}
                 onCheckAnswer={handleCheckAnswer}
@@ -349,8 +427,13 @@ export default function ActivityPlayer() {
                 isFinal={currentStepIndex === totalLessonSteps - 1 && !isRedoMode}
             />
 
+            {/* --- 4. CHAMADA DO MODAL ATUALIZADA --- */}
             {showGameOverModal && isRegeneratingLives && (
-                <GameOverModal regenerationTime={livesRegenerationTime} />
+                <GameOverModal 
+                    regenerationTime={livesRegenerationTime} 
+                    onGoHome={handleGoHome}
+                    onWatchAd={handleWatchAd}
+                />
             )}
 
             {showFirstMistakeModal && <FirstIncorrectAnswerModal lives={lives} onClose={handleCloseFirstMistakeModal} />}
