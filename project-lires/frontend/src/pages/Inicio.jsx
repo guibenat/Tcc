@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react'; 
+import React, { useState, useEffect, useRef, Fragment } from 'react'; // 1. IMPORTAR FRAGMENT
 import { useNavigate } from 'react-router-dom';
-// Puxo apenas o tema do meu contexto global
 import { useSettings } from '../components/SettingsContext';
+import { InfoModal } from '../components/InfoModal'; // 2. IMPORTAR O MODAL
 
 // --- Imports de Assets ---
 import logoLiresClaraImg from '../assets/logo-lires.png';
@@ -9,26 +9,20 @@ import logoLiresEscuraImg from '../assets/logo-lires-branca.png';
 import roboPrincipalImg from '../assets/LoginLogo.png';
 import grupoInclusivoImg from '../assets/RoboPessoas.png';
 import conexaoImg from '../assets/GarotaNotebook.png';
-// Restaurando a importação da bandeira
 import bandeiraBrasilImg from '../assets/Brasil.jpg'; 
 
 
 // --- Componentes de Layout ---
 
-/**
- * Componente: Header
- * Contém o logo e o indicador de idioma estático.
- */
 const Header = ({ theme }) => {
   return (
     <header className="py-8">
       <div className="px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <img 
           src={theme === 'escuro' ? logoLiresEscuraImg : logoLiresClaraImg} 
-          alt="Logo Lires" 
+          alt="Lires Logo" 
           className="h-16 sm:h-20 w-auto" 
         />
-        {/* Restaurando o botão de Idioma como indicador estático */}
         <button className={`flex items-center gap-2 border rounded-full px-4 py-2 text-sm transition-colors ${
           theme === 'escuro' 
           ? 'border-gray-600 text-slate-300 hover:bg-gray-700' 
@@ -42,9 +36,6 @@ const Header = ({ theme }) => {
   );
 };
 
-/**
- * Componente: StickyActions
- */
 const StickyActions = ({ onStart, onLogin, isVisible, theme }) => (
   <div
     className={`fixed top-0 left-0 right-0 backdrop-blur-sm shadow-md z-50 transition-all duration-300 ease-in-out ${
@@ -87,9 +78,6 @@ const StickyActions = ({ onStart, onLogin, isVisible, theme }) => (
   </div>
 );
 
-/**
- * Componente: Hero (Texto em Português Fixo)
- */
 const Hero = ({ imagemRobo, onStart, onLogin, theme }) => (
   <section className="text-center md:text-left py-16 md:py-24" ref={null}>
     <div className="px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-center gap-8 lg:gap-12">
@@ -109,7 +97,7 @@ const Hero = ({ imagemRobo, onStart, onLogin, theme }) => (
             className="text-lg font-semibold py-3 px-12 border-none rounded-full cursor-pointer text-white transition transform duration-200 hover:scale-105"
             style={{
               backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)',
-              boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)',
+              boxShadow: '0 4px 15px rgba(90, 177, 255, 0.4)'
             }}
           >
             Comece agora
@@ -130,9 +118,6 @@ const Hero = ({ imagemRobo, onStart, onLogin, theme }) => (
   </section>
 );
 
-/**
- * Componente: Features (Texto em Português Fixo)
- */
 const Features = ({ imagemGrupo, imagemConexao, theme }) => (
   <>
     {/* Seção 1: Inclusivo e Transformador */}
@@ -171,9 +156,6 @@ const Features = ({ imagemGrupo, imagemConexao, theme }) => (
   </>
 );
 
-/**
- * Componente: CallToAction (Texto em Português Fixo)
- */
 const CallToAction = ({ theme }) => (
     <section className="text-center py-16">
       <div className="px-4 sm:px-6 lg:px-8">
@@ -187,52 +169,57 @@ const CallToAction = ({ theme }) => (
 );
  
 /**
- * Componente: Footer (Texto em Português Fixo)
+ * Componente: Footer (Atualizado com lógica de modal)
  */
-const Footer = ({ theme }) => (
-    <footer className="relative bg-gradient-to-b from-violet-400 to-blue-500 text-white pt-20 pb-8">
-      <div className="absolute top-0 left-0 w-full overflow-hidden" style={{ lineHeight: 0 }}>
-        <svg
-          data-name="Layer 1"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
-          className="relative block w-full h-[150px]"
-        >
-          <path
-            d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
-            className={theme === 'escuro' ? 'fill-gray-900' : 'fill-white'} 
-          ></path>
-        </svg>
-      </div>
+const Footer = ({ theme }) => {
+    // 3. ESTADO DO MODAL (MOVIDO AQUI)
+    const [modalType, setModalType] = useState(null);
+  
+    return (
+      // 4. USAR FRAGMENT PARA QUE O MODAL SEJA IRMÃO DO FOOTER
+      <Fragment>
+        <footer className="relative bg-gradient-to-b from-violet-400 to-blue-500 text-white pt-20 pb-8">
+          {/* ... (SVG da Onda) ... */}
+          <div className="absolute top-0 left-0 w-full overflow-hidden" style={{ lineHeight: 0 }}>
+              <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" className="relative block w-full h-[150px]">
+                  <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+                      className={theme === 'escuro' ? 'fill-gray-900' : 'fill-white'} 
+                  ></path>
+              </svg>
+          </div>
 
-      <div className="px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-10">
-          <a href="#" className="hover:underline">Sobre Nós</a>
-          <a href="#" className="hover:underline">Privacidade</a>
-          <a href="#" className="hover:underline">Termos</a>
-          <a href="#" className="hover:underline">Loja</a>
-        </div>
-        
-        <div className="text-center text-sm text-white/70 border-t border-white/20 pt-6 mt-8">
-          <p>&copy; {new Date().getFullYear()} Lires. Todos os direitos reservados.</p>
-        </div>
-      </div>
-    </footer>
-);
+          <div className="px-4 sm:px-6 lg:px-8 relative z-10">
+            {/* 5. ATUALIZAR LINKS PARA <button> */}
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-10">
+              <button onClick={() => setModalType('sobre')} className="hover:underline">Sobre Nós</button>
+              <button onClick={() => setModalType('privacidade')} className="hover:underline">Privacidade</button>
+              <button onClick={() => setModalType('termos')} className="hover:underline">Termos</button>
+            </div>
+            
+            <div className="text-center text-sm text-white/70 border-t border-white/20 pt-6 mt-8">
+              <p>&copy; {new Date().getFullYear()} Lires. Todos os direitos reservados.</p>
+            </div>
+          </div>
+        </footer>
+
+        {/* 6. RENDERIZAR O MODAL A PARTIR DO FOOTER */}
+        <InfoModal 
+            isOpen={!!modalType} 
+            type={modalType} 
+            onClose={() => setModalType(null)} 
+        />
+      </Fragment>
+    );
+};
 
 
 // --- Componente Principal ---
-
 export default function Inicio() {
-  // Puxo apenas o tema do contexto global
   const { theme } = useSettings(); 
-  
   const [showSticky, setShowSticky] = useState(false); 
   const heroRef = useRef(null); 
   const navigate = useNavigate();
 
-  // Efeito que monitora o scroll
   useEffect(() => {
     const handleScroll = () => {
       const heroElement = heroRef.current;
@@ -244,42 +231,28 @@ export default function Inicio() {
         }
       }
     };
-
     window.addEventListener('scroll', handleScroll, { passive: true });
-
-    // Função de limpeza (performance)
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []); 
 
-  const handleStartNow = () => {
-    navigate('/cadastro'); 
-  };
-
-  const handleAlreadyHaveAccount = () => {
-    navigate('/login'); 
-  };
+  const handleStartNow = () => navigate('/cadastro'); 
+  const handleAlreadyHaveAccount = () => navigate('/login'); 
 
   return (
-    // Container principal (fundo e tema)
     <div className={` ${
       theme === 'escuro' ? 'bg-gray-900 text-slate-300' : 'bg-white text-gray-800'
     }`}> 
       
-      {/* 1. Barra de Ação Fixa (Aparece no scroll) */}
       <StickyActions 
         onStart={handleStartNow} 
         onLogin={handleAlreadyHaveAccount} 
         isVisible={showSticky} 
         theme={theme} 
       />
-
-      {/* 2. Header (Logo e Indicador de Idioma) */}
       <Header theme={theme} />
-      
       <main>
-        {/* Seção Hero (com a ref para medir a posição) */}
         <div ref={heroRef}> 
           <Hero 
             imagemRobo={roboPrincipalImg} 
@@ -288,21 +261,15 @@ export default function Inicio() {
             theme={theme}
           />
         </div>
-        
-        {/* Divisor */}
         <div className="px-4 sm:px-6 lg:px-8">
           <div className={`border-t-2 my-16 ${theme === 'escuro' ? 'border-gray-700' : 'border-gray-100'}`}></div>
         </div>
-        
-        {/* Seções de Features */}
         <Features 
           imagemGrupo={grupoInclusivoImg} 
           imagemConexao={conexaoImg} 
           theme={theme}
         />
       </main>
-      
-      {/* CTA e Rodapé Final */}
       <CallToAction theme={theme} />
       <Footer theme={theme} />
     </div>

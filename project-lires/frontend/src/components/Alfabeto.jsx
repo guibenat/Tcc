@@ -26,7 +26,7 @@ const alphabetData = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(letter => ({
 const GifModal = ({ letter, onClose, theme }) => (
   <div 
     className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
-    onClick={onClose} // Permite fechar o modal clicando no fundo escuro
+    onClick={onClose} // Fecha o modal clicando no fundo
   >
     <div 
       className={`p-6 rounded-3xl border-2 ${theme === 'escuro' ? 'bg-gray-800 border-purple-600' : 'bg-white border-purple-400'}`}
@@ -41,7 +41,7 @@ const GifModal = ({ letter, onClose, theme }) => (
       <img 
         src={letter.gifSrc} 
         alt={`Sinal animado para a letra ${letter.char}`} 
-        className="w-64 h-64 object-contain rounded-2xl bg-white" // Fundo branco para garantir a visibilidade do GIF
+        className="w-64 h-64 object-contain rounded-2xl bg-white" // Fundo branco para garantir a visibilidade
       />
     </div>
   </div>
@@ -80,7 +80,7 @@ export default function AlphabetContent() {
   const [animationClass, setAnimationClass] = useState('');
   
   // Estado para controlar qual letra está selecionada (e, portanto, qual modal abrir)
-  // 'null' significa que o modal está fechado.
+  // 'null' = modal fechado.
   const [selectedLetter, setSelectedLetter] = useState(null);
   
   // Puxa o tema atual (claro/escuro) do contexto
@@ -94,7 +94,7 @@ export default function AlphabetContent() {
   return (
     <>
       {/* Bloco de estilo para garantir a fonte Poppins. 
-          Idealmente, isso estaria no CSS global (index.css), mas funciona aqui. */}
+          (Idealmente, isso estaria no CSS global (index.css), mas ok) */}
       <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
           body { font-family: 'Poppins', sans-serif; }
