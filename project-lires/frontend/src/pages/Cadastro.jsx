@@ -1,54 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; 
-import { useSettings } from '../components/SettingsContext'; 
-
-// --- Assets ---
 import logoLiresClaraImg from '../assets/logo-lires.png';
 import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; 
+import { useSettings } from '../components/SettingsContext';
 
-// --- Componentes de Ícones (Auxiliares) ---
+// 1. IMPORTAR A LÓGICA DE AUTH E O HOOK DO GOOGLE
+import { useGoogleLogin } from '@react-oauth/google';
+import { handleGoogleAuth } from '../authLogic'; // Nosso novo arquivo
+
+// --- Ícones (GoogleIcon, EyeIcon, BackArrowIcon, FooterText) ---
 const GoogleIcon = () => (
-    // SVG para o botão de Login com Google
     <svg className="w-6 h-6 mr-2" viewBox="0 0 48 48">
-        <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
-        <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
-        <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
-        <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.022,35.283,44,30.036,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+        <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.022,35.283,44,30.036,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
     </svg>
 );
-
 const EyeIcon = ({ theme }) => (
-    // Ícone de "mostrar senha" (reage ao tema)
     <svg className={`w-6 h-6 ${theme === 'escuro' ? 'text-gray-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
     </svg>
 );
-
 const BackArrowIcon = ({ theme }) => (
-    // Ícone de voltar (reage ao tema)
     <svg className={`w-6 h-6 transition-colors ${theme === 'escuro' ? 'text-gray-400 hover:text-gray-100' : 'text-gray-500 hover:text-gray-800'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
     </svg>
 );
-
 const FooterText = ({ theme }) => (
-    // Componente do rodapé (termos de uso e reCAPTCHA)
     <div className={`text-center text-xs space-y-2 z-10 mt-auto py-6 px-4 ${
         theme === 'escuro' ? 'text-gray-400' : 'text-gray-500'
     }`}>
-        <p>
-            Ao entrar no LIRES você concorda com os nossos termos e nossa
-            <a href="#" className="text-blue-500 hover:underline ml-1"> Política de privacidade</a>
-        </p>
-        <p>
-            Esse site é protegido pelo rCAPTCHA. Aplicam-se os 
-            <a href="#" className="text-blue-500 hover:underline ml-1"> Termos de Uso do Google</a>
-        </p>
+        <p>Ao entrar no LIRES você concorda com os nossos termos e nossa <a href="#" className="text-blue-500 hover:underline ml-1"> Política de privacidade</a></p>
+        <p>Esse site é protegido pelo rCAPTCHA. Aplicam-se os <a href="#" className="text-blue-500 hover:underline ml-1"> Termos de Uso do Google</a></p>
     </div>
 );
 
-// --- Componente de Etapa 1: Idade ---
+// --- Etapas do Formulário (Sem alterações) ---
 const AgeStep = ({ age, setAge, onNext, theme }) => (
     <>
         <h2 className={`text-2xl font-bold text-center mb-2 ${
@@ -56,9 +41,7 @@ const AgeStep = ({ age, setAge, onNext, theme }) => (
         }`}>
             Quantos Anos Você Tem?
         </h2>
-        
         <div className="flex items-center justify-center gap-4 my-4">
-            {/* Botão de Diminuir Idade */}
             <button
                 onClick={() => setAge(prev => Math.max(0, prev - 1))}
                 disabled={age <= 0}
@@ -67,16 +50,12 @@ const AgeStep = ({ age, setAge, onNext, theme }) => (
                     ? 'text-white bg-pink-600 hover:bg-pink-700 disabled:bg-gray-600'
                     : 'text-white bg-pink-300 hover:bg-pink-400 disabled:bg-gray-200'
                 }`}
-            >
-                -
-            </button>
-            {/* Display da Idade */}
+            > - </button>
             <span className={`text-4xl font-bold w-24 text-center ${
                     theme === 'escuro' ? 'text-pink-400' : 'text-pink-500'
             }`}>
                 {age}
             </span>
-            {/* Botão de Aumentar Idade */}
             <button
                 onClick={() => setAge(prev => Math.min(100, prev + 1))}
                 disabled={age >= 100}
@@ -85,17 +64,13 @@ const AgeStep = ({ age, setAge, onNext, theme }) => (
                         ? 'text-white bg-pink-600 hover:bg-pink-700 disabled:bg-gray-600'
                         : 'text-white bg-pink-300 hover:bg-pink-400 disabled:bg-gray-200'
                 }`}
-            >
-                +
-            </button>
+            > + </button>
         </div>
-
         <p className={`text-center text-xs mt-4 mb-6 ${
             theme === 'escuro' ? 'text-gray-400' : 'text-gray-500'
         }`}>
             Informar sua idade garante que você tenha a melhor experiência com LIRES.
         </p>
-        
         <button 
             onClick={onNext}
             className={`w-full py-3 text-white font-bold text-base rounded-lg transition-colors ${
@@ -108,10 +83,7 @@ const AgeStep = ({ age, setAge, onNext, theme }) => (
         </button>
     </>
 );
-
-// --- Componente de Etapa 2: Perfil/Credenciais ---
 const ProfileStep = ({ name, setName, email, setEmail, password, setPassword, onBack, onCreateAccount, theme }) => {
-    // Estado local para mostrar/esconder a senha
     const [showPassword, setShowPassword] = useState(false);
     
     const inputClasses = `w-full px-5 py-3 text-base rounded-lg border focus:outline-none focus:ring-2 placeholder-gray-500 ${
@@ -181,58 +153,47 @@ const ProfileStep = ({ name, setName, email, setEmail, password, setPassword, on
     );
 };
 
-// --- Componente Principal: Cadastro ---
-
+// --- Componente Principal ---
 export default function Cadastro() { 
     const { theme } = useSettings(); 
     const navigate = useNavigate();
-    
-    // Controle da Máquina de Estados (Step 1: Idade, Step 2: Perfil)
     const [step, setStep] = useState(1);
     const [exitAnimationClass, setExitAnimationClass] = useState('');
     const [enterAnimationClass, setEnterAnimationClass] = useState('anim-enter');
 
-    // Estados do Formulário
     const [age, setAge] = useState(18);
     const [name, setName] = useState(''); 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    // 1. Efeito para Carregar dados salvos do localStorage
+    // Salva/Carrega dados incompletos do formulário
     useEffect(() => {
         const savedData = localStorage.getItem('cadastroFormData');
         if (savedData) {
             const parsedData = JSON.parse(savedData);
-            // Preenche os campos caso o usuário tenha saído no meio do cadastro
             setAge(parsedData.age || 18);
             setName(parsedData.name || '');
             setEmail(parsedData.email || '');
             setPassword(parsedData.password || '');
         }
     }, []);
-    
-    // 2. Efeito para Salvar dados no localStorage a cada alteração
     useEffect(() => {
         const formData = { age, name, email, password };
         localStorage.setItem('cadastroFormData', JSON.stringify(formData));
     }, [age, name, email, password]);
 
-    /**
-     * Lógica central de transição entre etapas (com animação)
-     */
+    // Lógica de animação
     const handleStepChange = (newStep) => {
         setError('');
         setEnterAnimationClass(''); 
-        setExitAnimationClass('anim-exit'); // Inicia animação de saída
+        setExitAnimationClass('anim-exit'); 
         setTimeout(() => {
-            setStep(newStep); // Troca o componente
+            setStep(newStep); 
             setExitAnimationClass(''); 
-            setEnterAnimationClass('anim-enter'); // Inicia animação de entrada
+            setEnterAnimationClass('anim-enter'); 
         }, 800); 
     };
-    
-    // Validação do Step 1 (Idade)
     const validateAndProceedStep1 = () => {
         if (age === null || age === '' || age <= 0) {
             setError('Por favor, informe uma idade válida.');
@@ -241,12 +202,9 @@ export default function Cadastro() {
         handleStepChange(2);
     };
     
-    /**
-     * Validação e Finalização (Criação da Conta)
-     * Esta é a lógica mais importante: valida, gera o username e salva no DB.
-     */
+    // 2. LÓGICA DE CADASTRO COM E-MAIL (Simplificada)
     const validateAndFinish = () => {
-        // Validação básica
+        // Validação local
         if (!email || !password) {
             setError('E-mail e senha são obrigatórios.');
             return;
@@ -261,7 +219,9 @@ export default function Cadastro() {
             return;
         }
         
-        // Verifica se o e-mail já existe no "banco de dados"
+        setError('');
+        
+        // Verifica se o e-mail já existe
         const existingUsers = JSON.parse(localStorage.getItem('liresUsersDB')) || [];
         const emailExists = existingUsers.some(user => user.email === email);
         if (emailExists) {
@@ -269,70 +229,49 @@ export default function Cadastro() {
             return;
         }
 
-        // --- Lógica de Geração de Username Único ---
-        
-        const formatNumber = (num) => num.toString().padStart(4, '0');
-        const isUsernameTaken = (username, users) => {
-            return users.some(user => user.username === username);
-        };
-        
-        // Cria a base do username (nome limpo ou 'aluno')
-        let baseUsername = name.trim() ? name.trim() : 'aluno';
-        baseUsername = baseUsername
-            .replace(/\s+/g, '') // Remove espaços
-            .replace(/[^a-zA-Z0-9]/g, '') // Remove caracteres especiais
-            .toLowerCase();
-        if (!baseUsername) { baseUsername = 'aluno'; }
-        
-        // Adiciona um número sequencial (0001, 0002...) até ser único
-        let suffix = 1;
-        let finalUsername = `${baseUsername}${formatNumber(suffix)}`; 
-        while (isUsernameTaken(finalUsername, existingUsers)) {
-            suffix++;
-            finalUsername = `${baseUsername}${formatNumber(suffix)}`;
-        }
-
-        // --- Criação do Objeto Usuário ---
-        const newUser = {
-            id: Date.now(), // ID baseado no timestamp
-            name: name.trim() || finalUsername,
-            username: finalUsername, 
+        // Criamos um objeto 'googleData' simulado para o authLogic
+        const simulatedGoogleData = {
             email: email,
-            password: password, 
-            age: age,
-            // Estados iniciais do jogo e preferências
-            hasOnboarded: false,
-            lives: 5,
-            lcoins: 0, 
-            dailyStreak: 0, 
-            lastCompletedTimestamp: null, 
-            lessonProgress: {},
-            followers: [], 
-            following: [], 
-            timeSpentToday: 0, 
-            preferences: {
-                theme: 'claro', 
-                fontSize: 'medio',
-                colorBlindFilter: 'nenhum',
-                autoLegends: 'desativado'
-            }
+            name: name,
+            sub: password // Usamos a senha como "ID" para o authLogic
         };
-
-        // --- Salva no "Banco de Dados" ---
-        const updatedUsers = [...existingUsers, newUser];
-        localStorage.setItem('liresUsersDB', JSON.stringify(updatedUsers)); // Salva no DB
-        localStorage.setItem('currentUser', JSON.stringify(newUser)); // Define como usuário logado
         
-        console.log("Conta criada com sucesso:", finalUsername);
-        localStorage.removeItem('cadastroFormData'); // Limpa o estado do formulário
+        // Chamamos a mesma função do Google
+        handleGoogleAuth(simulatedGoogleData);
         
-        // Navega para a tela de Onboarding/Inicial
+        localStorage.removeItem('cadastroFormData');
         setExitAnimationClass('anim-exit');
-        setTimeout(() => {
-            // Uso window.location.href para garantir o reset completo do SettingsContext
-            window.location.href = '/inicial'; 
-        }, 800); 
+        // O authLogic cuidará da navegação
     };
+    
+    // 3. LÓGICA DE CADASTRO COM GOOGLE
+    const googleLogin = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            try {
+                const accessToken = tokenResponse.access_token;
+                const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                    headers: { 'Authorization': `Bearer ${accessToken}` },
+                });
+                
+                const googleData = await response.json();
+                
+                // Chama nossa lógica de auth centralizada
+                handleGoogleAuth(googleData);
+                
+                localStorage.removeItem('cadastroFormData');
+                setEnterAnimationClass(''); 
+                setExitAnimationClass('anim-exit'); 
+                
+            } catch (err) {
+                console.error("Falha ao buscar perfil do Google:", err);
+                setError("Não foi possível fazer login com o Google.");
+            }
+        },
+        onError: () => {
+            console.error('Falha no login com o Google');
+            setError("Não foi possível fazer login com o Google.");
+        },
+    });
 
     return (
         <>
@@ -352,13 +291,12 @@ export default function Cadastro() {
                                 values="M0,500 C360,400 480,600 720,500 C960,400 1080,600 1440,500 L1440,800 L0,800 Z; M0,550 C360,650 480,450 720,550 C960,650 1080,450 1440,550 L1440,800 L0,800 Z; M0,500 C360,400 480,600 720,500 C960,400 1080,600 1440,500 L1440,800 L0,800 Z" />
                         </path>
                         <path fill={theme === 'escuro' ? '#1d4ed8' : "#60a5fa"} fillOpacity="0.3" d="M0,600 C360,500 480,700 720,600 C960,500 1080,700 1440,600 L1440,800 L0,800 Z">
-                            <animate attributeName="d" dur="16s" repeatCount="indefinite"
-                                values="M0,600 C360,500 480,700 720,600 C960,500 1080,700 1440,600 L1440,800 L0,800 Z; M0,650 C360,750 480,550 720,650 C960,750 1080,550 1440,650 L1440,800 L0,800 Z; M0,600 C360,500 480,700 720,600 C960,500 1080,700 1440,600 L1440,800 L0,800 Z" />
+                                <animate attributeName="d" dur="16s" repeatCount="indefinite"
+                                    values="M0,600 C360,500 480,700 720,600 C960,500 1080,700 1440,600 L1440,800 L0,800 Z; M0,650 C360,750 480,550 720,650 C960,750 1080,550 1440,650 L1440,800 L0,800 Z; M0,600 C360,500 480,700 720,600 C960,500 1080,700 1440,600 L1440,800 L0,800 Z" />
                         </path>
                     </svg>
                 </div>
-                
-                {/* --- Logo Header --- */}
+
                 <header className="absolute top-0 left-0 right-0 p-6 sm:p-8 z-10">
                     <img 
                         src={theme === 'escuro' ? logoLiresEscuraImg : logoLiresClaraImg} 
@@ -367,13 +305,11 @@ export default function Cadastro() {
                     />
                 </header>
                 
-                {/* --- Formulário Central --- */}
                 <main className="w-full z-10 flex-grow flex flex-col justify-center items-center px-4 py-8">
                     <div className={`content-box w-full max-w-sm p-8 sm:p-12 rounded-2xl shadow-lg ${exitAnimationClass} ${enterAnimationClass} ${
                         theme === 'escuro' ? 'bg-gray-800 border border-gray-700' : 'bg-white'
                     }`}>
                         
-                        {/* Renderiza a etapa correta */}
                         {step === 1 ? (
                             <AgeStep 
                                 age={age} 
@@ -397,16 +333,17 @@ export default function Cadastro() {
                         
                         {error && <p className="text-red-500 text-sm text-center mt-4">{error}</p>}
                         
-                        {/* Divisor "OU" */}
                         <div className="flex items-center my-6">
                             <hr className={`flex-grow ${theme === 'escuro' ? 'border-gray-600' : 'border-gray-300'}`} />
                             <span className={`px-4 text-sm font-semibold ${theme === 'escuro' ? 'text-gray-400' : 'text-gray-500'}`}>OU</span>
                             <hr className={`flex-grow ${theme === 'escuro' ? 'border-gray-600' : 'border-gray-300'}`} />
                         </div>
                         
-                        {/* Botão de Cadastro com Google */}
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <button className={`flex items-center justify-center w-full py-3 rounded-lg border transition-colors ${
+                            {/* 4. BOTÃO DO GOOGLE (agora funcional) */}
+                            <button 
+                                onClick={() => googleLogin()}
+                                className={`flex items-center justify-center w-full py-3 rounded-lg border transition-colors ${
                                 theme === 'escuro' 
                                 ? 'bg-gray-700 border-gray-600 hover:bg-gray-600' 
                                 : 'bg-pink-100 border-pink-200 hover:bg-pink-200'

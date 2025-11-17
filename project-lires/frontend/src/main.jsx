@@ -1,18 +1,17 @@
+// src/main.jsx
 import ReactDOM from 'react-dom/client';
 import React from 'react';
 import App from './App.jsx'; 
-// Importo o arquivo de estilos globais (inclui o Tailwind e as animações base)
 import './style/index.css'; 
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
-/**
- * Ponto de entrada principal do aplicativo.
- * Usa o método 'createRoot' do React 18 para montar a aplicação no DOM
- * (no elemento com id='root').
- */
+// GARANTA QUE ESTA LINHA SEJA EXATAMENTE ASSIM:
+const GOOGLE_CLIENT_ID = "38058878818-61sidunf71010bct2974skbe1hitj0qs.apps.googleusercontent.com";
+
 ReactDOM.createRoot(document.getElementById('root')).render(
-  // React.StrictMode: Ajuda a identificar possíveis problemas no código durante o desenvolvimento.
   <React.StrictMode>
-    {/* O App é o componente raiz que contém o roteamento e o contexto global. */}
-    <App />
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <App />
+    </GoogleOAuthProvider>
   </React.StrictMode>,
 );
