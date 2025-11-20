@@ -1,0 +1,29 @@
+{
+  "name": "backend-node",
+  "version": "1.0.0",
+  "description": "Projeto Backend utilizando node.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guibenat/BackendNode.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/guibenat/BackendNode/issues"
+  },
+  "homepage": "https://github.com/guibenat/BackendNode#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.15.3"
+  }
+}
