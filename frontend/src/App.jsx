@@ -75,11 +75,6 @@ function App() {
           <Route path="/perfil" element={<UserPage />} />
           <Route path="/usuario/:username" element={<UserPage />} /> 
           
-          {/* --- ROTAS ESTÁTICAS REMOVIDAS --- */}
-          {/* <Route path="/sobre" element={<SobrePage />} /> */}
-          {/* <Route path="/termos-de-privacidade" element={<TermosPrivacidadePage />} /> */}
-          {/* <Route path="/termos-de-uso" element={<TermosUsoPage />} /> */}
-          {/* --- FIM DA REMOÇÃO --- */}
 
           {/* Rotas de Configurações Aninhadas */}
           <Route path="/configuracoes" element={<SettingsLayout />}>

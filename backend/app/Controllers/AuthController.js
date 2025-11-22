@@ -67,6 +67,9 @@ exports.logarUsuario = async (req, res) => {
         id: usuario.id,
         nome: usuario.nome_usuario,
         email: usuario.email_usuario,
+        vidas: usuario.vidas,
+        moedas: usuario.moedas,
+        sequencia: usuario.sequencia,
       },
     });
   } catch (error) {

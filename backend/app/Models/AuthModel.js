@@ -1,68 +1,58 @@
-const conn = require('../config/database/connect');
+const db = require("../config/database/connect");
 
-// Cadastro
-exports.criarUsuario = async (nome, email, senhaHash) => {
-  try {
-    // Verifica
-    const [existente] = await conn.query(
-      'SELECT id FROM login_lires WHERE email_usuario = ?', 
-      [email]
-    );
-    
-    if (existente.length > 0) {
-      throw new Error('Este email já está cadastrado.');
-    }
+const AuthModel = {
+  criarUsuario: async (nome, email, senhaHash, idade) => {
+    // Definindo os valores padrão do "Kit Inicial"
+    const vidasPadrao = 5;
+    const moedasPadrao = 150;
+    const sequenciaPadrao = 1;
 
-    // Insere
-    const sql = 'INSERT INTO login_lires (nome_usuario, email_usuario, senha) VALUES (?, ?, ?)';
-    const [resultado] = await conn.query(sql, [nome, email, senhaHash]);
+    const sql =
+      "INSERT INTO login_lires (nome_usuario, email_usuario, senha, idade_usuario, vidas, moedas, sequencia) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-    // Dados
-    return { id: resultado.insertId, nome, email };
+    // conexão com o banco de dados
+    const [result] = await db.query(sql, [
+      nome,
+      email,
+      senhaHash,
+      idade,
+      vidasPadrao,
+      moedasPadrao,
+      sequenciaPadrao,
+    ]);
 
-  } catch (error) {
-    throw error;
-  }
-}
+    return {
+      id: result.insertId,
+      nome,
+      email,
+      idade,
+      vidas: vidasPadrao,
+      moedas: moedasPadrao,
+      sequencia: sequenciaPadrao,
+    };
+  },
 
-// Login
-exports.buscarUsuarioPorEmail = async (email) => {
-  try {
-    // Busca usuario
-    const [usuarios] = await conn.query(
-      'SELECT * FROM login_lires WHERE email_usuario = ?', 
-      [email]
-    );
-    
-    // Retorna
-    return usuarios[0];
+  buscarUsuarioPorEmail: async (email) => {
+    const sql = "SELECT * FROM login_lires WHERE email_usuario = ?";
+    const [rows] = await db.query(sql, [email]);
+    if (rows.length === 0) return null;
+    return rows[0];
+  },
 
-  } catch (error) {
-    throw error;
-  }
-}
-// Buscar perfil
-exports.buscarUsuarioPorId = async (id) => {
-  try {
-    const sql = 'SELECT id, nome_usuario, email_usuario, vidas, moedas, sequencia FROM login_lires WHERE id = ?';
-    const [usuarios] = await conn.query(sql, [id]);
-    
-    return usuarios[0]; // Retorna o usuário encontrado ou undefined se não encontrado
+  buscarUsuarioPorId: async (id) => {
+    const sql =
+      "SELECT id, nome_usuario, email_usuario, vidas, moedas, sequencia FROM login_lires WHERE id = ?";
+    const [rows] = await db.query(sql, [id]);
+    if (rows.length === 0) return null;
+    return rows[0];
+  },
 
-  } catch (error) {
-    throw error;
-  }
-}
-//Colecionáveis
-exports.atualizarProgresso = async (id, vidas, moedas, sequencia) => {
-  try {
-    const sql = 'UPDATE login_lires SET vidas = ?, moedas = ?, sequencia = ? WHERE id = ?';
-
-    await conn.query(sql, [vidas, moedas, sequencia, id]);
-
+  atualizarProgresso: async (id, vidas, moedas, sequencia) => {
+    const sql =
+      "UPDATE login_lires SET vidas = ?, moedas = ?, sequencia = ? WHERE id = ?";
+    await db.query(sql, [vidas, moedas, sequencia, id]);
     return { id, vidas, moedas, sequencia };
+  },
+};
 
-  } catch (error) {
-    throw error;
-  }
-}
+module.exports = AuthModel;
