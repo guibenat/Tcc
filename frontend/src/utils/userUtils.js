@@ -1,5 +1,3 @@
-// Verifique se o caminho da importação está correto!
-// Se a pasta 'utils' está dentro de 'src', então para ir para 'services' é '../services/api'
 import api from '../services/api';
 
 export const updateUserStats = async (newStats) => {
