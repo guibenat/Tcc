@@ -374,8 +374,8 @@ const Stats = ({ theme, streak, signs, lcoins, isMyProfile }) => (
     <div className="w-full max-w-4xl mt-6 px-4">
         <div className="flex justify-between items-center mb-4">
             <h2 className={`text-2xl font-bold ${theme === 'escuro' ? 'text-purple-400' : 'text-violet-500'}`}>Estatísticas</h2>
-            {/* Mostra o botão de Debug só no meu perfil */}
-            {isMyProfile && <ResetButton theme={theme} />} 
+            {/* Mostra o botão de Debug só no meu perfil - COMENTADO PARA NÃO APARECER */}
+            {/* {isMyProfile && <ResetButton theme={theme} />} */}
         </div>
         <div className="grid grid-cols-2 gap-4">
             {/* Coluna da Esquerda */}

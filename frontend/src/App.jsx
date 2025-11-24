@@ -25,8 +25,8 @@ import PraticarPage from './pages/PraticarPage';
 
 // Páginas de Configurações
 import GerenciamentoConta from './pages/GerenciamentoConta'; 
-import ConfiguracoesPrivacidade from './pages/Configurações';
-import Seguranca from './pages/Segurança';
+import ConfiguracoesPrivacidade from './pages/Configuracoes';
+import Seguranca from './pages/Seguranca';
 import Encerramento from './pages/EncerramentoLires';
 import Notificacoes from './pages/Notificacoes'; 
 import Preferencias from './pages/Preferencias';

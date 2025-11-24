@@ -409,8 +409,8 @@ export default function MainContent() {
                     </div>
                 </section>
 
-                {/* --- BOTÃO DE DEBUG --- */}
-                <section className="mt-16 mb-8 flex justify-center">
+                {/* --- BOTÃO DE DEBUG (COMENTADO PARA NÃO APARECER) --- */}
+                {/* <section className="mt-16 mb-8 flex justify-center">
                     <button
                         onClick={handleResetProgress}
                         className={`
@@ -423,7 +423,8 @@ export default function MainContent() {
                     >
                         [DEBUG] Resetar Progresso
                     </button>
-                </section>
+                </section> 
+                */}
                 {/* --- FIM DO BOTÃO DE DEBUG --- */}
 
             </main>
