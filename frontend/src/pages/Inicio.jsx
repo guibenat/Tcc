@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef, Fragment } from 'react'; // 1. IMPORTAR FRAGMENT
+import React, { useState, useEffect, useRef, Fragment } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import { useSettings } from '../components/SettingsContext';
-import { InfoModal } from '../components/InfoModal'; // 2. IMPORTAR O MODAL
+import { InfoModal } from '../components/InfoModal'; 
 
-// --- Imports de Assets ---
+// Imports de Assets 
 import logoLiresClaraImg from '../assets/logo-lires.png';
 import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; 
 import roboPrincipalImg from '../assets/LoginLogo.png';
@@ -12,7 +12,7 @@ import conexaoImg from '../assets/GarotaNotebook.png';
 import bandeiraBrasilImg from '../assets/Brasil.jpg'; 
 
 
-// --- Componentes de Layout ---
+// Componentes de Layout 
 
 const Header = ({ theme }) => {
   return (
@@ -120,7 +120,7 @@ const Hero = ({ imagemRobo, onStart, onLogin, theme }) => (
 
 const Features = ({ imagemGrupo, imagemConexao, theme }) => (
   <>
-    {/* Seção 1: Inclusivo e Transformador */}
+    {/* Inclusivo e Transformador */}
     <section className="py-16 text-center md:text-left">
       <div className="px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-12">
         <div className="md:w-1/2 fade-in-up flex flex-col justify-center">
@@ -137,7 +137,7 @@ const Features = ({ imagemGrupo, imagemConexao, theme }) => (
       </div>
     </section>
 
-    {/* Seção 2: Mantenha a Conexão */}
+    {/* Mantenha a Conexão */}
     <section className="py-16 text-center md:text-left">
       <div className="px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row-reverse items-center gap-12">
         <div className="md:w-1/2 fade-in-up flex flex-col justify-center">
@@ -168,18 +168,14 @@ const CallToAction = ({ theme }) => (
     </section>
 );
  
-/**
- * Componente: Footer (Atualizado com lógica de modal)
- */
+// Footer 
 const Footer = ({ theme }) => {
-    // 3. ESTADO DO MODAL (MOVIDO AQUI)
     const [modalType, setModalType] = useState(null);
   
     return (
-      // 4. USAR FRAGMENT PARA QUE O MODAL SEJA IRMÃO DO FOOTER
       <Fragment>
         <footer className="relative bg-gradient-to-b from-violet-400 to-blue-500 text-white pt-20 pb-8">
-          {/* ... (SVG da Onda) ... */}
+          {/* (SVG da Onda) */}
           <div className="absolute top-0 left-0 w-full overflow-hidden" style={{ lineHeight: 0 }}>
               <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" className="relative block w-full h-[150px]">
                   <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
@@ -189,7 +185,7 @@ const Footer = ({ theme }) => {
           </div>
 
           <div className="px-4 sm:px-6 lg:px-8 relative z-10">
-            {/* 5. ATUALIZAR LINKS PARA <button> */}
+            {/* Atualizar links para botões */}
             <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-10">
               <button onClick={() => setModalType('sobre')} className="hover:underline">Sobre Nós</button>
               <button onClick={() => setModalType('privacidade')} className="hover:underline">Privacidade</button>
@@ -202,7 +198,7 @@ const Footer = ({ theme }) => {
           </div>
         </footer>
 
-        {/* 6. RENDERIZAR O MODAL A PARTIR DO FOOTER */}
+        {/* Renderizar o modal a partir do footer */}
         <InfoModal 
             isOpen={!!modalType} 
             type={modalType} 
@@ -213,7 +209,7 @@ const Footer = ({ theme }) => {
 };
 
 
-// --- Componente Principal ---
+// Componente Principal
 export default function Inicio() {
   const { theme } = useSettings(); 
   const [showSticky, setShowSticky] = useState(false); 

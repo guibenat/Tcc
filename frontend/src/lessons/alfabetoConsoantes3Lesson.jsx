@@ -1,10 +1,7 @@
-// CAMINHO: src/lessons/alfabetoConsoantes3Lesson.jsx
-
 import React from 'react';
-// Importo meus componentes de UI reutilizáveis (Modal de Início, Tela de Vídeo, Tela de Pergunta)
 import { Step1, StepVideo, StepPergunta } from '../components/LessonUI';
 
-// --- Assets (Vídeos e Gifs) ---
+// Assets (Vídeos e Gifs)
 // Carregando os vídeos da lição (P, R, S, T)
 const videoP = new URL('../assets/AlfabetoVideo/P.mp4', import.meta.url).href;
 // O vídeo para 'Q.mp4' não existe, então pulamos a importação dele
@@ -24,10 +21,7 @@ const gifA = new URL('../assets/AlfabetoRespostas/A.gif', import.meta.url).href;
 const gifE = new URL('../assets/AlfabetoRespostas/E.gif', import.meta.url).href;
 const gifO = new URL('../assets/AlfabetoRespostas/O.gif', import.meta.url).href;
 
-/**
- * Pacote de Lição: Alfabeto Consoantes - Parte 3
- * * Define a estrutura da lição 'alfabeto-consoantes-3'.
- */
+
 export const alfabetoConsoantes3Lesson = {
   id: 'alfabeto-consoantes-3',
   title: 'Alfabeto Manual',

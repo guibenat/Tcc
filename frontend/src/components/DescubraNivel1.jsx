@@ -13,13 +13,13 @@ const floatAnimation = `
   }
 `;
 
-// Componente da tela "Descubra seu Nível - Passo 1"
+// Componente da tela "Descubra seu Nível
 function DescubraNivel1() {
   return (
     // Wrapper principal da tela
     <div className="flex flex-col justify-center items-center h-screen w-screen bg-gray-100 text-gray-800 font-poppins">
       
-      {/* 1. Conteúdo da Página (Fica por trás do modal) */}
+      {/* Conteúdo da Página  */}
       <div className="bg-white shadow-lg rounded-2xl p-10 w-full h-full box-border text-center flex flex-col">
         
         {/* Header com a logo */}
@@ -30,23 +30,22 @@ function DescubraNivel1() {
           <hr className="my-0 mb-4" />
         </div>
 
-        {/* Área de conteúdo principal (vazia, já que o foco é o modal) */}
+        {/* Área de conteúdo principal */}
         <div className="flex-grow flex items-center justify-center">
         </div>
       </div>
 
-      {/* 2. Modal de Nivelamento (Overlay) */}
+      {/* Modal de Nivelamento */}
       <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
         
         {/* Card do Modal */}
         <div 
           className="bg-white p-8 rounded-2xl border-2 border-blue-400 flex items-center gap-8 max-w-2xl"
           style={{
-            // Efeito de "glow"
             boxShadow: '0 0 50px rgba(90, 177, 255, 0.6)',
           }}
         >
-          {/* Lado Esquerdo: Textos e Botão */}
+          {/* Textos e Botão */}
           <div className="flex-grow text-left">
             {/* Título com gradiente */}
             <p className="text-xl font-semibold" style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
@@ -84,7 +83,7 @@ function DescubraNivel1() {
         </div>
       </div>
       
-      {/* Injeta a string da animação @keyframes na página */}
+      {/* Injeta a string da animação */}
       <style>{floatAnimation}</style>
     </div>
   );

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, Fragment, useRef } from 'react';
-// 1. CORREÇÃO: Importar APENAS o useSettings
 import { useSettings } from '../components/SettingsContext';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
@@ -8,7 +7,7 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 import robotMasterImage from '../assets/robo-premium2.png'; 
 import liresMasterLogoImg from '../assets/lires-master-logo.png'; 
 
-// --- Animações (Limpas e Corrigidas) ---
+// Animações 
 const floatAnimation = `
   @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
 `;
@@ -25,7 +24,7 @@ const spaceAnimations = `
   @keyframes shootingStar2 { 0% { transform: translateX(0px) translateY(0px) rotate(315deg); opacity: 1; height: 1px; width: 120px; } 70% { opacity: 1; } 100% { transform: translateX(-500px) translateY(500px) rotate(315deg); opacity: 0; height: 1px; width: 120px; } }
 `;
 
-// --- Ícones SVG ---
+// Ícones SVG 
 const CheckIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
     <circle cx="12" cy="12" r="12" fill="url(#grad-check)"/>
@@ -52,7 +51,7 @@ const PlusIcon = () => (
   </svg>
 ); 
 
-// --- Função de Copiar (Helper) ---
+// Função para copiar texto para a área de transferência
 const copyToClipboard = (text, onSuccess) => {
     const textArea = document.createElement('textarea');
     textArea.value = text;
@@ -72,7 +71,7 @@ const copyToClipboard = (text, onSuccess) => {
     document.body.removeChild(textArea);
 };
 
-// --- Componente de Fundo Animado (Usado no modal) ---
+// comp de fundo animado
 const AnimatedSpaceBackground = () => (
     <div 
         className="absolute inset-0 overflow-hidden"
@@ -80,7 +79,7 @@ const AnimatedSpaceBackground = () => (
             background: 'radial-gradient(circle at 10% 20%, rgb(39, 53, 131) 0%, rgb(18, 24, 73) 90%)'
         }}
     >
-        {/* ... (código das estrelas e planetas) ... */}
+        {/* codigo estrelas e planetas*/}
         <div className="absolute inset-0" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'25\' cy=\'25\' r=\'0.5\' fill=\'%23FFFFFF\'/%3E%3Ccircle cx=\'75\' cy=\'75\' r=\'0.5\' fill=\'%23FFFFFF\'/%3E%3Ccircle cx=\'50\' cy=\'10\' r=\'0.5\' fill=\'%23FFFFFF\'/%3E%3Ccircle cx=\'10\' cy=\'80\' r=\'0.5\' fill=\'%23FFFFFF\'/%3E%3Ccircle cx=\'85\' cy=\'50\' r=\'0.5\' fill=\'%23FFFFFF\'/%3E%3Ccircle cx=\'40\' cy=\'60\' r=\'0.5\' fill=\'%23FFFFFF\'/%3E%3C/svg%3E")', backgroundSize: '400px 400px', animation: 'moveStars 150s linear infinite', opacity: 0.5 }} />
         <div className="absolute top-1/2 left-1/2 w-1 h-80 opacity-0" style={{ background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0))', filter: 'blur(1px)', animation: 'shootingStar 10s ease-in-out 3s infinite' }} />
         <div className="absolute top-1/4 left-1/4 w-1 h-80 opacity-0" style={{ background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0))', filter: 'blur(1px)', animation: 'shootingStar2 12s ease-in-out 7s infinite' }} />
@@ -93,8 +92,7 @@ const AnimatedSpaceBackground = () => (
     </div>
 );
 
-// --- Componente de Card de Plano (Helper) ---
-// 3. CORREÇÃO: Uso de backticks (`) para o className que usa ${isFeatured}
+// componentes ded card
 const PlanCard = ({ title, price, priceSubtitle, benefits, onSelect, theme, isFeatured = false }) => (
     <div className={`
         rounded-2xl p-6 flex flex-col border-2
@@ -128,7 +126,7 @@ const PlanCard = ({ title, price, priceSubtitle, benefits, onSelect, theme, isFe
     </div>
 );
 
-// --- Componente de Modal de Assinatura ---
+// Modal de assinatura
 const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
     // ... (código interno do modal: splash, plans, pix, success) ...
     const [modalScreen, setModalScreen] = useState('splash'); 
@@ -221,7 +219,6 @@ const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
                 
                 {modalScreen === 'splash' && (
                     <div className="flex flex-col md:flex-row items-center justify-center gap-12 px-6">
-                        {/* ... (Conteúdo da tela Splash) ... */}
                         <div className="md:w-1/2">
                             <img src={robotMasterImage} alt="Robô Master" className="w-full max-w-sm" style={{ animation: 'float 3s ease-in-out infinite' }} />
                         </div>
@@ -248,7 +245,6 @@ const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
                 
                 {modalScreen === 'plans' && (
                     <div className="flex flex-col items-center">
-                        {/* ... (Conteúdo da tela Planos com PlanCard) ... */}
                         <img src={liresMasterLogoImg} alt="Líres Master" className="w-48 mb-4" />
                         <h2 className="text-3xl font-bold mb-8">Planos de assinatura</h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
@@ -261,7 +257,6 @@ const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
                 
                 {modalScreen === 'pix' && (
                     <div className="w-full max-w-md mx-auto p-6 rounded-2xl bg-white text-gray-900">
-                        {/* ... (Conteúdo da tela PIX com QR Code, Timer e Copia/Cola) ... */}
                         <h2 className="text-2xl font-bold text-center text-purple-600 mb-4">Pagamento PIX ({selectedPlan.name})</h2>
                         <div className="flex flex-col items-center">
                             <div className="w-48 h-48 rounded-lg bg-gray-100 flex items-center justify-center">
@@ -299,7 +294,6 @@ const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
                 
                 {modalScreen === 'success' && (
                     <div className="w-full max-w-md mx-auto p-6 rounded-2xl bg-white text-gray-900 text-center">
-                        {/* ... (Conteúdo da tela Sucesso) ... */}
                         <svg className="w-16 h-16 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         <h2 className="text-3xl font-bold text-purple-600 my-4">Pagamento Confirmado!</h2>
                         <p className="text-lg text-gray-700 mb-6">Parabéns! Você agora é um Lires Master. Aproveite todos os benefícios.</p>
@@ -316,10 +310,8 @@ const SubscriptionModal = ({ isOpen, onClose, onPaymentSuccess, theme }) => {
 
 
 export default function Assinatura() {
-  // 2. CORREÇÃO: Puxar os setters do hook useSettings()
   const { 
     theme, 
-    // Removidos os setters de progresso (não são usados aqui)
   } = useSettings();
   
   const [animationClass, setAnimationClass] = useState('');
@@ -332,7 +324,7 @@ export default function Assinatura() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Carrega o status de Master no início
+  // Carrega o status de Master
   useEffect(() => {
     setAnimationClass('anim-enter');
     const userString = localStorage.getItem('currentUser');
@@ -345,9 +337,7 @@ export default function Assinatura() {
     }
   }, []);
 
-  /**
-   * Salva o status de Master e os detalhes do plano no localStorage
-   */
+  // Lógica após pagamento bem-sucedido
   const handlePaymentSuccess = (plan) => {
     const userString = localStorage.getItem('currentUser');
     const dbString = localStorage.getItem('liresUsersDB');
@@ -359,9 +349,9 @@ export default function Assinatura() {
         const updatedUser = { 
             ...currentUser, 
             isMaster: true,
-            planType: plan.name, // Ex: 'Anual'
+            planType: plan.name, 
             subscriptionStartDate: Date.now(), // Data de início
-            subscriptionCanceled: false // Reseta o cancelamento (caso esteja re-assinando)
+            subscriptionCanceled: false 
         };
         
         const updatedDB = liresUsersDB.map(user => 
@@ -371,7 +361,7 @@ export default function Assinatura() {
         localStorage.setItem('currentUser', JSON.stringify(updatedUser));
         localStorage.setItem('liresUsersDB', JSON.stringify(updatedDB));
         
-        // Atualiza o estado local para a UI reagir
+        // Atualiza o estado local
         setIsMaster(true); 
         setUserPlan(plan.name);
         setSubscriptionDate(Date.now());
@@ -379,7 +369,7 @@ export default function Assinatura() {
     }
   };
 
-  // Helpers de Estilo para o Swal (Pop-up de confirmação)
+  // Pop up de confirmação
   const getSwalCustomClasses = (type = 'info') => ({
     popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-800 text-slate-200' : 'bg-white'}`,
     title: `${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`,
@@ -389,9 +379,7 @@ export default function Assinatura() {
   });
   const getSwalBackground = () => (theme === 'escuro' ? '#1f2937' : '#fff');
   
-  /**
-   * Calcula a data de término do plano (Helper)
-   */
+  // Clacula a data de termino da assinatura
   const getExpirationDate = () => {
     if (!subscriptionDate || !userPlan) return null;
     
@@ -403,9 +391,7 @@ export default function Assinatura() {
     return endDate.toLocaleDateString('pt-BR');
   };
 
-  /**
-   * Lógica de Cancelamento (Agenda o cancelamento)
-   */
+  // Logica de cancelamento
   const handleCancelSubscription = () => {
     const expirationDateString = getExpirationDate();
 
@@ -431,7 +417,7 @@ export default function Assinatura() {
             const currentUser = JSON.parse(userString);
             const liresUsersDB = JSON.parse(dbString);
 
-            // Marca 'subscriptionCanceled: true', MAS MANTÉM 'isMaster: true'
+            
             const updatedUser = { ...currentUser, subscriptionCanceled: true };
             const updatedDB = liresUsersDB.map(user => 
                 user.id === currentUser.id ? updatedUser : user
@@ -440,7 +426,7 @@ export default function Assinatura() {
             localStorage.setItem('currentUser', JSON.stringify(updatedUser));
             localStorage.setItem('liresUsersDB', JSON.stringify(updatedDB));
 
-            setIsCanceled(true); // Atualiza a UI localmente
+            setIsCanceled(true); 
             
             Swal.fire({
                 title: 'Cancelamento Agendado',
@@ -454,7 +440,7 @@ export default function Assinatura() {
     });
   };
 
-  // --- Função de DEBUG (Resetar APENAS Assinatura) ---
+  // debug da assinatura-
   const handleDebugResetSubscription = () => {
     Swal.fire({
         title: 'Resetar Assinatura? (Debug)',
@@ -475,7 +461,7 @@ export default function Assinatura() {
             if (!userString) return; 
             const currentUser = JSON.parse(userString);
             
-            // Reseta apenas os campos da assinatura
+            // Reseta campos da assinatura
             const resetUser = {
                 ...currentUser,
                 isMaster: false,
@@ -484,7 +470,7 @@ export default function Assinatura() {
                 subscriptionCanceled: false,
             };
 
-            // Atualiza o 'currentUser' e o 'liresUsersDB'
+            // Atualiza
             localStorage.setItem('currentUser', JSON.stringify(resetUser));
             
             const dbString = localStorage.getItem('liresUsersDB');
@@ -494,7 +480,7 @@ export default function Assinatura() {
             );
             localStorage.setItem('liresUsersDB', JSON.stringify(updatedDB));
 
-            // Atualiza o estado local para a UI reagir
+            // Atualiza o estado local 
             setIsMaster(false);
             setUserPlan(null);
             setSubscriptionDate(null);
@@ -502,7 +488,7 @@ export default function Assinatura() {
         }
     });
   };
-  // --- Fim da Função de Debug ---
+  // Fim da Função de Debug 
 
   const beneficios = [
     "Sem anúncios",
@@ -512,7 +498,7 @@ export default function Assinatura() {
     "Conquistas exclusivas para assinantes"
   ];
 
-  // --- Classes de Estilo ---
+  // Classes de Estilo
   const mainTitleClasses = theme === 'escuro' ? 'text-purple-400 font-bold text-4xl md:text-5xl mb-8' : 'text-purple-600 font-bold text-4xl md:text-5xl mb-8';
   const cardClasses = theme === 'escuro' ? 'bg-gray-800 rounded-lg shadow-md p-6 md:p-10' : 'bg-white rounded-lg shadow-md p-6 md:p-10';
   const boxTitleClasses = theme === 'escuro' ? 'text-purple-400 font-bold text-xl md:text-2xl lg:text-3xl mb-4' : 'text-purple-600 font-bold text-xl md:text-2xl lg:text-3xl mb-4';
@@ -520,7 +506,7 @@ export default function Assinatura() {
   const sectionTitleClasses = theme === 'escuro' ? 'text-purple-400 font-bold text-2xl md:text-3xl mb-6' : 'text-purple-600 font-bold text-2xl md:text-3xl mb-6';
   const benefitTextClasses = theme === 'escuro' ? 'text-gray-300 text-lg' : 'text-gray-700 text-lg';
   
-  // Pega a data de expiração (se existir)
+  // Pega a data de expiração 
   const expirationDateString = getExpirationDate();
   
   return (
@@ -544,20 +530,17 @@ export default function Assinatura() {
                style={{ background: 'linear-gradient(110deg, #4F46E5 0%, #A855F7 100%)', boxShadow: '0 10px 30px rgba(129, 93, 248, 0.4)' }}>
             
             <div className="md:w-3/5 text-white text-center md:text-left z-10">
-              {/* --- CORREÇÃO: TROCANDO O <span> PELA <img> --- */}
               <img 
                 src={liresMasterLogoImg} 
                 alt="Líres Master" 
-                className="h-8 w-auto mb-4" // Ajuste a altura (h-8) ou largura (w-48) como preferir
+                className="h-8 w-auto mb-4" 
               />
               
               <h3 className="text-3xl md:text-4xl font-extrabold mb-3">
                 Aprenda Libras <span className="underline decoration-yellow-300">SEM LIMITES!</span>
               </h3>
-              
-              {/* --- LÓGICA DE EXIBIÇÃO DINÂMICA (3 ESTADOS) --- */}
               {!isMaster ? (
-                // 1. NÃO É MASTER (Mostra CTA de assinatura)
+
                 <>
                   <p className="text-lg text-purple-100 mb-6">
                     Mais conteúdo, mais prática e recursos exclusivos para acelerar seu aprendizado.
@@ -570,7 +553,7 @@ export default function Assinatura() {
                   </button>
                 </>
               ) : isCanceled ? (
-                // 2. É MASTER, MAS JÁ CANCELOU (Mostra status cancelado)
+                // Cancelado (Mostra mensagem de cancelamento agendado)
                 <>
                   <p className="text-lg text-purple-100 mb-6">
                     Seu plano {userPlan || ''} foi cancelado e não será renovado.
@@ -584,7 +567,7 @@ export default function Assinatura() {
                   </button>
                 </>
               ) : (
-                // 3. É MASTER E ESTÁ ATIVO (Mostra botão de cancelar)
+                // Ativo 
                 <>
                   <p className="text-lg text-purple-100 mb-6">
                     Seu plano {userPlan || ''} está ativo.
@@ -634,10 +617,10 @@ export default function Assinatura() {
         </div>
       </div>
 
-      {/* Botão de Debug para Resetar Assinatura */}
+     
       <div className="flex justify-center mt-8 pb-8">
         <button
-          onClick={handleDebugResetSubscription} // Mudado do reset total
+          onClick={handleDebugResetSubscription} 
           className={`px-4 py-2 rounded-full text-xs font-semibold ${
             theme === 'escuro' 
             ? 'bg-gray-800 text-red-400 border border-red-700 hover:bg-red-900'
@@ -648,11 +631,11 @@ export default function Assinatura() {
         </button>
       </div>
 
-      {/* Modal de Pagamento (PIX) */}
+      {/* Modal de Pagamento*/}
       <SubscriptionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onPaymentSuccess={handlePaymentSuccess} // Passa o {plan}
+        onPaymentSuccess={handlePaymentSuccess}
         theme={theme}
       />
     </Fragment>

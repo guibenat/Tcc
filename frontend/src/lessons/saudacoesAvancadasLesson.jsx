@@ -1,18 +1,13 @@
-// CAMINHO: src/lessons/saudacoesAvancadasLesson.jsx
-
 import React from 'react';
-// Importo meus componentes de UI reutilizáveis (Modal de Início, Tela de Vídeo, Tela de Pergunta)
 import { Step1, StepVideo, StepPergunta } from '../components/LessonUI'; 
 
-// --- Assets de Vídeo (MP4) ---
-// Vídeos para a lição (Bom Dia, Boa Tarde, Boa Noite, Até Logo)
+// Assets de Vídeo 
 const videoBomDia = new URL('../assets/PrimeirosPassosVideo/BomDia.mp4', import.meta.url).href;
 const videoBoaTarde = new URL('../assets/PrimeirosPassosVideo/BoaTarde.mp4', import.meta.url).href;
 const videoBoaNoite = new URL('../assets/PrimeirosPassosVideo/BoaNoite.mp4', import.meta.url).href;
 const videoAteLogo = new URL('../assets/PrimeirosPassosVideo/AteLogo.mp4', import.meta.url).href;
 
-// --- Assets de Alternativas (GIF) ---
-// Gifs para as perguntas (respostas e distratores)
+// Assets de Alternativas
 const gifOi = new URL('../assets/PrimeirosPassos/Oi.gif', import.meta.url).href;
 const gifTchau = new URL('../assets/PrimeirosPassos/Tchau.gif', import.meta.url).href;
 const gifObrigado = new URL('../assets/PrimeirosPassos/Obrigado.gif', import.meta.url).href;
@@ -21,11 +16,6 @@ const gifBoaTarde = new URL('../assets/PrimeirosPassos/Boa tarde.gif', import.me
 const gifBoaNoite = new URL('../assets/PrimeirosPassos/Boa noite.gif', import.meta.url).href;
 const gifAteLogo = new URL('../assets/PrimeirosPassos/Até logo.gif', import.meta.url).href;
 
-/**
- * Pacote de Lição: Saudações Avançadas (Parte 2)
- * * Define a estrutura da lição 'saudacoes-avancadas'.
- * * Focada em Bom dia, Boa tarde, Boa noite e Despedidas.
- */
 export const saudacoesAvancadasLesson = {
   id: 'saudacoes-avancadas',
   title: 'Primeira Aula Prática',

@@ -1,16 +1,13 @@
-// CAMINHO: src/lessons/checkpoint1Lesson.jsx
-
 import React from 'react';
-// Importo meus componentes de UI reutilizáveis (Modal de Início, Tela de Vídeo, Tela de Pergunta)
 import { Step1, StepVideo, StepPergunta } from '../components/LessonUI'; 
 
-// --- Assets de Vídeo (MP4) ---
+// Assets de Vídeo
 // Vídeos para o checkpoint (Oi, Bom Dia, Obrigado)
 const videoOi = new URL('../assets/PrimeirosPassosVideo/Oi.mp4', import.meta.url).href;
 const videoBomDia = new URL('../assets/PrimeirosPassosVideo/BomDia.mp4', import.meta.url).href;
 const videoObrigado = new URL('../assets/PrimeirosPassosVideo/Obrigado.mp4', import.meta.url).href;
 
-// --- Assets de Alternativas (GIF) ---
+// Assets de Alternativas 
 // Gifs para as perguntas
 const gifOi = new URL('../assets/PrimeirosPassos/Oi.gif', import.meta.url).href;
 const gifTchau = new URL('../assets/PrimeirosPassos/Tchau.gif', import.meta.url).href;
@@ -18,11 +15,6 @@ const gifObrigado = new URL('../assets/PrimeirosPassos/Obrigado.gif', import.met
 const gifBomDia = new URL('../assets/PrimeirosPassos/Bom dia.gif', import.meta.url).href;
 const gifBoaTarde = new URL('../assets/PrimeirosPassos/Boa tarde.gif', import.meta.url).href;
 
-/**
- * Pacote de Lição: Checkpoint 1
- * * Define a estrutura da lição 'checkpoint-1'.
- * * Este é o desafio final da Unidade 1.
- */
 export const checkpoint1Lesson = {
   id: 'checkpoint-1',
   title: 'Desafio Final',

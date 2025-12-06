@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-// Puxo meu hook do Contexto para acessar o estado global
 import { useSettings } from '../components/SettingsContext'; 
-import Swal from 'sweetalert2'; // Para os pop-ups de confirmação
+import Swal from 'sweetalert2'; 
 
-// --- Imagens ---
+// Imagens
 import fireIconImg from '../assets/foguinho.png';
 import lcoinIconImg from '../assets/lcoin.png';
 import heartIconImg from '../assets/coracaoo.png';
@@ -20,10 +19,8 @@ const UserStat = ({ iconSrc, value, color }) => (
 
 /**
  * Componente: LojaSidebar
- * A barra lateral que mostra o status do usuário e permite a compra de power-ups.
  */
 export default function LojaSidebar() {
-  // Puxo tudo o que preciso do meu SettingsContext.
   const { 
     theme, 
     lives, 
@@ -35,7 +32,7 @@ export default function LojaSidebar() {
   } = useSettings();
  
   const [animationClass, setAnimationClass] = useState('');
-  // Estado para o timer do Dobro XP (para o cronômetro local)
+  // Estado para o timer do Dobro XP 
   const [doubleXpTimeLeft, setDoubleXpTimeLeft] = useState(0);
 
   // Animação de entrada
@@ -43,7 +40,7 @@ export default function LojaSidebar() {
       setAnimationClass('anim-enter');
   }, []); 
 
-  // --- Lógica: Timer do Dobro XP ---
+  // Lógica: Timer do Dobro XP 
   useEffect(() => {
     if (!doubleXpExpiresAt) {
       setDoubleXpTimeLeft(0);
@@ -56,18 +53,17 @@ export default function LojaSidebar() {
 
       if (timeLeftMs <= 0) {
         setDoubleXpTimeLeft(0);
-        setDoubleXpExpiresAt(null); // Limpa o estado global quando expira
+        setDoubleXpExpiresAt(null); 
       } else {
         setDoubleXpTimeLeft(timeLeftMs);
       }
     };
 
-    calculateTimeLeft(); // Calcula imediatamente
-    const interval = setInterval(calculateTimeLeft, 1000); // Atualiza a cada segundo
-    return () => clearInterval(interval); // Limpa o intervalo no unmount
+    calculateTimeLeft(); 
+    const interval = setInterval(calculateTimeLeft, 1000); 
+    return () => clearInterval(interval); 
   }, [doubleXpExpiresAt, setDoubleXpExpiresAt]);
 
-  // Helper para formatar milissegundos em MM:SS
   const formatTime = (ms) => {
     const totalSeconds = Math.floor(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
@@ -76,9 +72,9 @@ export default function LojaSidebar() {
   };
 
   const isDoubleXpActive = doubleXpTimeLeft > 0;
-  // --- Fim da Lógica do Timer ---
+  // Fim da Lógica do Timer
 
-  // --- Lógica: Compra de Itens ---
+  // Lógica: Compra de Itens
   const getSwalCustomClasses = () => ({
     popup: `font-poppins rounded-2xl ${theme === 'escuro' ? 'bg-gray-800 text-slate-200' : 'bg-white'}`,
     title: `${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`,
@@ -88,7 +84,7 @@ export default function LojaSidebar() {
   const getSwalBackground = () => (theme === 'escuro' ? '#1f2937' : '#fff');
 
   const handleBuyItem = (cost, itemName) => {
-    // 1. Verifica se tem Lcoins suficientes
+    // Verifica se tem Lcoins suficientes
     if (lcoins < cost) {
         Swal.fire({
             title: 'Lcoins Insuficientes!',
@@ -102,7 +98,7 @@ export default function LojaSidebar() {
         return;
     }
 
-    // 2. Verifica se já possui o item (Congelar)
+    // Verifica se já possui o item (Congelar)
     if (itemName === "Congelar Sequência" && isStreakFreezeActive) {
         Swal.fire({
             title: 'Item já Ativo!',
@@ -116,7 +112,7 @@ export default function LojaSidebar() {
         return;
     }
 
-    // 3. Pop-up de confirmação (com texto dinâmico para "Reativar")
+    // Pop-up de confirmação
     let confirmButtonText = 'Sim, comprar!';
     if (itemName === "Dobro de XP" && isDoubleXpActive) {
         confirmButtonText = 'Sim, reativar!'; 
@@ -135,7 +131,7 @@ export default function LojaSidebar() {
         background: getSwalBackground()
     }).then((result) => {
         if (result.isConfirmed) {
-            // 4. Debita as Lcoins e Ativa o item (atualizando o Contexto)
+            // Debita as Lcoins e Ativa o item (atualizando o Contexto)
             setLcoins(prevLcoins => prevLcoins - cost);
             
             if (itemName === "Congelar Sequência") {
@@ -146,7 +142,7 @@ export default function LojaSidebar() {
                 setDoubleXpExpiresAt(expirationTime);
             }
 
-            // 5. Sucesso
+            // Sucesso
             Swal.fire({
                 title: 'Compra Efetuada!',
                 text: `Você comprou "${itemName}" por ${cost} Lcoins.`,
@@ -159,7 +155,7 @@ export default function LojaSidebar() {
         }
     });
   };
-  // --- Fim da Lógica de Compra ---
+  // Fim da Lógica de Compra 
 
 
   return (
@@ -169,7 +165,7 @@ export default function LojaSidebar() {
         : 'bg-[#F9F8FF] border-l border-slate-200'
     }`}>
       
-      {/* 1. Card de Status Dinâmico (Streak, Lcoins, Vidas) */}
+      {/* Card de Status Dinâmico */}
       <div className={`flex justify-around items-center p-2 rounded-xl ${
         theme === 'escuro' ? 'bg-gray-800' : 'bg-slate-50'
       }`}>
@@ -178,7 +174,6 @@ export default function LojaSidebar() {
         <UserStat iconSrc={heartIconImg} value={lives} color="text-red-500" />
       </div>
 
-      {/* 2. Buffs Ativos (Condicional) */}
       {isStreakFreezeActive && (
         <div className={`p-4 flex items-center gap-3 w-full rounded-2xl border ${
             theme === 'escuro' ? 'bg-gray-800 border-blue-600' : 'bg-white border-blue-400'
@@ -204,10 +199,10 @@ export default function LojaSidebar() {
         </div>
       )}
 
-      {/* 3. Cards de Compra */}
+      {/* Cards de Compra */}
       {/* Card "Congelar Sequência" */}
+
       <div 
-        // O clique é condicional: só chama a compra se o item NÃO estiver ativo
         onClick={() => !isStreakFreezeActive && handleBuyItem(400, "Congelar Sequência")}
         className={`p-5 flex items-center gap-4 w-full rounded-3xl border-2 transition-all transform ${
           isStreakFreezeActive 
@@ -235,7 +230,6 @@ export default function LojaSidebar() {
 
       {/* Card "Dobro de XP" */}
       <div 
-        // Permite o clique sempre, a função de compra decide se deve reativar
         onClick={() => handleBuyItem(250, "Dobro de XP")}
         className={`p-5 flex items-center gap-4 w-full rounded-3xl border-2 cursor-pointer transition-transform transform hover:scale-105 ${
         theme === 'escuro' 

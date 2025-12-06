@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSettings } from '../components/SettingsContext';
 
-// --- Imagens ---
+// Imagens
 import TelaMonitorSegurança from "../assets/TelaMonitorSegurança.png"; // Icone para PC
 import CelularLiresSegurança from "../assets/CelularLiresSegurança.png"; // Icone para Celular
 
-// --- Ícones SVG ---
+// Ícones SVG 
 const EyeIcon = ({ theme }) => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
     className={theme === 'escuro' ? 'text-gray-400' : 'text-gray-500'}
@@ -23,9 +23,7 @@ const EyeOffIcon = ({ theme }) => (
   </svg>
 );
 
-/**
- * Componente: PasswordInput (Input customizado com toggle de visibilidade)
- */
+// Segurança PasswordInput 
 const PasswordInput = ({ placeholder = "Digite sua senha", value = "", onChange = () => {}, className = "", showToggle = true, theme }) => {
   const [showPassword, setShowPassword] = useState(false);
   return (
@@ -56,9 +54,8 @@ const PasswordInput = ({ placeholder = "Digite sua senha", value = "", onChange 
   );
 };
 
-// --- Lógica de Dispositivos Conectados (Mock) ---
+// Lógica de Dispositivos Conectados 
 const getInitialDevices = () => {
-    // Cria um mock de dispositivos com base na data e hora atual
     const now = new Date();
     const formattedDate = now.toLocaleDateString('pt-BR'); 
     const formattedTime = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); 
@@ -83,21 +80,18 @@ const getInitialDevices = () => {
     ];
 };
 
-/**
- * Componente: Seguranca
- * Painel de gerenciamento de senha e dispositivos.
- */
+// Segurança
 export default function Seguranca() {
     const { theme } = useSettings();
     
-    // --- Estados para Alteração de Senha ---
+    // Estados para Alteração de Senha 
     const [senhaAtual, setSenhaAtual] = useState('');
     const [novaSenha, setNovaSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
     const [senhaError, setSenhaError] = useState('');
     const [senhaSuccess, setSenhaSuccess] = useState('');
     
-    // --- Estado para Monitoramento de Dispositivos ---
+    // Estado para Monitoramento de Dispositivos 
     const [dispositivos, setDispositivos] = useState(getInitialDevices());
 
     const [animationClass, setAnimationClass] = useState('');
@@ -105,12 +99,12 @@ export default function Seguranca() {
         setAnimationClass('anim-enter');
     }, []);
 
-    // --- Lógica: Mudar Senha ---
+    // Lógica Mudar Senha
     const handleMudarSenha = () => {
         setSenhaError('');
         setSenhaSuccess('');
 
-        // 1. Validar nova senha
+        // Validar nova senha
         if (novaSenha.length < 6) {
             setSenhaError("A nova senha deve ter pelo menos 6 caracteres.");
             return;
@@ -120,7 +114,7 @@ export default function Seguranca() {
             return;
         }
 
-        // 2. Simular verificação da senha atual
+        // Simular verificação da senha atual
         const userString = localStorage.getItem('currentUser');
         if (!userString) {
             setSenhaError("Erro: Usuário não encontrado.");
@@ -128,19 +122,19 @@ export default function Seguranca() {
         }
         const currentUser = JSON.parse(userString);
 
-        // Verifica a senha atual (hardcoded contra o valor salvo no localStorage)
+        // Verifica a senha atual 
         if (currentUser.password !== senhaAtual) {
             setSenhaError("A senha atual está incorreta.");
             return;
         }
         
-        // 3. Sucesso! Salvar a nova senha
+        // Salvar a nova senha
         
-        // Atualiza o objeto 'currentUser' logado
+        // Atualiza o objeto logado
         const updatedUser = { ...currentUser, password: novaSenha };
         localStorage.setItem('currentUser', JSON.stringify(updatedUser));
 
-        // Atualiza o DB de usuários (para manter a consistência)
+        // Atualiza o DB de usuários 
         const dbString = localStorage.getItem('liresUsersDB');
         if (dbString) {
             const liresUsersDB = JSON.parse(dbString);
@@ -157,11 +151,9 @@ export default function Seguranca() {
         setConfirmarSenha('');
     };
 
-    // --- Lógica: Desconectar Dispositivo ---
+    // Lógica Desconectar Dispositivo 
     const handleDesconectar = (id) => {
-        // Remove o dispositivo da lista do estado (simulando logout remoto)
         setDispositivos(prevDevices => prevDevices.filter(device => device.id !== id));
-        // Em um app real: chamaria API para invalidar a sessão/token do dispositivo
     };
 
     return (
@@ -175,7 +167,7 @@ export default function Seguranca() {
 
             <div className="space-y-6 sm:space-y-8 pr-4 sm:pr-0">
                 
-                {/* --- Card 1: Alterar Senha --- */}
+                {/* Alterar Senha */}
                 <div className={`rounded-lg shadow-md p-4 sm:p-6 ${
                     theme === 'escuro' ? 'bg-gray-800 border border-gray-700' : 'bg-white'
                 }`}>
@@ -224,7 +216,7 @@ export default function Seguranca() {
                 </div>
 
 
-                {/* --- Card 2: Dispositivos Conectados --- */}
+                {/* Dispositivos Conectados */}
                 <div className={`rounded-lg shadow-md p-4 sm:p-6 ${
                     theme === 'escuro' ? 'bg-gray-800 border border-gray-700' : 'bg-white'
                 }`}>
@@ -256,7 +248,7 @@ export default function Seguranca() {
                                 {/* Botão de Desconectar */}
                                 <button
                                     onClick={() => handleDesconectar(device.id)}
-                                    disabled={device.isCurrent} // Não pode desconectar o dispositivo atual
+                                    disabled={device.isCurrent} 
                                     className={`mt-3 sm:mt-0 sm:ml-4 py-2 px-4 rounded-full font-semibold text-sm ${
                                         device.isCurrent
                                         ? (theme === 'escuro' ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-500 cursor-not-allowed')

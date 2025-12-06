@@ -1,11 +1,7 @@
-// CAMINHO: src/lessons/alfabetoRevisaoLesson.jsx
-
 import React from 'react';
-// Importo meus componentes de UI reutilizáveis (Modal de Início e Tela de Pergunta)
 import { Step1, StepPergunta } from '../components/LessonUI';
 
-// --- Assets (Gifs para todas as letras revisadas) ---
-// Importo todos os GIFs necessários para as perguntas de revisão
+// Assets
 const gifA = new URL('../assets/AlfabetoRespostas/A.gif', import.meta.url).href;
 const gifB = new URL('../assets/AlfabetoRespostas/B.gif', import.meta.url).href;
 const gifC = new URL('../assets/AlfabetoRespostas/C.gif', import.meta.url).href;
@@ -20,7 +16,6 @@ const gifK = new URL('../assets/AlfabetoRespostas/K.gif', import.meta.url).href;
 const gifL = new URL('../assets/AlfabetoRespostas/L.gif', import.meta.url).href;
 const gifM = new URL('../assets/AlfabetoRespostas/M.gif', import.meta.url).href;
 const gifN = new URL('../assets/AlfabetoRespostas/N.gif', import.meta.url).href;
-// Corrigido (gifO)
 const gifO = new URL('../assets/AlfabetoRespostas/O.gif', import.meta.url).href; 
 const gifP = new URL('../assets/AlfabetoRespostas/P.gif', import.meta.url).href;
 const gifQ = new URL('../assets/AlfabetoRespostas/Q.gif', import.meta.url).href;
@@ -28,20 +23,13 @@ const gifR = new URL('../assets/AlfabetoRespostas/R.gif', import.meta.url).href;
 const gifS = new URL('../assets/AlfabetoRespostas/S.gif', import.meta.url).href;
 const gifT = new URL('../assets/AlfabetoRespostas/T.gif', import.meta.url).href;
 const gifU = new URL('../assets/AlfabetoRespostas/U.gif', import.meta.url).href;
-// CORREÇÃO FINAL: Removido o 'new' duplicado que gerou o erro na linha 30
 const gifV = new URL('../assets/AlfabetoRespostas/V.gif', import.meta.url).href; 
 
-/**
- * Pacote de Lição: Revisão Final do Alfabeto
- * * Esta lição testa o conhecimento do usuário sobre todas as letras aprendidas.
- * * É composta apenas por passos de pergunta.
- */
 export const alfabetoRevisaoLesson = {
   id: 'alfabeto-revisao',
   title: 'Alfabeto Manual',
   subtitle: 'Revisão Final',
   
-  // 'steps' é o array que define cada tela da lição
   steps: [
     // 1. Modal Inicial
     { 
@@ -111,6 +99,5 @@ export const alfabetoRevisaoLesson = {
       component: (props) => <StepPergunta {...props} questionText="Revisão: Qual sinal representa a letra Q?" options={[gifR, gifQ, gifP, gifO, gifN]} />, 
       correctAnswer: 1 // gifQ
     }
-    // O Lesson.jsx vai identificar que este é o último passo e mostrar "Finalizar"
   ]
 };

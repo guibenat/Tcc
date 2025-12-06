@@ -215,7 +215,7 @@ function Inicial() {
             <div className={`shadow-lg rounded-2xl p-10 w-full h-full box-border text-center flex flex-col ${
                 theme === 'escuro' ? 'bg-gray-800' : 'bg-white'
             }`}>
-                {/* === Header (Logo e Linha) === */}
+                {/* Header */}
                 <div className="flex flex-col flex-shrink-0">
                     <div className="pb-2 flex justify-start">
                         <img 
@@ -227,7 +227,7 @@ function Inicial() {
                     <hr className={`my-0 mb-4 ${theme === 'escuro' ? 'border-gray-700' : 'border-gray-200'}`} /> 
                 </div>
         
-                {/* === Título + Barra de progresso === */}
+                {/* Título + Barra de progresso */}
                 <h1
                     className="text-4xl font-semibold mb-5 flex-shrink-0" 
                     style={{ backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
@@ -244,7 +244,7 @@ function Inicial() {
                     <div style={{ width: getProgressWidth(), height: '100%', backgroundImage: 'linear-gradient(90deg, #b081ff, #59b1ff)', transition: 'all 0.5s ease' }}></div>
                 </div>
         
-                {/* === Main Content (Opções e Robô) === */}
+                {/* Main Content */}
                 <div className="flex-grow overflow-y-auto flex flex-col items-center mt-5 styled-scrollbar">
                     <div className={`w-full flex justify-center items-center gap-12 mb-10 md:flex-row flex-col content-box ${enterAnimationClass} ${exitAnimationClass}`}>
                         {/* Robô e Balão de Fala */}
@@ -257,9 +257,9 @@ function Inicial() {
                             )}
                         </div>
         
-                        {/* Bloco de Opções (Renderização Condicional por Step) */}
+                        {/* Bloco de Opções */}
                         <div className="flex flex-col gap-4 w-96">
-                            {/* Passo 1: Nível */}
+                            {/* Nível */}
                             {step === 1 && allLevels.map(level => ( 
                                 <button 
                                     key={level} 
@@ -273,7 +273,7 @@ function Inicial() {
                                     </div>
                                 </button>
                             ))}
-                            {/* Passo 2: Categoria */}
+                            {/* Categoria */}
                             {step === 2 && allCategories.map(category => ( 
                                 <button 
                                     key={category} 
@@ -287,7 +287,7 @@ function Inicial() {
                                     </div>
                                 </button>
                             ))}
-                            {/* Passo 3: Tempo */}
+                            {/* Tempo */}
                             {step === 3 && allTimes.map(time => ( 
                                 <button 
                                     key={time} 
@@ -300,7 +300,7 @@ function Inicial() {
                                     </div>
                                 </button>
                             ))}
-                            {/* Passo 4: Escolha Final (Começar / Descobrir Nível) */}
+                            {/* Escolha Final */}
                             {step === 4 && allChoices.map(choice => ( 
                                 <button 
                                     key={choice} 
@@ -321,10 +321,10 @@ function Inicial() {
                     </div>
                 </div>
         
-                {/* === Footer (Voltar e Continuar) === */}
+                {/* Footer */}
                 <hr className={`my-0 mb-4 ${theme === 'escuro' ? 'border-gray-700' : 'border-gray-200'}`} />
                 <div className={`pt-4 flex items-center flex-shrink-0 ${step === 1 ? 'justify-end' : 'justify-between'}`}>
-                    {/* Botão Voltar (aparece a partir do Passo 2) */}
+                    {/* Botão Voltar */}
                     {step > 1 && (
                         <button
                             className="text-lg font-semibold py-4 px-12 border-none rounded-3xl cursor-pointer text-white transition transform duration-200 hover:scale-105"
@@ -334,7 +334,7 @@ function Inicial() {
                             Voltar
                         </button>
                     )}
-                    {/* Botão Continuar/Avançar */}
+                    {/* Botão Continuar */}
                     <button
                         className={`text-lg font-semibold py-4 px-12 border-none rounded-3xl cursor-pointer text-white transition transform duration-200 hover:scale-105 ${
                             ((step === 1 && !selections.level) || (step === 2 && !selections.category) || (step === 3 && !selections.time) || (step === 4 && !selections.choice)) 

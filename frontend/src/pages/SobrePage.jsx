@@ -5,12 +5,7 @@ import MobileTopBar from '../components/MobileTopBar';
 import MobileBottomBar from '../components/MobileBottomBar';
 import { useSettings } from '../components/SettingsContext';
 
-/**
- * Componente: StaticCard
- * Um card reutilizável para exibir o conteúdo estático (Sobre, Termos, etc.)
- * REMOVIDO o plugin 'prose' para permitir estilização manual.
- */
-const StaticCard = ({ title, children, theme }) => (
+StaticCard = ({ title, children, theme }) => (
     <div className={`
         content-box anim-enter w-full max-w-4xl mx-auto rounded-lg shadow-md p-6 md:p-10 
         ${theme === 'escuro' ? 'bg-gray-800 border border-gray-700' : 'bg-white'}
@@ -21,8 +16,6 @@ const StaticCard = ({ title, children, theme }) => (
         `}>
             {title}
         </h1>
-        
-        {/* O container do children agora define o espaçamento e a cor base */}
         <div className={`
             space-y-6 text-lg
             ${theme === 'escuro' ? 'text-gray-300' : 'text-gray-700'}
@@ -32,10 +25,7 @@ const StaticCard = ({ title, children, theme }) => (
     </div>
 );
 
-/**
- * Página: Sobre o Projeto
- * Rota: /sobre
- */
+// Componente principal da página Sobre
 export default function SobrePage() {
     const { theme } = useSettings();
     const [animationClass, setAnimationClass] = useState('');
@@ -51,7 +41,7 @@ export default function SobrePage() {
     const strongClasses = `${theme === 'escuro' ? 'text-gray-100' : 'text-gray-900'}`;
 
     return (
-        // Layout Padrão (Sidebars + Fundo Dinâmico)
+        // Layout Padrão 
         <div className={`font-poppins relative min-h-screen ${
             theme === 'escuro' ? 'bg-gray-900' : 'bg-gradient-to-b from-[#F9EFFF] to-white'
         }`}>
@@ -65,8 +55,7 @@ export default function SobrePage() {
                 <main className="px-4 lg:px-8 pt-20 pb-24 lg:py-8">
                     
                     <StaticCard title="Sobre o Projeto Lires" theme={theme}>
-                        
-                        {/* CORREÇÃO: Usando <h2> e <ul> para estrutura correta */}
+
                         <h2 className={h2Classes}>O que é o Lires?</h2>
                         <p className={pClasses}>
                             O Lires (Libras para Todos) é um Trabalho de Conclusão de Curso (TCC) 

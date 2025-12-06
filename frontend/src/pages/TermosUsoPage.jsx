@@ -5,10 +5,6 @@ import MobileTopBar from '../components/MobileTopBar';
 import MobileBottomBar from '../components/MobileBottomBar';
 import { useSettings } from '../components/SettingsContext';
 
-/**
- * Componente: StaticCard
- * (Reutilizado para manter o estilo)
- */
 const StaticCard = ({ title, children, theme }) => (
     <div className={`
         content-box anim-enter w-full max-w-4xl mx-auto rounded-lg shadow-md p-6 md:p-10 
@@ -20,7 +16,6 @@ const StaticCard = ({ title, children, theme }) => (
         `}>
             {title}
         </h1>
-        {/* O container do children agora define o espaçamento e a cor base */}
         <div className={`
             space-y-6 text-lg
             ${theme === 'escuro' ? 'text-gray-300' : 'text-gray-700'}
@@ -30,10 +25,7 @@ const StaticCard = ({ title, children, theme }) => (
     </div>
 );
 
-/**
- * Página: Termos de Uso
- * Rota: /termos-de-uso
- */
+//Página de termos de uso
 export default function TermosUsoPage() {
     const { theme } = useSettings();
     const [animationClass, setAnimationClass] = useState('');
@@ -66,8 +58,6 @@ export default function TermosUsoPage() {
                             Ao utilizar o aplicativo Lires (doravante "Aplicativo"), você concorda 
                             com os seguintes termos e condições:
                         </p>
-                        
-                        {/* CORREÇÃO: Usando <ol> e <li> com classes manuais */}
                         <ol className={listClasses}>
                             <li>
                                 <strong className={strongClasses}>Propósito Acadêmico</strong>

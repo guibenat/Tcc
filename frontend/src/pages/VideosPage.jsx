@@ -1,17 +1,13 @@
-// CAMINHO: src/pages/VideosPage.jsx
-
 import React, { useState, useEffect } from 'react';
-// Layout e Contexto
 import SidebarLeft from '../components/SidebarLeft';
 import SidebarRight from '../components/SidebarRight';
 import MobileTopBar from '../components/MobileTopBar';
 import MobileBottomBar from '../components/MobileBottomBar';
-// Puxo o estado global e o mapa de lições (estrutura do curso)
 import { useSettings } from '../components/SettingsContext';
 import { lessonMap } from '../lessons/lessonMap'; 
 
-// --- Ícones (SVG) ---
-const PlayIcon = ({ theme }) => ( /* ... código SVG ... */ 
+// Ícones 
+const PlayIcon = ({ theme }) => ( /* código SVG */ 
   <svg 
     className={`w-10 h-10 transition-colors ${
       theme === 'escuro' 
@@ -24,7 +20,7 @@ const PlayIcon = ({ theme }) => ( /* ... código SVG ... */
     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path>
   </svg>
 );
-const LockIcon = ({ theme }) => ( /* ... código SVG ... */ 
+const LockIcon = ({ theme }) => ( /* código SVG */ 
   <svg 
     className={`w-8 h-8 ${
       theme === 'escuro' ? 'text-slate-500' : 'text-slate-400'
@@ -35,7 +31,7 @@ const LockIcon = ({ theme }) => ( /* ... código SVG ... */
     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"></path>
   </svg>
 );
-const BackArrowIcon = ({ theme }) => ( /* ... código SVG ... */ 
+const BackArrowIcon = ({ theme }) => ( /* código SVG */ 
   <svg 
     className={`w-8 h-8 ${
       theme === 'escuro' ? 'text-slate-300' : 'text-slate-600'
@@ -50,17 +46,16 @@ const BackArrowIcon = ({ theme }) => ( /* ... código SVG ... */
 const CloseIcon = () => <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>;
 
 
-// --- 1. Importação Estática de Todos os Vídeos ---
-// (Necessário para que o Vite/Webpack inclua os assets no build final)
+// Importação Estática de Todos os Vídeos 
 import videoOi from '../assets/PrimeirosPassosVideo/Oi.mp4';
 import videoTchau from '../assets/PrimeirosPassosVideo/Tchau.mp4';
-// ... (outros vídeos de Primeiros Passos)
+// outros vídeos de Primeiros Passos
 import videoObrigado from '../assets/PrimeirosPassosVideo/Obrigado.mp4';
 import videoBomDia from '../assets/PrimeirosPassosVideo/BomDia.mp4';
 import videoBoaTarde from '../assets/PrimeirosPassosVideo/BoaTarde.mp4';
 import videoBoaNoite from '../assets/PrimeirosPassosVideo/BoaNoite.mp4';
 import videoAteLogo from '../assets/PrimeirosPassosVideo/AteLogo.mp4';
-// ... (todos os vídeos do Alfabeto)
+// todos os vídeos do Alfabeto
 import videoA from '../assets/AlfabetoVideo/A.mp4';
 import videoB from '../assets/AlfabetoVideo/B.mp4';
 import videoC from '../assets/AlfabetoVideo/C.mp4';
@@ -84,8 +79,7 @@ import videoT from '../assets/AlfabetoVideo/T.mp4';
 import videoU from '../assets/AlfabetoVideo/U.mp4';
 import videoV from '../assets/AlfabetoVideo/V.mp4';
 
-// --- 2. MAPA DE LIÇÕES PARA VÍDEOS ---
-// Associa o ID da lição (lessonId) aos vídeos que ela ensinou.
+// MAPA DE LIÇÕES PARA VÍDEOS 
 const lessonVideoMap = {
   'comecar-do-zero': [
     { id: 'v1', title: 'Oi', url: videoOi },
@@ -136,11 +130,9 @@ const lessonVideoMap = {
 };
 
 
-// --- COMPONENTES DE UI ---
+// Compnentes de ui
 
-/**
- * Título de Página Reutilizável
- */
+
 const PageTitle = ({ title, subtitle, theme }) => (
   <div className="text-left">
     <div className="relative inline-block mb-1">
@@ -151,9 +143,8 @@ const PageTitle = ({ title, subtitle, theme }) => (
   </div>
 );
 
-/**
- * Modal do Player de Vídeo (O que aparece em tela cheia)
- */
+// Modal de Player de Vídeo
+
 const VideoPlayerModal = ({ videoUrl, onClose }) => (
   <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50" onClick={onClose}>
     <button className="absolute top-4 right-4 text-white z-50"><CloseIcon /></button>
@@ -165,9 +156,7 @@ const VideoPlayerModal = ({ videoUrl, onClose }) => (
   </div>
 );
 
-/**
- * View da Lista de Módulos (Primeira Tela)
- */
+// Primeira tela
 const ModuleListView = ({ videoModules, onSelectModule, theme }) => (
   <div className="flex flex-col h-full w-full">
     <div className="mb-12 w-full">
@@ -177,7 +166,6 @@ const ModuleListView = ({ videoModules, onSelectModule, theme }) => (
       {videoModules.map(module => (
         <button
           key={module.id}
-          // Só permite o clique se o módulo estiver destrancado
           onClick={() => module.unlocked && onSelectModule(module)} 
           disabled={!module.unlocked}
           className={`w-full flex items-center p-6 rounded-2xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed group ${
@@ -196,9 +184,7 @@ const ModuleListView = ({ videoModules, onSelectModule, theme }) => (
   </div>
 );
 
-/**
- * View em Grid de Vídeos (Segunda Tela)
- */
+// View de grade de vídeos dentro do módulo
 const VideoGridView = ({ module, onBack, onPlayVideo, theme }) => (
   <div className="flex flex-col h-full w-full">
     <div className="flex items-center mb-12 w-full">
@@ -207,7 +193,7 @@ const VideoGridView = ({ module, onBack, onPlayVideo, theme }) => (
       </button>
       <PageTitle title={module.title} subtitle="Revise agora os vídeos que você já aprendeu" theme={theme} />
     </div>
-    {/* Grid de 2 colunas (mobile) e 3 colunas (desktop/tablet) */}
+    {/* Grid 2*/}
     <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10 flex-grow">
       {module.videos.map((video, index) => (
         <div key={index}>
@@ -237,41 +223,40 @@ const VideoGridView = ({ module, onBack, onPlayVideo, theme }) => (
 );
 
 
-// --- COMPONENTE PRINCIPAL DA PÁGINA (VideosPage) ---
+// COMPONENTE PRINCIPAL DA PÁGINA 
 export default function VideosPage() {
   // Puxo o tema e o progresso do Contexto
   const { theme, lessonProgress } = useSettings(); 
   
-  // --- Estados da Máquina de Visão ---
-  const [currentView, setCurrentView] = useState('list'); // 'list' (módulos) ou 'grid' (vídeos)
-  const [selectedModule, setSelectedModule] = useState(null); // Módulo selecionado
-  const [playingVideo, setPlayingVideo] = useState(null); // URL do vídeo tocando no modal
+  // Estados da Máquina de Visão 
+  const [currentView, setCurrentView] = useState('list'); 
+  const [selectedModule, setSelectedModule] = useState(null); 
+  const [playingVideo, setPlayingVideo] = useState(null); 
   const [enterAnimationClass, setEnterAnimationClass] = useState('anim-enter');
   const [exitAnimationClass, setExitAnimationClass] = useState('');
 
-  // --- LÓGICA DINÂMICA PARA CONSTRUIR OS MÓDULOS ---
+  // Lógica dinâmica para construir os módulos
   
-  // 1. Definição da Estrutura do Curso (agrupada por Unidade)
+  // Definição da Estrutura do Curso 
   const moduleStructure = [
     { 
       id: 1, 
       title: 'Unidade 1: Primeiros passos', 
-      lessons: lessonMap.filter(l => l.unit === 1).map(l => l.id) // Pega as lições da Unidade 1
+      lessons: lessonMap.filter(l => l.unit === 1).map(l => l.id) 
     },
     { 
       id: 2, 
       title: 'Unidade 2: Alfabeto', 
-      lessons: lessonMap.filter(l => l.unit === 2).map(l => l.id) // Pega as lições da Unidade 2
+      lessons: lessonMap.filter(l => l.unit === 2).map(l => l.id) 
     },
     { id: 3, title: 'Unidade 3: Símbolos e marcas', lessons: [] },
-    // ... (Placeholder para unidades futuras)
   ];
 
-  // 2. Mapeia a estrutura para os dados de visualização (videoModules)
+  // Mapeia a estrutura para os dados de visualização
   const videoModules = moduleStructure.map(module => {
-    let moduleUnlocked = false; // O módulo está destrancado se pelo menos uma lição estiver completa
-    let videosWatched = 0; // Quantos vídeos estão desbloqueados
-    let allModuleVideos = []; // Lista de vídeos desbloqueados (para o grid)
+    let moduleUnlocked = false; 
+    let videosWatched = 0; 
+    let allModuleVideos = []; 
 
     module.lessons.forEach(lessonId => {
       const progress = lessonProgress[lessonId];
@@ -288,7 +273,6 @@ export default function VideosPage() {
           videosWatched++;
         });
       }
-      // TODO: Para vídeos não assistidos, marcar como unlocked: false e adicioná-los também
     });
 
     // Calcula o total de vídeos que este módulo possui (para o contador)
@@ -305,10 +289,8 @@ export default function VideosPage() {
       videos: allModuleVideos, // Lista de vídeos desbloqueados
     };
   });
-  // --- FIM DA LÓGICA DINÂMICA ---
+  // Fim da lógica 
 
-
-  // Handler para ir do "list" (módulos) para o "grid" (vídeos)
   const handleSelectModule = (module) => {
     // Lógica de animação de saída/entrada
     setEnterAnimationClass('');
@@ -321,7 +303,6 @@ export default function VideosPage() {
     }, 800);
   };
 
-  // Handler para voltar do "grid" para o "list"
   const handleBackToList = () => {
     // Lógica de animação de saída/entrada
     setEnterAnimationClass('');
@@ -338,7 +319,7 @@ export default function VideosPage() {
     <div className={`font-poppins relative min-h-screen flex flex-col ${
         theme === 'escuro' ? 'bg-gray-900' : 'bg-gradient-to-b from-[#F9EFFF] to-white'
     }`}>
-      {/* --- Layout Fixo --- */}
+      {/* Layout Fixo */}
       <SidebarLeft />
       <SidebarRight />
       <MobileTopBar />
@@ -349,10 +330,9 @@ export default function VideosPage() {
       <div className="w-full lg:pl-48 lg:pr-96 flex-grow flex flex-col">
         {/* Main Content Area */}
         <main className="px-6 lg:px-12 pt-20 pb-24 lg:pt-8 lg:pb-8 w-full flex-grow flex flex-col">
-          {/* Wrapper que controla a animação do conteúdo central */}
           <div className={`content-box w-full flex-grow flex flex-col ${enterAnimationClass} ${exitAnimationClass}`}>
             
-            {/* 1. View de Lista de Módulos */}
+            {/* View de Lista de Módulos */}
             {currentView === 'list' && (
               <ModuleListView 
                 videoModules={videoModules} 
@@ -361,7 +341,7 @@ export default function VideosPage() {
               />
             )}
             
-            {/* 2. View em Grid de Vídeos */}
+            {/* View em Grid de Vídeos */}
             {currentView === 'grid' && selectedModule && (
               <VideoGridView 
                 module={selectedModule} 

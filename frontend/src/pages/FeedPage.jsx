@@ -1,27 +1,25 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// Layout e Contexto
 import SidebarLeft from '../components/SidebarLeft';
 import SidebarRight from '../components/SidebarRight';
 import MobileTopBar from '../components/MobileTopBar';
 import MobileBottomBar from '../components/MobileBottomBar';
 import { useSettings } from '../components/SettingsContext'; 
-import Perfil from '../assets/Perfil.png'; // Fallback
+import Perfil from '../assets/Perfil.png'; 
 
-// --- Ícones e URLs ---
+// Ícones e URLs 
 import Foguinho from '../assets/Foguinho.png';
 const Alvo = "https://placehold.co/64x64/3b82f6/ffffff?text=META"; // Icone para meta completa
 const Espadas = "https://placehold.co/64x64/ef4444/ffffff?text=VERSUS"; // Icone para desafios
 const Relogio = "https://placehold.co/64x64/f59e0b/ffffff?text=PROG"; // Icone para progresso em andamento
 
-// --- Helper: Função de Avatar ---
+// Função de Avatar
 // Definição da paleta de cores para avatares
 const colorPalette = [
     'f0d3f7', 'c0aede', 'd1d4f9', 'fde047', 'a78bfa',
     '7c3aed', '4ade80', '2dd4bf', 'fb7185', 'f97316'
 ].join(',');
 
-// Monta a URL do avatar com base no seed
 const getAvatarUrl = (seed, style) => {
     const finalStyle = style || 'bottts-neutral'; 
     if (!seed) {
@@ -30,8 +28,6 @@ const getAvatarUrl = (seed, style) => {
     return `https://api.dicebear.com/7.x/${finalStyle}/svg?seed=${seed}&radius=50&backgroundColor=${colorPalette}`;
 };
 
-// --- Helper: Função para formatar o tempo ---
-// Converte timestamp em string "há X minutos atrás"
 function formatTimeAgo(timestamp) {
     const now = new Date();
     const seconds = Math.floor((now.getTime() - timestamp) / 1000);
@@ -49,12 +45,9 @@ function formatTimeAgo(timestamp) {
 }
 
 
-// --- Componentes do Feed ---
+// Componentes do Feed 
 
-/**
- * Componente: RenderPostContent
- * Roteia a renderização do corpo do post com base no 'post.type'.
- */
+
 const RenderPostContent = ({ post, theme }) => {
     switch (post.type) {
         case 'streak': // Post de Sequência
@@ -81,7 +74,7 @@ const RenderPostContent = ({ post, theme }) => {
                     </div>
                 </div>
             );
-        case 'meta_progress': // Post de Progresso de Meta (Incompleta)
+        case 'meta_progress': // Post de Progresso de Meta 
             return (
                 <div className={`mt-4 p-5 rounded-lg border-2 border-yellow-400 bg-gradient-to-br ${theme === 'escuro' ? 'from-yellow-900/30 to-gray-800' : 'from-yellow-100/30 to-white/10'}`}>
                     <div className="flex items-center gap-4">
@@ -116,10 +109,6 @@ const RenderPostContent = ({ post, theme }) => {
     }
 };
 
-/**
- * Componente: PostCard
- * Renderiza um post completo (cabeçalho, info do usuário, conteúdo).
- */
 const PostCard = ({ post, theme, navigate }) => (
   <div className={`rounded-2xl p-6 ${
     theme === 'escuro' 
@@ -147,10 +136,6 @@ const PostCard = ({ post, theme, navigate }) => (
   </div>
 );
 
-/**
- * Componente: PostCreator
- * Bloco que permite ao usuário gerar e postar seu progresso.
- */
 const PostCreator = ({ theme, currentUser, onShowPreview, dailyStreak, timeSpentToday, goalMinutes, dailyGoal }) => {
     
     return (
@@ -159,7 +144,7 @@ const PostCreator = ({ theme, currentUser, onShowPreview, dailyStreak, timeSpent
           ? 'bg-gray-800 border border-gray-700' 
           : 'bg-white/70 border border-slate-200'
         }`}>
-            {/* Bloco 1: Avatar e Texto */}
+            {/* Avatar e Texto */}
             <div className="flex items-center gap-4">
                 <img 
                     src={getAvatarUrl(currentUser?.avatarSeed || currentUser?.username, currentUser?.avatarStyle)} 
@@ -170,7 +155,7 @@ const PostCreator = ({ theme, currentUser, onShowPreview, dailyStreak, timeSpent
                     Compartilhe seu progresso!
                 </p>
             </div>
-            {/* Bloco 2: Botões de Criação de Post */}
+            {/* Botões de Criação de Post */}
             <div className="flex justify-start items-center ml-0 md:ml-14">
                 <div className="flex gap-2">
                     <button onClick={() => onShowPreview('streak')} className="btn-gradient-purple text-white font-semibold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity text-sm shadow-lg">Sequência</button>
@@ -182,12 +167,8 @@ const PostCreator = ({ theme, currentUser, onShowPreview, dailyStreak, timeSpent
     );
 };
 
-// --- Outros Componentes de UI ---
+// Outros Componentes de UI 
 
-/**
- * Componente: FeedTabs
- * Botões para alternar entre "Geral" e "Amigos".
- */
 const FeedTabs = ({ activeTab, onTabChange, theme }) => {
     const baseClasses = "px-8 py-3 rounded-full font-bold transition-all duration-300 ease-in-out";
     const activeClasses = "bg-pink-500 text-white shadow-lg shadow-pink-500/40 transform -translate-y-0.5";
@@ -205,9 +186,8 @@ const FeedTabs = ({ activeTab, onTabChange, theme }) => {
     );
 };
 
-/**
- * Modal de Confirmação de Postagem.
- */
+// Modal de Confirmação de Postagem
+
 const PostConfirmationModal = ({ isOpen, onClose, onConfirm, postData, theme }) => {
     if (!isOpen || !postData) return null;
 
@@ -238,7 +218,7 @@ const PostConfirmationModal = ({ isOpen, onClose, onConfirm, postData, theme }) 
                     <p className={`text-sm mb-2 ${theme === 'escuro' ? 'text-gray-400' : 'text-gray-600'}`}>
                         É assim que seu post vai aparecer:
                     </p>
-                    {/* Preview do post (RenderPostContent dentro do PostCard) */}
+                    {/* Preview do post */}
                     <PostCard post={{ ...postData, user: { ...postData.user, name: 'Você' } }} theme={theme} />
                 </div>
                 
@@ -266,39 +246,36 @@ const PostConfirmationModal = ({ isOpen, onClose, onConfirm, postData, theme }) 
 };
 
 
-// --- COMPONENTE PRINCIPAL DA PÁGINA DE FEED ---
+// Componente principal do Feed
 export default function FeedPage() {
     // Puxo estados globais do usuário logado
     const { 
         theme, 
-        following: loggedInFollowing, // Usuários que EU sigo
+        following: loggedInFollowing, // Usuários que eu sigo
         dailyStreak, 
-        onboardingSelections, // Para puxar a meta (ex: 10 min/dia)
+        onboardingSelections, // Para puxar a meta 
         timeSpentToday // Tempo que passei hoje na lição
     } = useSettings(); 
     
-    // Calculo a meta em minutos (padrão 10)
+    // Calculo a meta em minutos
     const dailyGoal = onboardingSelections?.time || '10 min/dia';
     const goalMinutes = parseInt(dailyGoal) || 10;
     
     const navigate = useNavigate();
     
-    // --- Estados Locais ---
+    // Estados Locais
     const [activeTab, setActiveTab] = useState('geral');
     const [enterAnimationClass, setEnterAnimationClass] = useState('anim-enter');
     const [exitAnimationClass, setExitAnimationClass] = useState('');
 
-    const [allPosts, setAllPosts] = useState([]); // Todos os posts (do localStorage)
-    const [allUsers, setAllUsers] = useState(new Map()); // Todos os usuários (para lookup rápido)
+    const [allPosts, setAllPosts] = useState([]); // Todos os posts 
+    const [allUsers, setAllUsers] = useState(new Map()); // Todos os usuários 
     const [currentUser, setCurrentUser] = useState(null); // O usuário logado
     const [isLoading, setIsLoading] = useState(true);
 
     const [modalData, setModalData] = useState({ isOpen: false, postData: null }); // Estado do Modal de Confirmação
 
-    /**
-     * Efeito de Carregamento Inicial
-     * Puxa todos os posts e usuários do localStorage.
-     */
+    // Carrega dados do usuário e posts ao montar o componente
     useEffect(() => {
         const userString = localStorage.getItem('currentUser');
         if (!userString) {
@@ -317,7 +294,7 @@ export default function FeedPage() {
         let postsFromDB = JSON.parse(localStorage.getItem('liresPostsDB'));
         
         if (!postsFromDB || postsFromDB.length === 0) {
-            // Cria posts de mock se o DB estiver vazio
+            // Cria posts de mock
             const firstUserId = dbUsers.length > 0 ? dbUsers[0].id : loggedInUser.id; 
             postsFromDB = [
                 { id: 2, userId: firstUserId, timestamp: Date.now() - 7200000, type: 'meta_complete', value: '10 min/dia' },
@@ -329,20 +306,16 @@ export default function FeedPage() {
         setAllPosts(postsFromDB);
         setIsLoading(false);
 
-    }, [navigate]); // Roda apenas no mount
+    }, [navigate]); 
 
-    /**
-     * Adiciona um novo post ao topo do feed e salva no localStorage.
-     */
+    // Adiciona um novo post ao topo do feed e salva no localStorage.
     const handlePostCreated = (newPost) => {
         setAllPosts(prevPosts => [newPost, ...prevPosts]);
         const currentPosts = JSON.parse(localStorage.getItem('liresPostsDB')) || [];
         localStorage.setItem('liresPostsDB', JSON.stringify([newPost, ...currentPosts]));
     };
     
-    /**
-     * Controla a transição animada entre as abas (Geral / Amigos).
-     */
+    // Controla a troca de abas com animações
     const handleTabChange = (newTab) => {
         if (newTab === activeTab) return; 
         setEnterAnimationClass('');
@@ -354,9 +327,7 @@ export default function FeedPage() {
         }, 800); 
     };
 
-    /**
-     * Calcula o tipo de post (streak, meta, versus) e abre o modal de preview.
-     */
+    // Calcula o tipo de post
     const handleShowPreview = (type) => {
         if (!currentUser) return;
 
@@ -376,10 +347,10 @@ export default function FeedPage() {
         if (type === 'streak') {
             postData.value = dailyStreak;
         } else if (type === 'meta') {
-            // Lógica para Meta: completa ou em progresso
+            // Lógica para Meta
             if (timeSpentToday >= goalMinutes) {
                 postData.type = 'meta_complete';
-                postData.value = dailyGoal; // Ex: "10 min/dia"
+                postData.value = dailyGoal; 
             } else {
                 postData.type = 'meta_progress';
                 postData.value = { 
@@ -387,14 +358,12 @@ export default function FeedPage() {
                     goal: goalMinutes 
                 };
             }
-        } // Se for 'versus', o tipo já foi definido como 'versus'
+        } 
 
         setModalData({ isOpen: true, postData: postData });
     };
 
-    /**
-     * Finaliza a postagem após a confirmação do modal.
-     */
+    // Finaliza a postagem após a confirmação do modal.
     const handleConfirmPost = () => {
         if (modalData.postData) {
             handlePostCreated(modalData.postData); // Adiciona ao feed e salva
@@ -406,11 +375,9 @@ export default function FeedPage() {
         setModalData({ isOpen: false, postData: null });
     };
 
-    /**
-     * Combina os posts com os dados do usuário para renderização e filtra pelas abas.
-     */
+    // Combina os posts com os dados do usuário para renderização e filtra pelas abas.
     const combinedPosts = allPosts.map(post => {
-        // Puxo os dados completos do usuário usando o Map para ser rápido
+        // Puxo os dados completos do usuário usando o Map 
         const user = allUsers.get(post.userId);
         return {
             ...post,
@@ -423,7 +390,7 @@ export default function FeedPage() {
             return true; // Mostra tudo
         }
         if (activeTab === 'amigos') {
-            // Mostra posts de quem eu sigo OU os meus próprios posts
+            // Mostra posts de quem eu sigo ou os meus próprios posts
             return loggedInFollowing.includes(post.userId) || post.userId === currentUser?.id;
         }
         return false;
@@ -441,7 +408,7 @@ export default function FeedPage() {
                     }
                 `}</style>
                 
-                {/* --- Barras de Navegação Fixas --- */}
+                {/*Barras de Navegação Fixas*/}
                 <SidebarLeft />
                 <SidebarRight />
                 <MobileTopBar />
@@ -466,7 +433,7 @@ export default function FeedPage() {
                             
                             <hr className={`my-6 ${theme === 'escuro' ? 'border-gray-700' : 'border-teal-200'}`} />
                             
-                            {/* Feed (Posts) */}
+                            {/*Feed (Posts)*/}
                             <div className={`content-box flex-grow flex flex-col ${enterAnimationClass} ${exitAnimationClass}`}>
                                 {isLoading ? (
                                     <p className={`text-center ${theme === 'escuro' ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -474,7 +441,7 @@ export default function FeedPage() {
                                     </p>
                                 ) : filteredPosts.length > 0 ? (
                                     <div className="space-y-6">
-                                        {/* Renderiza os posts filtrados */}
+                                        {/*Renderiza os posts filtrados*/}
                                         {filteredPosts.map(post => (
                                             <PostCard 
                                                 key={post.id} 

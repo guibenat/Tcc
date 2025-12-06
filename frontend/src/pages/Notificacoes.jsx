@@ -1,32 +1,28 @@
 import React, { useState, useEffect } from 'react';
-// Puxo o hook de configurações para acessar o tema e o usuário logado
 import { useSettings } from '../components/SettingsContext';
 
-/**
- * Componente: Notificacoes
- * Lida com as preferências de notificação do usuário (frequência, horário e tipos).
- */
+// Componente Notificações
 export default function Notificacoes() { 
     const { theme } = useSettings();
 
-    // --- Estados para Seletores ---
+    // Estados para Seletores 
     const [silenciarNotificacoes, setSilenciarNotificacoes] = useState("Nunca");
     const [frequencia, setFrequencia] = useState("Diária");
     const [horario, setHorario] = useState("Manhã");
 
-    // --- Estados para Switches (Tipos de Notificação) ---
+    // Estados para Switches 
     const [lembreteDiario, setLembreteDiario] = useState(true);
     const [progressoEConquista, setProgressoeConquista] = useState(true);
     const [rankingCompeticao, setRankingCompeticao] = useState(true);
     const [interacoesSociais, setInteracoesSociais] = useState(true);
     const [eventosEspeciais, setEventosEspeciais] = useState(false);
 
-    // --- Estados de UI/Fluxo ---
+    // Estados de UI/Fluxo 
     const [animationClass, setAnimationClass] = useState('');
     const [saveMessage, setSaveMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true); // Flag para evitar salvar no carregamento inicial
 
-    // --- 1. useEffect: Carregar Configurações Salvas ---
+    // Carregar Configurações Salvas do localStorage
     useEffect(() => {
         setAnimationClass('anim-enter');
         
@@ -50,7 +46,7 @@ export default function Notificacoes() {
         setIsLoading(false); // Libera o auto-save
     }, []);
 
-    // --- 2. useEffect: Auto-Salvamento no localStorage ---
+    // useEffect: Auto-Salvamento no localStorage 
     useEffect(() => {
         // Não salva na primeira vez que a página carrega
         if (isLoading) return; 
@@ -64,7 +60,7 @@ export default function Notificacoes() {
         const currentUser = JSON.parse(userString);
         const liresUsersDB = JSON.parse(dbString);
 
-        // 1. Cria o objeto de configurações atual
+        // Cria o objeto de configurações atual
         const notificationSettings = {
             silenciar: silenciarNotificacoes,
             frequencia: frequencia,
@@ -76,7 +72,7 @@ export default function Notificacoes() {
             eventosespeciais: eventosEspeciais,
         };
 
-        // 2. Atualiza o usuário no DB
+        // Atualiza o usuário no DB
         const updatedUser = { 
             ...currentUser, 
             notificationSettings: notificationSettings 
@@ -86,11 +82,11 @@ export default function Notificacoes() {
             user.id === currentUser.id ? updatedUser : user
         );
 
-        // 3. Persiste no localStorage
+        // Persiste no localStorage
         localStorage.setItem('currentUser', JSON.stringify(updatedUser));
         localStorage.setItem('liresUsersDB', JSON.stringify(updatedDB));
 
-        // 4. Mostra feedback e limpa
+        // Mostra feedback e limpa
         setSaveMessage("Salvo!");
         const timer = setTimeout(() => setSaveMessage(''), 2000); 
         return () => clearTimeout(timer); 
@@ -101,7 +97,7 @@ export default function Notificacoes() {
         interacoesSociais, eventosEspeciais, isLoading
     ]);
 
-    // --- Classes de Estilo Dinâmicas ---
+    // Classes de Estilo Dinâmicas 
     const selectClasses = theme === 'escuro'
         ? 'w-full max-w-md bg-gray-700 border-2 border-gray-600 rounded-full px-4 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500'
         : 'w-full max-w-md border-2 border-cyan-400 rounded-full px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-cyan-400';
@@ -134,7 +130,7 @@ export default function Notificacoes() {
         ? 'text-purple-400 font-semibold text-lg md:text-xl mt-6 mb-4'
         : 'text-purple-600 font-semibold text-lg md:text-xl mt-6 mb-4';
 
-    // --- Renderização ---
+    // Renderização 
     return (
         <div className={`content-box w-full ${animationClass}`}>
             {/* TÍTULO PRINCIPAL E FEEDBACK DE SALVAR */}
@@ -153,7 +149,7 @@ export default function Notificacoes() {
             </div>
 
             <div className="space-y-8">
-                {/* Seção 1: Configurações de Envio (Horário, Frequência, Silenciar) */}
+                {/* Configurações de Envio */}
                 <div className={cardClasses}>
                     <h2 className={titleClasses}>
                         Configurações de Envio
@@ -218,7 +214,7 @@ export default function Notificacoes() {
                     </div>
                 </div>
 
-                {/* Seção 2: Tipos de Notificação (Switches) */}
+                {/* Tipos de Notificação */}
                 <div className={cardClasses}>
                     <h2 className={titleClasses}>
                         Tipos de Notificação
@@ -226,7 +222,7 @@ export default function Notificacoes() {
                     <div className={dividerClasses}></div>
                     <div className="space-y-6">
                         
-                        {/* Switch 1 - Lembrete diário */}
+                        {/* Lembrete diário */}
                         <div className="flex items-center gap-3 flex-wrap">
                             <button
                                 onClick={() => setLembreteDiario(!lembreteDiario)}
@@ -243,7 +239,7 @@ export default function Notificacoes() {
                             </span>
                         </div>
 
-                        {/* Switch 2 - Progresso e conquistas */}
+                        {/* Progresso e conquistas */}
                         <div className="flex items-center gap-3 flex-wrap">
                             <button
                                 onClick={() => setProgressoeConquista(!progressoEConquista)}
@@ -260,7 +256,7 @@ export default function Notificacoes() {
                             </span>
                         </div>
 
-                        {/* Switch 3 - Ranking e Competição */}
+                        {/* Ranking e Competição */}
                         <div className="flex items-center gap-3 flex-wrap">
                             <button
                                 onClick={() => setRankingCompeticao(!rankingCompeticao)}
@@ -277,7 +273,7 @@ export default function Notificacoes() {
                             </span>
                         </div>
 
-                        {/* Switch 4 - Interações Sociais */}
+                        {/* Interações Sociais */}
                         <div className='flex items-center gap-3 flex-wrap mt-6'>
                             <button
                                 onClick={() => setInteracoesSociais(!interacoesSociais)}
@@ -294,7 +290,7 @@ export default function Notificacoes() {
                             </span>
                         </div>
 
-                        {/* Switch 5 - Eventos Especiais */}
+                        {/* Eventos Especiais */}
                         <div className='flex items-center gap-3 flex-wrap mt-6'>
                             <button
                                 onClick={() => setEventosEspeciais(!eventosEspeciais)}

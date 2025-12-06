@@ -5,10 +5,7 @@ import MobileTopBar from '../components/MobileTopBar';
 import MobileBottomBar from '../components/MobileBottomBar';
 import { useSettings } from '../components/SettingsContext';
 
-/**
- * Componente: StaticCard
- * (Reutilizado para manter o estilo)
- */
+// Componente reutilizável para cards estáticos
 const StaticCard = ({ title, children, theme }) => (
     <div className={`
         content-box anim-enter w-full max-w-4xl mx-auto rounded-lg shadow-md p-6 md:p-10 
@@ -20,7 +17,6 @@ const StaticCard = ({ title, children, theme }) => (
         `}>
             {title}
         </h1>
-        {/* O container do children agora define o espaçamento e a cor base */}
         <div className={`
             space-y-6 text-lg
             ${theme === 'escuro' ? 'text-gray-300' : 'text-gray-700'}
@@ -30,10 +26,7 @@ const StaticCard = ({ title, children, theme }) => (
     </div>
 );
 
-/**
- * Página: Termos de Privacidade
- * Rota: /termos-de-privacidade
- */
+// Pagina de termos de privacidade
 export default function TermosPrivacidadePage() {
     const { theme } = useSettings();
     const [animationClass, setAnimationClass] = useState('');
@@ -67,8 +60,7 @@ export default function TermosPrivacidadePage() {
                             Sua privacidade é importante para nós. Esta política explica como 
                             coletamos, usamos e protegemos suas informações pessoais.
                         </p>
-                        
-                        {/* CORREÇÃO: Usando <ol> e <li> com classes manuais */}
+
                         <ol className={listClasses}>
                             <li>
                                 <strong className={strongClasses}>

@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
-// Puxo o hook de configurações para acessar o tema e os dados
 import { useSettings } from '../components/SettingsContext'; 
 
-// --- Assets ---
+// Assets 
 import roboTristeImg from '../assets/robo_triste.png'; // Imagem para o modal de exclusão
-// --- Fim dos Assets ---
+// Fim dos Assets 
 
 export default function EncerramentoLires() {
     const navigate = useNavigate();
@@ -30,7 +29,7 @@ export default function EncerramentoLires() {
 
     const getSwalBackground = () => (theme === 'escuro' ? '#1f2937' : '#fff');
 
-    // --- 1. Opção: Sair da conta (Logout) ---
+    // Sair da conta 
     const handleLogout = () => {
         Swal.fire({
             title: 'Deseja realmente sair?',
@@ -45,14 +44,14 @@ export default function EncerramentoLires() {
             background: getSwalBackground()
         }).then((result) => {
             if (result.isConfirmed) {
-                // Lógica de Logout: remove o usuário logado e recarrega a página
+                // Lógica de Logout
                 localStorage.removeItem('currentUser');
                 window.location.href = '/'; 
             }
         });
     };
 
-    // --- 2. Opção: Desativar Conta (Ocultar) ---
+    // Desativar Conta
     const handleDeactivate = () => {
         Swal.fire({
             title: 'Desativar sua conta?',
@@ -98,7 +97,7 @@ export default function EncerramentoLires() {
         });
     };
 
-    // --- 3. Opção: Excluir Conta Permanentemente (3 Passos) ---
+    // Excluir Conta Permanentemente
     const handleDelete = async () => {
         const userString = localStorage.getItem('currentUser');
         if (!userString) {
@@ -108,7 +107,7 @@ export default function EncerramentoLires() {
         const currentUser = JSON.parse(userString);
         const userPassword = currentUser.password; // Pega a senha salva
 
-        // PASSO 1: Aviso de Perda de Dados
+        // Aviso de Perda de Dados
         const firstStep = await Swal.fire({
             title: `<div class="flex items-center justify-center space-x-2">
                         <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -134,12 +133,12 @@ export default function EncerramentoLires() {
             background: getSwalBackground()
         });
 
-        // Se o usuário clicou "Cancelar" no Passo 1, para tudo.
+        // Se o usuário clicou "Cancelar" no Aviso de Perda de Dados, para tudo.
         if (!firstStep.isConfirmed) {
             return;
         }
 
-        // PASSO 2: Confirmação de Senha
+        // Confirmação de Senha
         const { value: passwordInput } = await Swal.fire({
             title: 'Digite sua senha para confirmar:',
             input: 'password',
@@ -175,7 +174,7 @@ export default function EncerramentoLires() {
             localStorage.setItem('liresUsersDB', JSON.stringify(updatedDB));
             localStorage.removeItem('currentUser'); // Desloga
 
-            // PASSO 3: Confirmação Final com Robô Triste
+            // Confirmação Final com Robô Triste
             Swal.fire({
                 title: 'Sua conta foi excluída com sucesso.',
                 html: `
@@ -226,21 +225,21 @@ export default function EncerramentoLires() {
                 </h2>
                 
                 <div className="space-y-4">
-                    {/* OPÇÃO 1: Sair (Logout) */}
+                    {/* Sair da conta */}
                     <div className={`pb-4 border-b ${theme === 'escuro' ? 'border-gray-700' : 'border-gray-200'}`}>
                         <h3 className={`text-xl font-semibold ${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`}>Sair da conta</h3>
                         <p className={theme === 'escuro' ? 'text-slate-400' : 'text-slate-600'}>Desconecta sua conta deste dispositivo.</p>
                         <button onClick={handleLogout} className="mt-2 text-blue-500 hover:underline font-semibold">Sair</button>
                     </div>
 
-                    {/* OPÇÃO 2: Desativar Conta */}
+                    {/* Desativar conta */}
                     <div className={`pb-4 border-b ${theme === 'escuro' ? 'border-gray-700' : 'border-gray-200'}`}>
                         <h3 className={`text-xl font-semibold ${theme === 'escuro' ? 'text-slate-200' : 'text-slate-800'}`}>Desativar conta</h3>
                         <p className={theme === 'escuro' ? 'text-slate-400' : 'text-slate-600'}>Seu perfil ficará oculto e você poderá reativá-lo a qualquer momento.</p>
                         <button onClick={handleDeactivate} className="mt-2 text-orange-500 hover:underline font-semibold">Desativar</button>
                     </div>
 
-                    {/* OPÇÃO 3: Excluir Permanentemente */}
+                    {/* Excluir conta permanentemente */}
                     <div>
                         <h3 className={`text-xl font-semibold ${theme === 'escuro' ? 'text-red-500' : 'text-red-700'}`}>Excluir conta permanentemente</h3>
                         <p className={theme === 'escuro' ? 'text-red-500' : 'text-red-600'}>Esta ação é irreversível. Todos os seus dados, progresso e Lcoins serão perdidos.</p>

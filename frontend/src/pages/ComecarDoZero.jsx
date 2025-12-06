@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-// Puxo o hook de configurações para acessar o tema e o estado das vidas
 import { useSettings } from '../components/SettingsContext';
 
-// --- Assets ---
+// Assets 
 import robotImage from '../assets/robot-happy.png';
 import liresLogoImage from '../assets/logo-lires.png';
 import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; // Logo para o modo escuro
 import coracaoImage from '../assets/coracaoo.png';
 import robotReviewImage from '../assets/robot-review.png'; 
 
-// --- Animações e Estilos Globais ---
+// Animações e Estilos Globais
 const floatAnimation = `
   @keyframes float {
     0% { transform: translateY(0px); }
@@ -18,7 +17,7 @@ const floatAnimation = `
   }
 `;
 
-// Estilos para a barra de rolagem customizada
+// Estilos para a barra de rolagem 
 const scrollbarStyles = `
   ::-webkit-scrollbar {
     width: 8px;
@@ -37,7 +36,7 @@ const scrollbarStyles = `
   }
 `;
 
-// Componente para o ícone de Play (usado nas telas de vídeo)
+// Componente para o ícone de Play 
 const PlayIconPlaceholder = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -50,13 +49,10 @@ const PlayIconPlaceholder = () => (
 );
 
 
-// --- Componentes de Feedback/Modais ---
+// modai/ feedbacks
 
-/**
- * Notificação Inferior (Acerto/Erro)
- */
+//acerto e erro
 function BottomNotification({ type, message, onContinue }) {
-    // Nota: O tema está hardcoded para 'escuro' aqui, para manter o estilo original.
     const isCorrect = type === 'correct';
     const containerStyle = isCorrect ? "bg-purple-900 border-t-4 border-purple-700" : "bg-red-900 border-t-4 border-red-700";
     const titleStyle = "text-white";
@@ -95,9 +91,7 @@ function BottomNotification({ type, message, onContinue }) {
     );
 }
 
-/**
- * Modal para o Alerta de Primeira Resposta Incorreta (Game Tip)
- */
+//acerto e erro
 function FirstIncorrectAnswerModal({ lives, onClose }) {
     const { theme } = useSettings();
 
@@ -135,9 +129,7 @@ function FirstIncorrectAnswerModal({ lives, onClose }) {
     );
 }
 
-/**
- * Modal de Game Over (Fim de Jogo)
- */
+//fim de jogo
 function GameOverModal({ onClose }) {
     const { theme } = useSettings();
 
@@ -170,9 +162,7 @@ function GameOverModal({ onClose }) {
     );
 }
 
-/**
- * Tela de Revisão (Redo Mode)
- */
+// Tela de revisão após erros
 function ReviewScreen({ errorCount, onContinue }) {
     const { theme } = useSettings();
 
@@ -220,7 +210,7 @@ function ReviewScreen({ errorCount, onContinue }) {
     );
 }
 
-// Coração individual (para o display de vidas)
+// Coração individual
 const HeartIcon = ({ filled }) => (
     <img 
         src={coracaoImage} 
@@ -233,7 +223,7 @@ const HeartIcon = ({ filled }) => (
     />
 );
 
-// Barra de Progresso (reutilizada)
+// Barra de Progresso
 function ProgressBar({ progress }) {
     const { theme } = useSettings();
 
@@ -256,10 +246,8 @@ function ProgressBar({ progress }) {
 }
 
 
-// --- Definição das Telas Locais (Mock Lesson UI) ---
-// NOTA: Estas funções são as UIs específicas da lição "Começar do Zero"
 
-// Tela 1: Modal de Início
+// Modal de Início
 function Step1({ onNext }) {
     const { theme } = useSettings();
 
@@ -319,7 +307,7 @@ function Step1({ onNext }) {
     );
 }
 
-// Tela 2, 4, 6: Vídeos (Reutilizada com o PlayIconPlaceholder)
+// Videos
 function Step2({ onNext, progress, lives }) {
     const { theme } = useSettings();
 
@@ -403,7 +391,7 @@ function Step2({ onNext, progress, lives }) {
     );
 }
 
-// Tela 3, 5, 7: Perguntas (Reutilizada, mas com texto/lógica hardcoded)
+// Tela 3, 5, 7
 function Step3({ onNext, onCheckAnswer, progress, onSelectAnswer, selectedAnswer, lives, isChecking }) {
     const { theme } = useSettings();
 
@@ -478,7 +466,7 @@ function Step3({ onNext, onCheckAnswer, progress, onSelectAnswer, selectedAnswer
                         </div>
                     </div>
                     <div className="flex-grow flex flex-col items-center overflow-y-auto px-10">
-                        {/* Conteúdo de Opções Omitido (Apenas placeholders) */}
+                        {/* Conteúdo de Opções*/}
                     </div>
 
                     <div className="flex-shrink-0 px-10 pb-10">
@@ -503,7 +491,7 @@ function Step3({ onNext, onCheckAnswer, progress, onSelectAnswer, selectedAnswer
 }
 // Step4, Step5, Step6, Step7 são variações dos Step2 e Step3
 
-// --- Componente Principal que gerencia as telas ---
+// Componente que gerencia as telas
 export default function App() {
     const { theme } = useSettings(); 
     const [currentStep, setCurrentStep] = useState(0);
@@ -520,11 +508,11 @@ export default function App() {
     const [showReviewScreen, setShowReviewScreen] = useState(false);
 
 
-    // Respostas corretas (hardcoded) para os passos 2, 4 e 6 (perguntas)
+    // Respostas corretas 
     const correctAnswers = {
-        2: 1, // Pergunta 1: Tchau -> Opção 2
-        4: 3, // Pergunta 2: Tchau -> Opção 4
-        6: 0, // Pergunta 3: Obrigado -> Opção 1
+        2: 1, 
+        4: 3, 
+        6: 0, 
     };
     
     // Armazena a resposta selecionada do usuário para cada pergunta
@@ -533,7 +521,7 @@ export default function App() {
         4: null,
         6: null,
     });
-    const totalSteps = 6; // Total de passos de conteúdo (exclui o modal inicial)
+    const totalSteps = 6; // Total de passos de conteúdo 
 
     const handleSelectAnswer = (step, answer) => {
         setAnswers(prev => ({ ...prev, [step]: answer }));
@@ -556,7 +544,7 @@ export default function App() {
     };
 
 
-    // Avança para o próximo passo (modo normal ou redo)
+    // Avança para o próximo passo 
     const proceed = () => {
         setIsChecking(false);
         setNotification({ visible: false, type: '', message: '' });
@@ -567,13 +555,13 @@ export default function App() {
         }
 
         if (isRedoMode) {
-            // Lógica do Redo Mode (refazer erros)
+            // Refazer erros
             if (redoIndex < incorrectSteps.length - 1) {
                 const nextRedoIndex = redoIndex + 1;
                 setRedoIndex(nextRedoIndex);
                 setCurrentStep(incorrectSteps[nextRedoIndex]);
             } else {
-                // Fim do Redo, volta para o estado inicial
+                // Fim do modo Refazer Erros
                 setIsRedoMode(false);
                 console.log("Respostas Finais:", answers);
                 alert("Redo completo. Respostas salvas no console!");
@@ -626,8 +614,6 @@ export default function App() {
             // Resposta Incorreta
             const newLives = lives - 1;
             setLives(newLives);
-
-            // Se for modo normal e o erro ainda não foi contado, adiciona à lista
             if(!isRedoMode && !incorrectSteps.includes(currentStep)){
                 setIncorrectSteps(prev => [...prev, currentStep].sort((a,b)=>a-b));
             }
@@ -678,7 +664,7 @@ export default function App() {
         progress = currentStep > 0 ? (currentStep / totalSteps) * 100 : 0;
     }
 
-    // Função que renderiza a tela correta (Step1 a Step7)
+    // Função que renderiza a tela correta 
     const renderStep = () => {
         // Mapeio o currentStep para os componentes visuais
         switch (currentStep) {
@@ -691,7 +677,6 @@ export default function App() {
             case 2: // Pergunta Oi
             case 4: // Pergunta Tchau
             case 6: // Pergunta Obrigado
-                // Passo as props de lógica (checkAnswer, selectedAnswer, etc.)
                 const isLastQuestion = currentStep === 6;
                 return <Step3
                     onNext={() => setCurrentStep(currentStep + 1)}

@@ -2,7 +2,7 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}", // <-- ESTA LINHA É A MAIS IMPORTANTE
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {},

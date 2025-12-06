@@ -1,9 +1,4 @@
-// CAMINHO: src/lessons/lessonmap.jsx
-// Este arquivo funciona como o "banco de dados" ou o "mapa da trilha" do curso.
-// Ele importa todas as lições individuais e define a ordem e os metadados de cada uma.
-
 import { comecarDoZeroLesson } from './comecarDoZeroLesson.jsx';
-// Lição Avançada (TODO: criar este arquivo)
 import { saudacoesAvancadasLesson } from './saudacoesAvancadasLesson.jsx'; 
 import { checkpoint1Lesson } from './checkpoint1Lesson.jsx';
 import { alfabetoLetraALesson } from './alfabetoLetraALesson.jsx';
@@ -23,17 +18,13 @@ const countInteractiveSteps = (steps) => {
   return steps.filter(step => step.type === 'pergunta').length;
 };
 
-/**
- * Mapa Principal de Lições (lessonMap)
- * Define a ordem, a qual unidade pertence (unit), o título e o total de passos.
- */
+
 export const lessonMap = [
-  // --- UNIDADE 1: Saudações e Primeiros Passos ---
+  // Saudações e Primeiros Passos 
   {
     id: 'comecar-do-zero',
     unit: 1, 
     title: 'Começar do Zero',
-    // O totalSteps é calculado dinamicamente
     totalSteps: countInteractiveSteps(comecarDoZeroLesson.steps), // 3 perguntas
   },
   {
@@ -50,7 +41,7 @@ export const lessonMap = [
     isCheckpoint: true, // Flag para indicar que é um desafio/revisão
   },
   
-  // --- UNIDADE 2: Alfabeto Manual ---
+  // Unidade 2: Alfabeto Manual 
   {
     id: 'alfabeto-letra-a',
     unit: 2, 
@@ -79,7 +70,6 @@ export const lessonMap = [
     id: 'alfabeto-consoantes-4',
     unit: 2, 
     title: 'Consoantes - Parte 4 (Final)',
-    // O totalSteps é 1, pois a lição está incompleta (só tem a letra V)
     totalSteps: countInteractiveSteps(alfabetoConsoantes4Lesson.steps), // 1 pergunta
   },
   {
@@ -91,13 +81,7 @@ export const lessonMap = [
   },
 ];
 
-/**
- * Objeto de Pesquisa Rápida (lessonLookup)
- * Cria um objeto onde a chave é o ID da lição. Isso permite que o ActivityPlayer
- * encontre os metadados de uma lição rapidamente (ex: lessonLookup['comecar-do-zero']).
- */
 export const lessonLookup = lessonMap.reduce((acc, lesson) => {
-  // Pego a definição completa da lição e uso o ID como chave
   const lessonDefinition = 
     (lesson.id === 'comecar-do-zero' && comecarDoZeroLesson) ||
     (lesson.id === 'checkpoint-1' && checkpoint1Lesson) ||
@@ -107,12 +91,10 @@ export const lessonLookup = lessonMap.reduce((acc, lesson) => {
     (lesson.id === 'alfabeto-consoantes-3' && alfabetoConsoantes3Lesson) ||
     (lesson.id === 'alfabeto-consoantes-4' && alfabetoConsoantes4Lesson) ||
     (lesson.id === 'alfabeto-revisao' && alfabetoRevisaoLesson);
-    // TODO: Adicionar todas as lições aqui
   
   if (lessonDefinition) {
     acc[lesson.id] = { ...lesson, ...lessonDefinition };
   } else {
-    // Se a lição ainda não foi criada (ex: saudacoesAvancadasLesson), uso os metadados do lessonMap
     acc[lesson.id] = { ...lesson, steps: [] }; 
   }
   return acc;

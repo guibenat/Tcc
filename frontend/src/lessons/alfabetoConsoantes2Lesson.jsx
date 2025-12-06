@@ -1,10 +1,7 @@
-// CAMINHO: src/lessons/alfabetoConsoantes2Lesson.jsx
-
 import React from 'react';
-// Importo meus componentes de UI reutilizáveis (Modal de Início, Tela de Vídeo, Tela de Pergunta)
 import { Step1, StepVideo, StepPergunta } from '../components/LessonUI';
 
-// --- Assets (Vídeos e Gifs) ---
+// Assets 
 // Carregando os vídeos da lição (J, K, L, M, N)
 const videoJ = new URL('../assets/AlfabetoVideo/J.mp4', import.meta.url).href;
 const videoK = new URL('../assets/AlfabetoVideo/K.mp4', import.meta.url).href;
@@ -24,18 +21,12 @@ const gifA = new URL('../assets/AlfabetoRespostas/A.gif', import.meta.url).href;
 const gifB = new URL('../assets/AlfabetoRespostas/B.gif', import.meta.url).href;
 const gifC = new URL('../assets/AlfabetoRespostas/C.gif', import.meta.url).href;
 
-/**
- * Pacote de Lição: Alfabeto Consoantes - Parte 2
- * * Este objeto define a estrutura da lição 'alfabeto-consoantes-2'.
- * * O componente Lesson.jsx vai ler este objeto e renderizar os
- * * passos (steps) na ordem correta.
- */
+
 export const alfabetoConsoantes2Lesson = {
   id: 'alfabeto-consoantes-2',
   title: 'Alfabeto Manual',
   subtitle: 'Consoantes - Parte 2',
   
-  // 'steps' é o array que define cada tela da lição
   steps: [
     // 1. Modal Inicial
     { 
@@ -97,6 +88,5 @@ export const alfabetoConsoantes2Lesson = {
       component: (props) => <StepPergunta {...props} questionText="Qual sinal representa a letra N?" options={[gifB, gifL, gifJ, gifK, gifN]} />, 
       correctAnswer: 4 // gifN
     }
-    // O Lesson.jsx vai identificar que este é o último passo e mostrar "Finalizar"
   ]
 };

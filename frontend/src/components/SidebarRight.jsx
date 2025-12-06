@@ -1,9 +1,9 @@
-import React, { useState, useEffect, Fragment } from 'react'; // 1. ADICIONADO FRAGMENT E USESTATE
+import React, { useState, useEffect, Fragment } from 'react'; 
 import { useNavigate } from 'react-router-dom'; 
 import { useSettings } from './settingscontext'; 
-import { InfoModal } from './InfoModal'; // 2. IMPORTAR O MODAL
+import { InfoModal } from './InfoModal'; 
 
-// --- Imagens ---
+// Imagens 
 import userAvatarImg from '../assets/perfil.png';
 import moneyBagImg from '../assets/bolsinha-dinheiro.png';
 import fireIconImg from '../assets/foguinho.png';
@@ -13,7 +13,7 @@ import liresMasterLogoImg from '../assets/lires-master-logo.png';
 import robotMascotImg from '../assets/robot-mascot.png';     
 import AdImage from '../assets/anuncio.png';
 
-// --- Função de Avatar ---
+// Função de Avatar
 const colorPalette = [
     'f0d3f7', 'c0aede', 'd1d4f9', 'fde047', 'a78bfa',
     '7c3aed', '4ade80', '2dd4bf', 'fb7185', 'f97316'
@@ -27,7 +27,7 @@ const getAvatarUrl = (seed, style) => {
     return `https://api.dicebear.com/7.x/${finalStyle}/svg?seed=${seed}&radius=50&backgroundColor=${colorPalette}`;
 };
 
-// --- Componente UserStat ---
+// Componente UserStat 
 const UserStat = ({ iconSrc, value, color }) => (
     <div className="flex items-center gap-3">
         <img src={iconSrc} alt="Ícone de Status" className="w-8 h-8" />
@@ -35,13 +35,11 @@ const UserStat = ({ iconSrc, value, color }) => (
     </div>
 );
 
-// --- Componente Principal ---
+// Componente Principal
 export default function SidebarRight() {
   const { theme, lives, lcoins, dailyStreak, timeSpentToday } = useSettings();
   const navigate = useNavigate();
   const [avatarUrl, setAvatarUrl] = useState(userAvatarImg); 
-
-  // 3. ADICIONAR ESTADO PARA O MODAL
   const [modalType, setModalType] = useState(null); 
 
   useEffect(() => {
@@ -52,13 +50,12 @@ export default function SidebarRight() {
     }
   }, []); 
 
-  // --- Lógica de XP ---
+  // Lógica de XP 
   const DAILY_XP_GOAL = 250; 
   const currentXp = Math.floor(timeSpentToday || 0); 
   const xpPercentage = Math.min((currentXp / DAILY_XP_GOAL) * 100, 100);
 
   return (
-    // 4. USAR FRAGMENT PARA ENVOLVER A SIDEBAR E O MODAL
     <Fragment> 
       <aside className={`
         w-96 p-6 space-y-6 fixed top-0 right-0 h-screen overflow-y-auto hidden lg:block
@@ -66,8 +63,6 @@ export default function SidebarRight() {
           ? 'bg-gray-900 border-l border-gray-700' 
           : 'bg-[#F9EFFF] border-l border-slate-200'}
       `}>
-        
-        {/* User Stats */}
         <div className={`
           flex justify-around items-center p-2 rounded-xl
           ${theme === 'escuro' ? 'bg-gray-800' : 'bg-slate-50'}
@@ -156,8 +151,6 @@ export default function SidebarRight() {
             <img src={AdImage} alt="Anúncio" className="h-full w-full object-cover rounded-lg"/>
           </div>
         </div>
-        
-        {/* --- 5. FOOTER ATUALIZADO (USA BOTÕES) --- */}
         <footer className={`
           text-xs text-center pt-4 flex-shrink-0 flex justify-center flex-wrap gap-x-4
           ${theme === 'escuro' ? 'text-slate-400' : 'text-slate-500'}
@@ -168,8 +161,7 @@ export default function SidebarRight() {
         </footer>
         
       </aside>
-
-      {/* 6. RENDERIZAR O MODAL (fora da sidebar, mas dentro do fragment) */}
+      
       <InfoModal 
         isOpen={!!modalType} 
         type={modalType} 

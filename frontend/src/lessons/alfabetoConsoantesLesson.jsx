@@ -1,10 +1,7 @@
-// CAMINHO: src/lessons/alfabetoConsoantesLesson.jsx
-
 import React from 'react';
-// Importo meus componentes de UI reutilizáveis (Modal de Início, Tela de Vídeo, Tela de Pergunta)
 import { Step1, StepVideo, StepPergunta } from '../components/LessonUI';
 
-// --- Assets (Vídeos e Gifs - Consoantes 1: B, C, D, F, G, H) ---
+// Assets
 // Carregando os vídeos da lição
 const videoB = new URL('../assets/AlfabetoVideo/B.mp4', import.meta.url).href;
 const videoC = new URL('../assets/AlfabetoVideo/C.mp4', import.meta.url).href;
@@ -26,16 +23,11 @@ const gifA = new URL('../assets/AlfabetoRespostas/A.gif', import.meta.url).href;
 const gifE = new URL('../assets/AlfabetoRespostas/E.gif', import.meta.url).href;
 const gifI = new URL('../assets/AlfabetoRespostas/I.gif', import.meta.url).href;
 
-/**
- * Pacote de Lição: Alfabeto Consoantes - Parte 1
- * * Define a estrutura da lição 'alfabeto-consoantes'.
- */
 export const alfabetoConsoantesLesson = {
   id: 'alfabeto-consoantes',
   title: 'Alfabeto Manual',
   subtitle: 'Consoantes - Parte 1',
   
-  // 'steps' é o array que define cada tela da lição
   steps: [
     // 1. Modal Inicial
     { 

@@ -1,25 +1,19 @@
-// src/lessons/achievementsMap.jsx
-// Este arquivo define as conquistas do app.
-// Ele mapeia o ID da lição (do lessonMap.js) para o emblema de conquista
-// que o usuário recebe ao completá-la.
-
 export const achievementsMap = [
     {
-      id: 'comecar-do-zero', // 1ª Conquista (primeira lição)
+      id: 'comecar-do-zero', 
       title: 'Pioneiro',
       description: 'Você completou a sua primeira lição!'
     },
     {
-      id: 'checkpoint-1', // 2ª Conquista (final da Unidade 1)
+      id: 'checkpoint-1', 
       title: 'Revisão da Unidade 1',
       description: 'Você completou o desafio da Unidade 1!'
     },
     {
-      id: 'alfabeto-revisao', // 3ª Conquista (final da Unidade 2)
+      id: 'alfabeto-revisao', 
       title: 'Mestre do Alfabeto',
       description: 'Você completou a Unidade 2!'
     },
-    // Adicionei 4 placeholders para preencher os 7 slots da barra de progresso
     { 
       id: 'placeholder-4', 
       title: 'Em Breve...', 

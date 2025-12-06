@@ -5,7 +5,7 @@ import { useSettings } from './SettingsContext';
 import logoLiresClaraImg from '../assets/logo-lires.png';
 import logoLiresEscuraImg from '../assets/logo-lires-branca.png'; 
 
-// --- Conteúdos Estáticos (Extraídos do ABNT LIRES.docx) ---
+// Conteúdos Estáticos 
 
 // Conteúdo para "Sobre"
 const SobreContent = ({ theme }) => {
@@ -75,7 +75,6 @@ const TermosPrivacidadeContent = ({ theme }) => {
                         Utilizamos o [MySQL Workbench] para armazenar informações de usuários, 
                         histórico de acesso e os conteúdos disponíveis.
                     </p>
-                    {/* Nota: O código atual usa LocalStorage, mas o TCC menciona MySQL. */}
                 </li>
                 <li>
                     <strong className={strongClasses}>Acessibilidade e Design</strong>
@@ -138,7 +137,7 @@ const TermosUsoContent = ({ theme }) => {
     );
 };
 
-// --- Componente Modal ---
+// Componente Modal 
 export function InfoModal({ isOpen, onClose, type }) {
     const { theme } = useSettings();
     if (!isOpen) return null;
@@ -146,7 +145,6 @@ export function InfoModal({ isOpen, onClose, type }) {
     let title = '';
     let content = null;
 
-    // Define o título e o conteúdo com base no 'type'
     if (type === 'sobre') {
         title = 'Sobre o Projeto Lires';
         content = <SobreContent theme={theme} />;

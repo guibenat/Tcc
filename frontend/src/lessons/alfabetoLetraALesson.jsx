@@ -1,10 +1,7 @@
-// CAMINHO: src/lessons/alfabetoLetraALesson.jsx
-
 import React from 'react';
-// Importo meus componentes de UI reutilizáveis (Modal de Início, Tela de Vídeo, Tela de Pergunta)
 import { Step1, StepVideo, StepPergunta } from '../components/LessonUI';
 
-// --- Assets (Vídeos e Gifs - Vogais: A, E, I, O, U) ---
+// Assets
 // Carregando os vídeos da lição
 const videoA = new URL('../assets/AlfabetoVideo/A.mp4', import.meta.url).href;
 const videoE = new URL('../assets/AlfabetoVideo/E.mp4', import.meta.url).href;
@@ -24,16 +21,11 @@ const gifB = new URL('../assets/AlfabetoRespostas/B.gif', import.meta.url).href;
 const gifC = new URL('../assets/AlfabetoRespostas/C.gif', import.meta.url).href;
 const gifD = new URL('../assets/AlfabetoRespostas/D.gif', import.meta.url).href;
 
-/**
- * Pacote de Lição: Alfabeto Vogais - Parte 1
- * * Define a estrutura da lição 'alfabeto-letra-a'.
- */
 export const alfabetoLetraALesson = {
   id: 'alfabeto-letra-a',
   title: 'Alfabeto Manual',
   subtitle: 'Vogais - Parte 1',
   
-  // 'steps' é o array que define cada tela da lição
   steps: [
     // 1. Modal Inicial
     { 

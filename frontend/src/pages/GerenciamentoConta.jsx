@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
-// Contexto global
 import { useSettings } from '../components/SettingsContext'; 
 
-// --- Assets ---
+// Assets
 import Perfil from '../assets/Perfil.png'; 
 import LcoinIcon from '../assets/lcoin.png'; 
 
-// --- Helper: Função de Avatar ---
+// Função de Avatar
 const AVATAR_STYLE = 'bottts-neutral'; 
 const avatarSeeds = [
     'caua', 'maria', 'joao', 'ana', 'pedro', 'lucas', 'bia', 'leo', 
@@ -23,7 +22,7 @@ const getAvatarUrl = (seed, style = AVATAR_STYLE) => {
     return `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}&radius=50&backgroundColor=${colorPalette}`;
 };
 
-// --- Componente: AvatarPickerModal ---
+// AvatarPickerModal 
 const AvatarPickerModal = ({ isOpen, onClose, onSelect, currentSeed, theme }) => {
     if (!isOpen) return null;
 
@@ -51,7 +50,7 @@ const AvatarPickerModal = ({ isOpen, onClose, onSelect, currentSeed, theme }) =>
     );
 };
 
-// --- Componente: Modal de Verificação ---
+// Modal de Verificação
 const VerificationModal = ({ isOpen, onClose, onConfirm, target, theme, code, setCode, error, value }) => {
     if (!isOpen) return null;
     const safeValue = value || '';
@@ -86,7 +85,7 @@ export default function GerenciamentoConta() {
     const { theme, lcoins, setLcoins } = useSettings(); // Removido t e language
     const navigate = useNavigate(); 
 
-    // --- Estados Locais ---
+    // Estados Locais
     const [nome, setNome] = useState('');
     const [username, setUsername] = useState(''); 
     const [email, setEmail] = useState('');
@@ -116,7 +115,7 @@ export default function GerenciamentoConta() {
     const [verificationCode, setVerificationCode] = useState('');
     const [verificationError, setVerificationError] = useState('');
     
-    // --- 1. useEffect: Carregar Estado Inicial ---
+    // Carregar Estado Inicial
     useEffect(() => {
         setAnimationClass('anim-enter');
         const userString = localStorage.getItem('currentUser');
@@ -142,7 +141,7 @@ export default function GerenciamentoConta() {
         }
     }, []);
     
-    // --- Regras de Negócio ---
+    // Regras de Negócio
     const checkNomeCooldown = () => {
         if (!lastNomeChangeTimestamp) return { canChange: true };
         const daysToWait = 7;
@@ -164,7 +163,7 @@ export default function GerenciamentoConta() {
         return usernameChangeCount === 0 ? 0 : 1000;
     };
     
-    // --- Lógica de Verificação ---
+    // Lógica de Verificação
     const handleSendVerification = (target) => {
         setVerificationTarget(target);
         setVerificationError('');
@@ -213,7 +212,7 @@ export default function GerenciamentoConta() {
         setTimeout(() => setSaveMessage(''), 4000); 
     };
     
-    // --- Função Salvar ---
+    // Função Salvar
     const handleSave = (triggeredByVerification = false) => {
         if (!triggeredByVerification) {
             setSaveMessage('');
@@ -269,8 +268,6 @@ export default function GerenciamentoConta() {
         updatedUser.dataNascimento = dataNascimento; 
         updatedUser.isEmailVerified = isEmailVerified;
         updatedUser.isNumeroVerified = isNumeroVerified;
-        
-        // REMOVIDO: Lógica de salvar idioma
 
         const updatedDB = liresUsersDB.map(user => 
             user.id === currentUser.id ? updatedUser : user
@@ -297,7 +294,7 @@ export default function GerenciamentoConta() {
         }
     };
 
-    // --- Classes de Estilo ---
+    // Classes de Estilo 
     const inputClasses = theme === 'escuro'
         ? 'bg-gray-700 border-2 border-gray-600 rounded-lg px-4 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500' 
         : 'border-2 border-cyan-400 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-cyan-400'; 
@@ -416,8 +413,6 @@ export default function GerenciamentoConta() {
                                     <input type="text" value={dataNascimento} onChange={(e) => setDataNascimento(e.target.value)} placeholder="DD/MM/AAAA" className={`w-full max-w-md ${inputClasses}`}/>
                                     {!originalDataNascimento && ( <p className={helperTextClasses}>Complete para ganhar +25 Lcoins!</p> )}
                                 </div>
-                                
-                                {/* BOTÃO DE IDIOMA REMOVIDO DAQUI */}
 
                                 {/* Botão Salvar */}
                                 <div className="flex items-center gap-4 pt-4">

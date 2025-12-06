@@ -15,30 +15,25 @@ import Aprendizado from "../assets/Aprendizado.png";
 import Social from "../assets/Social.png";
 import Consistencia from "../assets/Consistencia.png";
 import Exploracao from "../assets/Exploração.png";
-// TODO: Importar o ObjectivesModal quando for linkar
-
-// --- Helper: Função para gerar o Avatar ---
-// (Mesma função usada na Sidebar e MobileBar)
 const colorPalette = [
     'f0d3f7', 'c0aede', 'd1d4f9', 'fde047', 'a78bfa',
     '7c3aed', '4ade80', '2dd4bf', 'fb7185', 'f97316'
 ].join(',');
 
 const getAvatarUrl = (seed, style) => {
-    const finalStyle = style || 'bottts-neutral'; // Padrão é robô
+    const finalStyle = style || 'bottts-neutral'; 
     if (!seed) {
-        return Perfil; // Retorna o placeholder
+        return Perfil; 
     }
     return `https://api.dicebear.com/7.x/${finalStyle}/svg?seed=${seed}&radius=50&backgroundColor=${colorPalette}`;
 };
 
-// --- Componente Principal ---
+// Componente Principal
 export default function UserContent() {
     
-    // --- Hooks ---
+    // Hooks 
+
     const navigate = useNavigate();
-    
-    // Puxo todos os dados dinâmicos do meu Contexto
     const {
         theme,
         dailyStreak,
@@ -50,65 +45,49 @@ export default function UserContent() {
         following
     } = useSettings();
 
-    // --- State Local ---
-    // Crio estados locais para os dados que pego do localStorage (username, data de entrada, etc)
+    // State Local 
     const [avatarUrl, setAvatarUrl] = useState(Perfil);
     const [username, setUsername] = useState('@username');
     const [joinDate, setJoinDate] = useState('...');
     const [animationClass, setAnimationClass] = useState('');
 
-    // --- Efeito de Carregamento ---
-    // Roda uma vez quando o componente carrega
+    // Efeito de Carregamento 
     useEffect(() => {
-        setAnimationClass('anim-enter'); // Ativa a animação de entrada
-        
-        // Puxo os dados do usuário logado no localStorage
+        setAnimationClass('anim-enter'); 
         const userString = localStorage.getItem('currentUser');
         if (userString) {
             const user = JSON.parse(userString);
-            
-            // Defino o username
             setUsername(user.username || '@username');
-            
-            // Formato a data de entrada (createdAt)
             const date = new Date(user.createdAt || Date.now());
             const joinDateString = date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
             setJoinDate(`Por aqui desde ${joinDateString}`);
-            
-            // Gero e defino a URL do avatar
             setAvatarUrl(getAvatarUrl(user.avatarSeed || user.username, user.avatarStyle));
         }
-    }, []); // O array vazio [] garante que rode só uma vez
+    }, []); 
 
-    // --- Cálculos Dinâmicos ---
-
-    // 1. Sinais Aprendidos: Conto quantas chaves existem no objeto lessonProgress
+    // Cálculos Dinâmicos
     const sinaisAprendidos = Object.keys(lessonProgress).length;
+    const dailyGoalInMinutes = onboardingSelections?.dailyGoal || 10; 
+    const timeToday = Math.floor(timeSpentToday || 0); 
+    const goalPercentage = Math.min((timeToday / dailyGoalInMinutes) * 100, 100); 
 
-    // 2. Meta Diária: Puxo a meta salva no onboarding e calculo o progresso
-    const dailyGoalInMinutes = onboardingSelections?.dailyGoal || 10; // Padrão de 10min
-    const timeToday = Math.floor(timeSpentToday || 0); // Pego o tempo de hoje (em minutos)
-    const goalPercentage = Math.min((timeToday / dailyGoalInMinutes) * 100, 100); // Trava em 100%
-
-    // --- Handlers ---
-    // Navega para a página de edição de perfil
+    // Handlers 
     const handleEditProfile = () => {
         navigate('/configuracoes/gerenciamento-de-conta');
     };
 
-    // TODO: Abrir o modal de Conquistas
+    // Abrir o modal de Conquistas
     const handleShowAchievements = () => {
         console.log("TODO: Abrir modal de Conquistas");
     };
 
-    // TODO: Abrir o modal de Objetivos
+    // Abrir o modal de Objetivos
     const handleShowObjectives = (title) => {
         console.log(`TODO: Abrir modal de Objetivos para: ${title}`);
-        // Ex: setModalData({ isOpen: true, title: title, objectives: ... })
     };
 
 
-    // --- Sub-componentes (Renderizados internamente) ---
+    // Sub-componentes 
 
     // Cabeçalho com o Avatar
     const ProfileHeader = () => (
@@ -129,7 +108,7 @@ export default function UserContent() {
         </div>
     );
 
-    // Informações do Usuário (Nome, Data, Seguidores)
+    // Informações do Usuário 
     const UserInfo = () => (
         <div className="w-full max-w-4xl mt-4 flex flex-col gap-2">
             <div className="flex items-center gap-2">
@@ -145,7 +124,7 @@ export default function UserContent() {
                 {joinDate}
             </p>
 
-            {/* Seguidores/Seguindo (dinâmico) */}
+            {/* Seguidores/Seguindo */}
             <div className="flex gap-4 pt-2">
                 <span className={`font-bold ${theme === 'escuro' ? 'text-purple-300' : 'text-purple-600'}`}>
                     {followers.length}
@@ -177,7 +156,7 @@ export default function UserContent() {
         </div>
     );
 
-    // Bloco de Estatísticas (Streak, Sinais, Lcoins)
+    // Bloco de Estatísticas 
     const Stats = () => (
         <div className="w-full max-w-4xl mt-6">
             <h2 className={`text-2xl font-bold mb-4 ${theme === 'escuro' ? 'text-purple-300' : 'text-violet-500'}`}>Estatísticas</h2>
@@ -201,7 +180,7 @@ export default function UserContent() {
                         </div>
                     </div>
                 </div>
-                {/* Coluna da Direita (Lcoins - dinâmico) */}
+                {/* Coluna da Direita */}
                 <div className="flex flex-col items-center justify-center gap-2 bg-violet-400/80 border border-violet-300 text-white rounded-2xl shadow-sm p-4">
                     <img src={LcoinIcon} alt="Lcoins" className="w-12 h-12" />
                     <span className="text-3xl font-bold">{lcoins}</span>
@@ -211,7 +190,7 @@ export default function UserContent() {
         </div>
     );
 
-    // Card da Meta Diária (dinâmico)
+    // Card da Meta Diária 
     const DailyGoal = () => (
         <div className="w-full max-w-4xl mt-6">
             <h2 className={`text-2xl font-bold mb-3 ${theme === 'escuro' ? 'text-purple-300' : 'text-violet-500'}`}>Metas</h2>
@@ -223,7 +202,7 @@ export default function UserContent() {
                 <div className="flex-grow h-4 bg-blue-900/70 rounded-full mx-4">
                     <div 
                         className="h-4 bg-gradient-to-r from-sky-400 to-cyan-300 rounded-full" 
-                        style={{ width: `${goalPercentage}%` }} // Largura dinâmica
+                        style={{ width: `${goalPercentage}%` }} 
                     ></div>
                 </div>
                 <span className="font-bold text-lg whitespace-nowrap">{timeToday}min ✓</span>
@@ -231,7 +210,7 @@ export default function UserContent() {
         </div>
     );
 
-    // Dados dos Objetivos (estático por enquanto, mas pronto para o modal)
+    // Dados dos Objetivos 
     const objectivesData = [
         { title: "Aprendizado", icon: Aprendizado, progress: "0/10" },
         { title: "Social", icon: Social, progress: "0/10" },
@@ -239,7 +218,7 @@ export default function UserContent() {
         { title: "Exploração", icon: Exploracao, progress: "0/10" },
     ];
 
-    // Card de Objetivos (clicáveis)
+    // Card de Objetivos 
     const Objectives = () => (
         <div className="w-full max-w-4xl mt-6">
             <h2 className={`text-2xl font-bold mb-4 ${theme === 'escuro' ? 'text-purple-300' : 'text-violet-500'}`}>Objetivos</h2>
@@ -263,11 +242,10 @@ export default function UserContent() {
         </div>
     );
 
-    // --- Renderização Principal ---
+    // Renderização Principal
     return (
-        // O 'main' reage ao tema e tem a animação de entrada
         <main className={`flex flex-col items-center p-4 sm:p-6 gap-6 content-box ${animationClass} ${
-            theme === 'escuro' ? 'bg-gray-900' : 'bg-gray-50' // Fundo da página
+            theme === 'escuro' ? 'bg-gray-900' : 'bg-gray-50' 
         }`}>
             {/* Renderizo os sub-componentes */}
             <ProfileHeader />
@@ -276,15 +254,7 @@ export default function UserContent() {
             <Stats />
             <DailyGoal />
             <Objectives />
-            {/* TODO: Renderizar o <ObjectivesModal /> aqui quando o estado dele for criado 
-              <ObjectivesModal 
-                isOpen={...} 
-                onClose={...} 
-                title={...} 
-                objectives={...}
-                theme={theme}
-              />
-            */}
+           
         </main>
     );
 }

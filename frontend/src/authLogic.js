@@ -1,10 +1,6 @@
-// src/authLogic.js
+// frontend/src/authLogic.js
 
-/**
- * Lógica de Login Padrão (Email/Senha)
- * Verifica o 'liresUsersDB' no localStorage.
- * Retorna uma string de erro em caso de falha, ou null em caso de sucesso.
- */
+// Função para lidar com login via e-mail/senha
 export const handleEmailLogin = (email, password) => {
     const usersDB = JSON.parse(localStorage.getItem('liresUsersDB')) || [];
     const user = usersDB.find(user => user.email === email);
@@ -18,18 +14,12 @@ export const handleEmailLogin = (email, password) => {
 
     // Sucesso
     localStorage.setItem('currentUser', JSON.stringify(user));
-    
-    // Redireciona com base no status do onboarding
+
     const destination = user.hasOnboarded ? '/home' : '/inicial';
-    window.location.href = destination; // Usamos href para forçar o recarregamento do Context
-    return null; // Sucesso
+    window.location.href = destination; 
+    return null; 
 };
-
-
-/**
- * Gera um username único (lógica movida do cadastro.jsx)
- * Ex: 'cauã' -> 'caua0001'
- */
+ 
 const generateUniqueUsername = (baseUsername, existingUsers) => {
     const formatNumber = (num) => num.toString().padStart(4, '0');
     const isUsernameTaken = (username, users) => {
@@ -43,7 +33,7 @@ const generateUniqueUsername = (baseUsername, existingUsers) => {
         .replace(/[^a-zA-Z0-9]/g, '') // Remove caracteres especiais
         .toLowerCase();
         
-    if (!cleanBase) cleanBase = 'aluno'; // Fallback
+    if (!cleanBase) cleanBase = 'aluno'; 
     
     let suffix = 1;
     let finalUsername = `${cleanBase}${formatNumber(suffix)}`; 
@@ -54,19 +44,14 @@ const generateUniqueUsername = (baseUsername, existingUsers) => {
     return finalUsername;
 };
 
-
-/**
- * Lógica Central de Autenticação do Google (Login OU Cadastro)
- * Esta é a função principal que os botões do Google irão chamar.
- */
 export const handleGoogleAuth = (googleData) => {
     const usersDB = JSON.parse(localStorage.getItem('liresUsersDB')) || [];
     
-    // 1. Tenta encontrar o usuário pelo e-mail do Google
+    // Tenta encontrar o usuário pelo e-mail do Google
     const user = usersDB.find(user => user.email === googleData.email);
 
     if (user) {
-        // --- CASO 1: Usuário Existe (Login) ---
+        // Usuário Existe (Login) 
         console.log("Google Auth: Usuário encontrado, fazendo login...");
         localStorage.setItem('currentUser', JSON.stringify(user));
         
@@ -74,7 +59,7 @@ export const handleGoogleAuth = (googleData) => {
         window.location.href = destination; // Força recarregamento
 
     } else {
-        // --- CASO 2: Usuário NÃO Existe (Cadastro) ---
+        // Usuário NÃO Existe (Cadastro) 
         console.log("Google Auth: Usuário não encontrado, criando nova conta...");
 
         // Cria um username a partir do nome ou e-mail
@@ -86,10 +71,9 @@ export const handleGoogleAuth = (googleData) => {
             name: googleData.name || finalUsername,
             username: finalUsername, 
             email: googleData.email,
-            // Usamos o Google ID (sub) como "senha" interna. Não é ideal, mas funciona para o TCC.
             password: googleData.sub, 
-            age: null, // Idade não é coletada pelo Google
-            isEmailVerified: true, // Google já verificou
+            age: null, 
+            isEmailVerified: true, 
             
             // Dados padrão do jogo
             hasOnboarded: false, // Vai para a tela /inicial
@@ -114,7 +98,6 @@ export const handleGoogleAuth = (googleData) => {
         localStorage.setItem('liresUsersDB', JSON.stringify(updatedUsers));
         localStorage.setItem('currentUser', JSON.stringify(newUser));
 
-        // Redireciona para o Onboarding
         window.location.href = '/inicial';
     }
 };
